@@ -41,6 +41,10 @@ class KeyboardInput {
     }
   }
 
+  // +-------------------------
+  // | Initializers
+  // +-------------------------
+
   function initStates():Void {
     this.keyStates = new Map();
     KeyboardKeys.initKeyStates(this.keyStates);
@@ -51,6 +55,9 @@ class KeyboardInput {
     Lib.stage.addEventListener( KeyboardEvent.KEY_UP,   onKeyUp );
   }
 
+  // +-------------------------
+  // | Event Handlers
+  // +-------------------------
 
   function onKeyDown(e:KeyboardEvent):Void {
     var key = e.keyCode;
