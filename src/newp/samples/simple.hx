@@ -4,32 +4,21 @@ import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-import openfl.events.MouseEvent;
 import newp.scenes.Scene;
-import newp.Lib;
 import newp.utils.Dice;
+import newp.Lib;
 
 
 class Simple extends Scene {
   
-  var mouseIsDown:Bool = false;
-  var mouseX:Float = 0;
-  var mouseY:Float = 0;
   var spriteCounter:TextField;
 
   public function new () {
-    
     super ();
 
     this.addSpriteCounter();
-
     this.addMessage();
-
     this.createSomeRandomBoxes();
-
-    Lib.stage.addEventListener (MouseEvent.MOUSE_DOWN, onMouseDown);
-    Lib.stage.addEventListener (MouseEvent.MOUSE_UP, onMouseUp);  
-    Lib.stage.addEventListener (MouseEvent.MOUSE_MOVE, onMouseMove);
   }
 
   // Methods
@@ -82,24 +71,13 @@ class Simple extends Scene {
     this.spriteCounter.text = Std.string(this.sprites.length);
   }
 
-  // Event Handlers
-
-  function onMouseDown(e: MouseEvent) { this.mouseIsDown = true; }
-
-  function onMouseUp(e:MouseEvent) { this.mouseIsDown = false; }
-
-  function onMouseMove(e:MouseEvent) {
-    this.mouseX = e.stageX;
-    this.mouseY = e.stageY;
-  }
-
   // Update Loop
 
   public override function update():Void {
 
-    if (this.mouseIsDown) {
+    if (Lib.inputs.mouse.down()) {
       var w = Dice.roll() * 10, h = Dice.roll() * 10;
-      this.addBoxSprite(this.mouseX, this.mouseY, w, h);
+      this.addBoxSprite(Lib.inputs.mouse.x, Lib.inputs.mouse.y, w, h);
     }
   } 
   
