@@ -23,7 +23,7 @@ class Engine {
     // this.inputs = new InputManager();
     
     this.clock = new Clock();
-    this.stage.addEventListener (Event.ENTER_FRAME, update);
+    this.stage.addEventListener (Event.ENTER_FRAME, this.update);
 
     if (scene == null) { return; }
     this.scenes.setScene(scene);

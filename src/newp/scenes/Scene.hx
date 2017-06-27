@@ -18,7 +18,7 @@ class Scene {
   public var y (get, set) :Float;
   
   public function new (name:String = '') { 
-    this.name = name == '' ? name : Type.getClassName(Type.getClass(this));
+    this.name = name != '' ? name : Type.getClassName(Type.getClass(this));
     this.sprites = [];
     this.renderTarget = new Sprite();
   }

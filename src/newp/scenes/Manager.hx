@@ -21,9 +21,9 @@ class Manager {
     var i, l, s;
     l = this.activeScenes.length;
     i = l;
-    while (i > 0) {
+    while (i >= 0) {
         s = this.activeScenes[i];
-        s.update();
+        if (s != null) { s.update(); }
         i--;
     }
   }

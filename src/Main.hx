@@ -10,7 +10,7 @@ class Main extends Sprite {
     
     super ();
     Lib.main = this;
-    Lib.engine = new Engine(this, new newp.scenes.Example());
+    Lib.engine = new Engine(this, new newp.samples.Simple());
   }
   
 }
