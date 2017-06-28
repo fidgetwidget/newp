@@ -16,14 +16,16 @@ class Engine {
   public var scenes (default, null) :SceneManager;
   public var inputs (default, null) :InputManager;
 
-  public function new( main:Sprite, scene:Scene = null ) {
+  public function new( main:Sprite ) {
+    newp.Lib.engine = this;
     this.main = main;
     this.scenes = new SceneManager();
     this.inputs = new InputManager();
-    
     this.clock = new Clock();
-    this.stage.addEventListener (Event.ENTER_FRAME, this.update);
+  }
 
+  public function start(scene:Scene = null):Void {
+    this.stage.addEventListener (Event.ENTER_FRAME, this.update);
     if (scene == null) { return; }
     this.scenes.setScene(scene);
   }

@@ -1,9 +1,10 @@
-package newp.samples;
+package samples;
 
 import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
+import openfl.display.FPS;
 import newp.scenes.Scene;
 import newp.utils.Dice;
 import newp.Lib;
@@ -14,8 +15,8 @@ class Simple extends Scene {
   var spriteCounter:TextField;
 
   public function new () {
-    super ();
-
+    super();
+    this.addFPS();
     this.addSpriteCounter();
     this.addMessage();
     this.createSomeRandomBoxes();
@@ -23,20 +24,13 @@ class Simple extends Scene {
 
   // Methods
 
-  function createSomeRandomBoxes() {
-    var x, y, w, h;
-    for (i in 0...30) {
-      x = Dice.parse("3d100 10d6");
-      y = Dice.parse("3d100 10d6");
-
-      w = Dice.roll() * 10;
-      h = Dice.roll() * 10;
-      this.addBoxSprite(x, y, w, h);
-    }
-  }
+  function addFPS() {
+    var fps = new FPS(10, 40, 0x555555);
+    this.addChild(fps);
+  }  
 
   function addSpriteCounter() {
-    var format = new TextFormat("Verdana", 24, 0xbbbbbb, true);
+    var format = new TextFormat("Verdana", 24, 0x777777, true);
     this.spriteCounter = new TextField();
     this.spriteCounter.x = 10;
     this.spriteCounter.y = 10;
@@ -58,6 +52,18 @@ class Simple extends Scene {
     textField.text = "Click to add some random squares!";
 
     this.addChild(textField);
+  }
+
+  function createSomeRandomBoxes() {
+    var x, y, w, h;
+    for (i in 0...30) {
+      x = Dice.parse("3d100 10d6");
+      y = Dice.parse("3d100 10d6");
+
+      w = Dice.roll() * 10;
+      h = Dice.roll() * 10;
+      this.addBoxSprite(x, y, w, h);
+    }
   }
 
   function addBoxSprite(x:Float, y:Float, w:Float, h:Float) {
