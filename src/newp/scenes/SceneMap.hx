@@ -2,7 +2,7 @@ package newp.scenes;
 
 import newp.scenes.Scene;
 
-class List {
+class SceneMap {
   
   var map:Map<String, Scene>;
   
