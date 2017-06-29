@@ -5,7 +5,7 @@ import openfl.ui.Keyboard;
 
 class KeyboardInput {
 
-  var keyStates:Map<Int,KeyState>;
+  var keyStates:KeyStateMap;
 
   public function new() {
     this.initStates();
@@ -13,22 +13,22 @@ class KeyboardInput {
   }
 
   public function down(key:Int):Bool {
-    if (!this.keyStates.exists(key)) return false;
+    if (!this.keyStates.has(key)) return false;
     return this.keyStates.get(key).current > 0;
   }
 
   public function up(key:Int):Bool {
-    if (!this.keyStates.exists(key)) return false;
+    if (!this.keyStates.has(key)) return false;
     return this.keyStates.get(key).current <= 0; 
   }
 
   public function pressed(key:Int):Bool {
-    if (!this.keyStates.exists(key)) return false;
+    if (!this.keyStates.has(key)) return false;
     return this.keyStates.get(key).current == 2;
   }
 
   public function released(key:Int):Bool {
-    if (!this.keyStates.exists(key)) return false;
+    if (!this.keyStates.has(key)) return false;
     return this.keyStates.get(key).current == -1;
   }
 
@@ -46,8 +46,7 @@ class KeyboardInput {
   // +-------------------------
 
   function initStates():Void {
-    this.keyStates = new Map();
-    KeyboardKeys.initKeyStates(this.keyStates);
+    this.keyStates = KeyStateMap.make();
   }
 
   function addEventHandlers():Void {
@@ -61,7 +60,7 @@ class KeyboardInput {
 
   function onKeyDown(e:KeyboardEvent):Void {
     var key = e.keyCode;
-    if (!keyStates.exists(key)) return;
+    if (!keyStates.has(key)) return;
     var state = keyStates.get(key);
     if (state.current > 0) state.current = 1;
     else state.current = 2;
@@ -69,7 +68,7 @@ class KeyboardInput {
 
   function onKeyUp(e:KeyboardEvent):Void {
     var key = e.keyCode;
-    if (!keyStates.exists(key)) return;
+    if (!keyStates.has(key)) return;
     var state = keyStates.get(key);
     if (state.current > 0) state.current = -1;
     else state.current = 0;

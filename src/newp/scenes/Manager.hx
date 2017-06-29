@@ -2,17 +2,17 @@ package newp.scenes;
 
 import newp.Lib;
 import newp.scenes.Scene;
-import newp.scenes.List;
+import newp.scenes.SceneMap;
 
 class Manager {
   
-  var scenes :List;
+  var scenes :SceneMap;
   var activeScenes :Array<Scene>;
   var sceneInFocus (get, never) :Scene;
   
   public function new () {
     
-    this.scenes = new List();
+    this.scenes = new SceneMap();
     this.activeScenes = [];
     
   }
