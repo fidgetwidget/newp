@@ -8,7 +8,7 @@ class Main extends Sprite {
   public function new () {
     super();
     var engine = new Engine(this);
-    var scene = new samples.Simple();
+    var scene = new samples.SimpleCollisions();
     engine.start(scene);
   }
   
