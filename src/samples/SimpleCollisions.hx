@@ -9,7 +9,7 @@ import openfl.display.Sprite;
 import newp.scenes.Scene;
 import newp.collision.shapes.Shape;
 import newp.collision.ShapeCollision;
-import newp.utils.Dice;
+import newp.math.Dice;
 import newp.Lib;
 
 

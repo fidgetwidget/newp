@@ -37,15 +37,21 @@ class Shape {
   // +-------------------------
 
   public function test(shape:Shape, ?into:ShapeCollision):ShapeCollision {
-    return SAT.testBoundsVsBounds(this.bounds, shape.bounds, into);
+    if (Std.is(shape, Circle))
+      return this.testCircle(cast shape, into, true);
+    
+    if (Std.is(shape, Polygon))
+      return this.testPolygon(cast shape, into, true);
+
+    return SAT.testBoundsVsBounds(this, shape, into);
   } 
 
   public function testCircle(circle:Circle, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {
-    return SAT.testCircleVsBounds(circle, this.bounds, into, flip);
+    return SAT.testCircleVsBounds(circle, this, into, flip);
   }
 
   public function testPolygon(poly:Polygon, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {
-    return SAT.testPolygonVsBounds(poly, this.bounds, into, flip);
+    return SAT.testPolygonVsBounds(poly, this, into, flip);
   }
 
 

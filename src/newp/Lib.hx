@@ -8,6 +8,8 @@ import openfl.display.Stage;
 
 class Lib {
   
+  public static var debug(default, null):Bool = true;
+
   @:allow(newp.Engine)
   public static var engine (default, null) :Engine;
 

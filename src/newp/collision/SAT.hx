@@ -2,7 +2,7 @@ package newp.collision;
 
 import newp.collision.ShapeCollision;
 import newp.collision.shapes.*;
-import newp.utils.MathUtils;
+import newp.math.Utils as MathUtils;
 import openfl.geom.Point;
 
 
@@ -15,10 +15,10 @@ class SAT {
   // | Bounds
   // +-------------------------
 
-  public static function testBoundsVsBounds( boundsA:Bounds, boundsB:Bounds, ?into:ShapeCollision, flip:Bool = false ) :ShapeCollision {
+  public static function testBoundsVsBounds( shapeA:Shape, shapeB:Shape, ?into:ShapeCollision, flip:Bool = false ) :ShapeCollision {
 
-    var bounds1 = flip ? boundsB : boundsA;
-    var bounds2 = flip ? boundsA : boundsB;
+    var bounds1 = flip ? shapeB.bounds : shapeA.bounds;
+    var bounds2 = flip ? shapeA.bounds : shapeB.bounds;
 
     var dx = bounds2.centerX - bounds1.centerX;
     var px = (bounds1.halfWidth + bounds2.halfWidth) - Math.abs(dx);
@@ -31,6 +31,8 @@ class SAT {
       if (py > 0) {
 
         into = (into == null) ? new ShapeCollision() : into.clear();
+        into.shape1 = flip ? shapeB : shapeA;
+        into.shape2 = flip ? shapeA : shapeB;
 
         if (px < py) {
           into.unitVectorX = MathUtils.sign(dx);
@@ -49,8 +51,9 @@ class SAT {
     return null;
   }
 
-  public static function testCircleVsBounds( circle:Circle, bounds:Bounds, ?into:ShapeCollision, flip:Bool = false ) :ShapeCollision {
+  public static function testCircleVsBounds( circle:Circle, shape:Shape, ?into:ShapeCollision, flip:Bool = false ) :ShapeCollision {
     
+    var bounds = shape.bounds;
     var dx = bounds.centerX - circle.x;
     var px = (bounds.halfWidth + circle.radius) - Math.abs(dx);
 
@@ -62,6 +65,8 @@ class SAT {
       if (py > 0) {
 
         into = (into == null) ? new ShapeCollision() : into.clear();
+        into.shape1 = flip ? shape : circle;
+        into.shape2 = flip ? circle : shape;
 
         if (px < py) {
           into.unitVectorX = MathUtils.sign(dx);
@@ -80,7 +85,7 @@ class SAT {
     return null; 
   }
 
-  public static function testPolygonVsBounds( poly:Polygon, bounds:Bounds, ?into:ShapeCollision, flip:Bool = false ) :ShapeCollision {
+  public static function testPolygonVsBounds( poly:Polygon, shape:Shape, ?into:ShapeCollision, flip:Bool = false ) :ShapeCollision {
 
     // TODO:
     // NOTE: I can't do the simple thing because we made displayObject a required field on Shape X(
@@ -97,7 +102,7 @@ class SAT {
     var circle1 = flip ? circleB : circleA;
     var circle2 = flip ? circleA : circleB;
 
-    var distsq = vec_lengthsq(circle1.x - circle2.x, circle1.y - circle2.y);
+    var distsq = MathUtils.vec_lengthsq(circle1.x - circle2.x, circle1.y - circle2.y);
     var size = circle1.transformedRadius + circle2.transformedRadius;
 
     if(distsq < size * size) {
@@ -110,10 +115,10 @@ class SAT {
       var delta = size - Math.sqrt(distsq);
       var unitVecX = circle1.x - circle2.x;
       var unitVecY = circle1.y - circle2.y;
-      var unitVecLen = vec_length(unitVecX, unitVecY);
+      var unitVecLen = MathUtils.vec_length(unitVecX, unitVecY);
 
-      unitVecX = vec_normalize(unitVecLen, unitVecX);
-      unitVecY = vec_normalize(unitVecLen, unitVecY);
+      unitVecX = MathUtils.vec_normalize(unitVecLen, unitVecX);
+      unitVecY = MathUtils.vec_normalize(unitVecLen, unitVecY);
 
       into.unitVectorX = unitVecX;
       into.unitVectorY = unitVecY;
@@ -172,7 +177,7 @@ class SAT {
     
     for(i in 0 ... verts.length) {
 
-      distance = vec_lengthsq(circleX - verts[i].x, circleY - verts[i].y);
+      distance = MathUtils.vec_lengthsq(circleX - verts[i].x, circleY - verts[i].y);
 
       if(distance < testDistance) {
         testDistance = distance;
@@ -183,23 +188,23 @@ class SAT {
 
     var normalAxisX = closestX - circleX;
     var normalAxisY = closestY - circleY;
-    var normAxisLen = vec_length(normalAxisX, normalAxisY);
-      normalAxisX = vec_normalize(normAxisLen, normalAxisX);
-      normalAxisY = vec_normalize(normAxisLen, normalAxisY);
+    var normAxisLen = MathUtils.vec_length(normalAxisX, normalAxisY);
+      normalAxisX = MathUtils.vec_normalize(normAxisLen, normalAxisX);
+      normalAxisY = MathUtils.vec_normalize(normAxisLen, normalAxisY);
 
     var test = 0.0;
-    var min1 = vec_dot(normalAxisX, normalAxisY, verts[0].x, verts[0].y);
+    var min1 = MathUtils.vec_dot(normalAxisX, normalAxisY, verts[0].x, verts[0].y);
     var max1 = min1;
 
     for(j in 1 ... verts.length) {
-      test = vec_dot(normalAxisX, normalAxisY, verts[j].x, verts[j].y);
+      test = MathUtils.vec_dot(normalAxisX, normalAxisY, verts[j].x, verts[j].y);
       if(test < min1) min1 = test;
       if(test > max1) max1 = test;
     }
 
     var max2 = circle.transformedRadius;
     var min2 = -circle.transformedRadius;
-    var offset = vec_dot(normalAxisX, normalAxisY, -circleX, -circleY);
+    var offset = MathUtils.vec_dot(normalAxisX, normalAxisY, -circleX, -circleY);
       
     min1 += offset;
     max1 += offset;
@@ -221,15 +226,15 @@ class SAT {
 
       normalAxisX = findNormalAxisX(verts, i);
       normalAxisY = findNormalAxisY(verts, i);
-      var aLen = vec_length(normalAxisX, normalAxisY);
-      normalAxisX = vec_normalize(aLen, normalAxisX);
-      normalAxisY = vec_normalize(aLen, normalAxisY);
+      var aLen = MathUtils.vec_length(normalAxisX, normalAxisY);
+      normalAxisX = MathUtils.vec_normalize(aLen, normalAxisX);
+      normalAxisY = MathUtils.vec_normalize(aLen, normalAxisY);
 
-      min1 = vec_dot(normalAxisX, normalAxisY, verts[0].x, verts[0].y);
+      min1 = MathUtils.vec_dot(normalAxisX, normalAxisY, verts[0].x, verts[0].y);
       max1 = min1; //set max and min
 
       for(j in 1 ... verts.length) {
-        test = vec_dot(normalAxisX, normalAxisY, verts[j].x, verts[j].y);
+        test = MathUtils.vec_dot(normalAxisX, normalAxisY, verts[j].x, verts[j].y);
         if(test < min1) min1 = test;
         if(test > max1) max1 = test;
       }
@@ -237,7 +242,7 @@ class SAT {
       max2 = circle.transformedRadius; //max is radius
       min2 = -circle.transformedRadius; //min is negative radius
 
-      offset = vec_dot(normalAxisX, normalAxisY, -circleX, -circleY);
+      offset = MathUtils.vec_dot(normalAxisX, normalAxisY, -circleX, -circleY);
       min1 += offset;
       max1 += offset;
 
@@ -294,24 +299,24 @@ class SAT {
 
       axisX = findNormalAxisX(verts1, i);
       axisY = findNormalAxisY(verts1, i);
-      var aLen = vec_length(axisX, axisY);
-      axisX = vec_normalize(aLen, axisX);
-      axisY = vec_normalize(aLen, axisY);
+      var aLen = MathUtils.vec_length(axisX, axisY);
+      axisX = MathUtils.vec_normalize(aLen, axisX);
+      axisY = MathUtils.vec_normalize(aLen, axisY);
 
-      min1 = vec_dot(axisX, axisY, verts1[0].x, verts1[0].y);
+      min1 = MathUtils.vec_dot(axisX, axisY, verts1[0].x, verts1[0].y);
       max1 = min1;
 
       for(j in 1 ... verts1.length) {
-        testNum = vec_dot(axisX, axisY, verts1[j].x, verts1[j].y);
+        testNum = MathUtils.vec_dot(axisX, axisY, verts1[j].x, verts1[j].y);
         if(testNum < min1) min1 = testNum;
         if(testNum > max1) max1 = testNum;
       }
 
-      min2 = vec_dot(axisX, axisY, verts2[0].x, verts2[0].y);
+      min2 = MathUtils.vec_dot(axisX, axisY, verts2[0].x, verts2[0].y);
       max2 = min2;
 
       for(j in 1 ... verts2.length) {
-        testNum = vec_dot(axisX, axisY, verts2[j].x, verts2[j].y);
+        testNum = MathUtils.vec_dot(axisX, axisY, verts2[j].x, verts2[j].y);
         if(testNum < min2) min2 = testNum;
         if(testNum > max2) max2 = testNum;
       }
@@ -346,24 +351,6 @@ class SAT {
     return into;
 
   }
-
-  static inline function vec_dot(xa:Float, ya:Float, xb:Float, yb:Float) :Float {
-    return xa * xb + ya * yb;
-  }
-
-  static inline function vec_length(x:Float, y:Float) :Float {
-    return Math.sqrt(vec_lengthsq(x, y));
-  }
-
-  static inline function vec_lengthsq(x:Float, y:Float) :Float {
-    return x * x + y * y;
-  }
-
-  static inline function vec_normalize(length:Float, val:Float) :Float {
-    if(length == 0) return 0;
-    return val /= length;
-  }
-  
 
   static inline function findNormalAxisX(verts:Array<Point>, index:Int) :Float {
     var v2 = (index >= verts.length - 1) ? verts[0] : verts[index + 1];

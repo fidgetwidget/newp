@@ -1,4 +1,4 @@
-package newp.utils;
+package newp.math;
 
 class Dice {
 

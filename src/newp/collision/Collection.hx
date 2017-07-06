@@ -1,26 +1,29 @@
 package newp.collision;
 
 import newp.collision.shapes.Shape;
-
+import openfl.display.Sprite;
 
 class Collection {
 
-  var size:Int;
-  var containerWidth:Int;
-  var containerHeight:Int;
+  var container_w:Int;
+  var container_h:Int;
   var shapeContainerMap:Map<Shape, Array<String>>;
   var containers:Map<String, Array<Shape>>;
   var shapeCollision:ShapeCollision;
+  var debugShape:Sprite;
 
   public var shapes:Array<Shape> = [];
   
-  public function new(size:Int) {
-    this.size = size;
-    this.containerWidth = size;
-    this.containerHeight = size;
+  public function new(width:Int, ?height:Int = null) {
+    this.container_w = width;
+    this.container_h = height == null ? width : height;
     this.shapeContainerMap = new Map();
     this.containers = new Map();
     this.shapeCollision = new ShapeCollision();
+    if (Lib.debug) {
+      this.debugShape = new Sprite();
+      Lib.main.addChild(debugShape);  
+    }
   }
 
   // Update the containers a shape is in
@@ -39,11 +42,11 @@ class Collection {
       var container = this.getContainer(key);
       if (container.indexOf(shape) < 0) container.push(shape);
     }
-    
+
     this.shapeContainerMap.set(shape, keys);
   }
 
-  public inline function collisionTest(callback:Shape->ShapeCollision->Void):Void {
+  public function collisionTest(callback:Shape->ShapeCollision->Void):Void {
     // Look through each container of shapes
     for (containerKey in containers.keys()) {
       var container = containers.get(containerKey);
@@ -53,11 +56,11 @@ class Collection {
     }
   }
 
-  public inline function collisionTest_container(container:Array<Shape>, callback):Void {
+  inline function collisionTest_container(container:Array<Shape>, callback):Void {
     for (i in 0...container.length) this.collisionTest_shape(container[i], container, callback);
   }
 
-  public inline function collisionTest_shape(shape:Shape, container:Array<Shape>, callback):Void {
+  inline function collisionTest_shape(shape:Shape, container:Array<Shape>, callback):Void {
     for (i in 0...container.length) {
       var other:Shape = container[i];
       if (shape == other) continue;
@@ -92,9 +95,11 @@ class Collection {
     this.shapes.remove(shape);
   }
 
-  
+  // +-------------------------
+  // | Helpers
+  // +-------------------------
 
-  function aNotInB(a:Array<String>, b:Array<String>, out:Array<String>):Array<String> {
+  inline function aNotInB(a:Array<String>, b:Array<String>, out:Array<String>):Array<String> {
     // clear out
     while(out.length > 0) out.pop();
 
@@ -105,25 +110,24 @@ class Collection {
     return out;
   }
 
-
-  function getContainer(key:String):Array<Shape> {
+  inline function getContainer(key:String):Array<Shape> {
     if (!this.containers.exists(key)) {
       this.containers.set(key, []);
+      if (Lib.debug) this.debug_draw_rect(key);
     }
     return this.containers.get(key);
   }
 
-
-  function getContainerKeysForShape(shape:Shape):Array<String> {
+  inline function getContainerKeysForShape(shape:Shape):Array<String> {
     var bounds = shape.bounds;
     var minX = bounds.minX;
     var maxX = bounds.maxX;
     var minY = bounds.minY;
     var maxY = bounds.maxY;
-    var cx = Math.floor(minX / this.containerWidth);
-    var dx = Math.floor(maxX / this.containerWidth) - cx;
-    var cy = Math.floor(minY / this.containerHeight);
-    var dy = Math.floor(maxY / this.containerHeight) - cy;
+    var cx = Math.floor(minX / this.container_w);
+    var dx = Math.floor(maxX / this.container_w) - cx;
+    var cy = Math.floor(minY / this.container_h);
+    var dy = Math.floor(maxY / this.container_h) - cy;
     var keys = [];
     // trace('${cx} ${dx} ${cy} ${dy}');
     for (x in 0...dx+1) {
@@ -135,9 +139,20 @@ class Collection {
     return keys;
   }
 
+  inline function debug_draw_rect(key:String):Void {
+    var xy = key.split('|');
+    var x = Std.parseInt(xy[0]);
+    var y = Std.parseInt(xy[1]);
+    var g = debugShape.graphics;
+    var xx = x * this.container_w;
+    var yy = y * this.container_h;
+    g.lineStyle(1, 0x0000ff);
+    g.moveTo(xx, yy);
+    g.drawRect(xx, yy, this.container_w, this.container_h);
+  }
+
 
   var keys_prev:Array<String>;
-  var keys_curr:Array<String>;
   var keys_to_remove:Array<String> = [];
   var keys_to_add:Array<String> = [];
 

@@ -10,7 +10,7 @@ import newp.scenes.Scene;
 import newp.collision.shapes.Shape;
 import newp.collision.ShapeCollision;
 import newp.collision.Collection;
-import newp.utils.Dice;
+import newp.math.Dice;
 import newp.Lib;
 
 
@@ -26,7 +26,7 @@ class BetterCollisions extends Scene {
   
   public function new () {
     super();
-    this.colliders = new Collection(128);
+    this.colliders = new Collection(256, 128);
     this.initLayers();
     this.initHud();
   }

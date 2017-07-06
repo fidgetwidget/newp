@@ -4,7 +4,7 @@ import openfl.display.DisplayObject;
 import openfl.geom.Point;
 import newp.collision.SAT;
 import newp.collision.ShapeCollision;
-import newp.utils.PointUtils;
+import newp.math.Utils as MathUtils;
 
 
 class Polygon extends Shape {
@@ -57,7 +57,7 @@ class Polygon extends Shape {
     this._transformedVerts = [];
     for (vert in this.verts) {
       var p = new Point();
-      PointUtils.transformPoint(vert, matrix, p);
+      MathUtils.transformPoint(vert, matrix, p);
       this._transformedVerts.push(p);
     }
   }
@@ -82,7 +82,7 @@ class Polygon extends Shape {
     for (i in 0...this.verts.length) {
       var vert = this.verts[i];
       var p = this._transformedVerts[i];
-      PointUtils.transformPoint(vert, matrix, p);
+      MathUtils.transformPoint(vert, matrix, p);
     }
     return this._transformedVerts;
   }
