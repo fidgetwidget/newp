@@ -6,14 +6,15 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import newp.scenes.Scene;
+import newp.scenes.SimpleScene;
 import newp.collision.shapes.Shape;
 import newp.collision.ShapeCollision;
 import newp.math.Dice;
+import newp.utils.Draw;
 import newp.Lib;
 
 
-class SimpleCollisions extends Scene {
+class SimpleCollisions extends SimpleScene {
   
   var hudLayer:Sprite;
   var spriteCounter:TextField;
@@ -31,10 +32,9 @@ class SimpleCollisions extends Scene {
   }
 
   // Adjust it to add them to a different layer
-  public override function addSprite(sprite:Sprite):Int {
+  public override function addSprite(sprite:Sprite):Void {
     this.spriteLayer.addChild(sprite);
     this.sprites.push(sprite);
-    return this.sprites.length;
   }
 
   // Update Loop
@@ -42,10 +42,10 @@ class SimpleCollisions extends Scene {
   public override function update():Void {
     if (Lib.inputs.mouse.down()) {
       var w = Dice.roll() * 10, h = Dice.roll() * 10;
-      this.addCollider(Lib.inputs.mouse.x, Lib.inputs.mouse.y, w, h);
+      this.addShape(Lib.inputs.mouse.x, Lib.inputs.mouse.y, w, h);
     }
 
-    this.collisionPass();
+    this.update_collision();
   } 
 
   // Methods
@@ -53,8 +53,8 @@ class SimpleCollisions extends Scene {
   function initLayers() {
     this.hudLayer = new Sprite();
     this.spriteLayer = new Sprite();
-    this.addChild(this.spriteLayer);
-    this.addChild(this.hudLayer);
+    this.container.addChild(this.spriteLayer);
+    this.container.addChild(this.hudLayer);
   }
 
   function initHud() {
@@ -83,29 +83,25 @@ class SimpleCollisions extends Scene {
     this.hudLayer.addChild(textField);
   }
 
-  function addCollider(x:Float, y:Float, w:Float, h:Float) {
+  function addShape(x:Float, y:Float, w:Float, h:Float) {
     var sprite = new openfl.display.Sprite();
-    var g = sprite.graphics;
-    
-    g.lineStyle(1, 0xff0000);
-    g.drawRect(x - w/2, y - h/2, w, h);
-    this.addSprite(sprite);
+    Draw.start(sprite.graphics)
+      .lineStyle(1, 0xff0000)
+      .drawRect(x - w/2, y - h/2, w, h);
 
-    var shape = new Shape(sprite);
+    var shape = new Shape(sprite);  
+    this.addSprite(sprite);
     this.colliders.push(shape);
 
     // only update the text when we update the count
     this.spriteCounter.text = Std.string(this.sprites.length);
   }
 
-  function collisionPass():Void {
-    for (i in 0...colliders.length) {
-      var shape:Shape = colliders[i];
-      this.collisionTest(shape, i);
-    }
+  function update_collision():Void {
+    for (i in 0...colliders.length) { this.collision_innerLoop(colliders[i], i);}
   }
 
-  function collisionTest(shape:Shape, index:Int):Void {
+  function collision_innerLoop(shape:Shape, index:Int):Void {
     for (i in 0...colliders.length) {
       if (i == index) continue;
 

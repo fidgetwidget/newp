@@ -1,5 +1,8 @@
 package newp.math;
 
+import openfl.geom.Point;
+import openfl.display.DisplayObject;
+
 class Motion {
 
   static var MIN_VALUE:Float = 0.0001;
@@ -19,8 +22,14 @@ class Motion {
   public var rs(get, set):Float;
 
   public var drag:Float;
-
   public var rDrag:Float;
+
+  public var target:DisplayObject;
+
+  public var hasTarget(get, never):Bool;
+
+  public var max_velocity:Float;
+  public var max_rotation:Float;
 
   public function new(drag:Float = 0.2, ?rDrag:Float = null) {
     this.max_velocity = MAX_VALUE;
@@ -33,22 +42,18 @@ class Motion {
     this.rDrag = rDrag == null ? drag : rDrag;
   }
 
-
-  public function update(?delta:Float = null):Motion {
-    var d = delta == null ? Lib.delta : delta;
-
+  public function update():Void {
+    var d = Lib.delta;
     this.vx = this.update_velocity(this.vx, this.ax, this.drag,  this.max_velocity, d);
     this.vy = this.update_velocity(this.vy, this.ay, this.drag,  this.max_velocity, d);
     this.rs = this.update_velocity(this.rs, this.ra, this.rDrag, this.max_rotation, d);
-
-    return this;
+    if (hasTarget) { this.apply(this.target); }
   }
 
-  public function apply(thing:Dynamic):Motion {
+  public function apply(thing:DisplayObject):Void {
     thing.x += this.vx;
     thing.y += this.vy;
     thing.rotation += this.rs;
-    return this;
   }
 
   // +-------------------------
@@ -56,6 +61,12 @@ class Motion {
   // +-------------------------
 
   // TODO: add moveTowards, accelerateTowards, etc functions that set the values for you
+  
+  public function moveAtAngle(speed:Float, angle:Float):Motion {
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    return this;
+  }
 
   // +-------------------------
   // | Helpers
@@ -74,7 +85,7 @@ class Motion {
         vel = 0;
       }
     }
-    return Utils.clamp_float(vel, max, -max);
+    return Utils.clamp_float(vel, -max, max);
   }
 
   // +-------------------------
@@ -94,5 +105,7 @@ class Motion {
   inline function set_ra(val:Float):Float { return this.rotationAccel = val; }
   inline function get_rs():Float { return this.rotationSpeed; }
   inline function set_rs(val:Float):Float { return this.rotationSpeed = val; }
+
+  inline function get_hasTarget():Bool { return this.target != null; }
 
 }

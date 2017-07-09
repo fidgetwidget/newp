@@ -28,7 +28,7 @@ class Utils {
   }
 
   public static inline function clamp_float(val:Float, min:Float, max:Float) {
-    return val > max ? max : val < min ? min : val;
+    return (val > max) ? max : (val < min) ? min : val;
   }
 
 

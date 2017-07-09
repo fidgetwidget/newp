@@ -10,6 +10,8 @@ class Shape {
 
   public var tags:Map<String, String>;
 
+  public var valid(get, never):Bool;
+
   public var x(get, set):Float;
 
   public var y(get, set):Float;
@@ -21,19 +23,18 @@ class Shape {
   public var scaleY(get, set):Float;
 
   public var bounds(get, never):Bounds;
-  var _bounds:Bounds;
 
   public var transformBody(default, null):DisplayObject;
 
 
-  public function new(transformBody:DisplayObject) {
+  public function new(?transformBody:DisplayObject) {
     this._bounds = new Bounds();
     this.tags = new Map();
     this.transformBody = transformBody;
   }
 
   // +-------------------------
-  // | Methods
+  // | Collision Methods
   // +-------------------------
 
   public function test(shape:Shape, ?into:ShapeCollision):ShapeCollision {
@@ -59,26 +60,47 @@ class Shape {
   // | Properties
   // +-------------------------
 
-  inline function get_x():Float { return this.transformBody.x; }
-  inline function set_x(val:Float):Float { return this.transformBody.x = val; }
+  inline function get_valid():Bool { return this.transformBody != null; }
 
-  inline function get_y():Float { return this.transformBody.y; }
-  inline function set_y(val:Float):Float { return this.transformBody.y = val; }
+  inline function get_x():Float { return this.valid ? this.transformBody.x : 0; }
+  inline function set_x(val:Float):Float { 
+    if (this.valid) this.transformBody.x = val;
+    return val; 
+  }
 
-  inline function get_rotation():Float { return this.transformBody.rotation; }
-  inline function set_rotation(val:Float):Float { return this.transformBody.rotation = val; }
+  inline function get_y():Float { return this.valid ? this.transformBody.y : 0; }
+  inline function set_y(val:Float):Float { 
+    if (this.valid) this.transformBody.y = val;
+    return val; 
+  }
 
-  inline function get_scaleX():Float { return this.transformBody.scaleX; }
-  inline function set_scaleX(val:Float):Float { return this.transformBody.scaleX = val; }
+  inline function get_rotation():Float { return this.valid ? this.transformBody.rotation : 0; }
+  inline function set_rotation(val:Float):Float { 
+    if (this.valid) this.transformBody.rotation = val;
+    return val; 
+  }
 
-  inline function get_scaleY():Float { return this.transformBody.scaleY; }
-  inline function set_scaleY(val:Float):Float { return this.transformBody.scaleY = val; }
+  inline function get_scaleX():Float { return this.valid ? this.transformBody.scaleX : 0; }
+  inline function set_scaleX(val:Float):Float { 
+    if (this.valid) this.transformBody.scaleX = val;
+    return val; 
+  }
+
+  inline function get_scaleY():Float { return this.valid ? this.transformBody.scaleY : 0; }
+  inline function set_scaleY(val:Float):Float { 
+    if (this.valid) this.transformBody.scaleY = val;
+    return val; 
+  }
 
   // Just use the transformBody's get bounds method
   // NOTE: we don't inline it because we want to be able to override it
   function get_bounds():Bounds {
+    if (!this.valid) return null;
     var _rect = this.transformBody.getBounds(Lib.stage);
     return this._bounds.copyFromRectangle( _rect );
   }
+
+
+  var _bounds:Bounds;
 
 }

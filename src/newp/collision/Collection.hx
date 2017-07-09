@@ -3,6 +3,9 @@ package newp.collision;
 import newp.collision.shapes.Shape;
 import openfl.display.Sprite;
 
+// A Simple Bin collection of colliders
+// - only compare colliders in the same bins to reduce the number of computations
+// TODO: create a taggable collection to do collision checking of tag groups, or single shape vs tag group(s)
 class Collection {
 
   var container_w:Int;
@@ -14,7 +17,7 @@ class Collection {
 
   public var shapes:Array<Shape> = [];
   
-  public function new(width:Int, ?height:Int = null) {
+  public function new(width:Int = 256, ?height:Int = null) {
     this.container_w = width;
     this.container_h = height == null ? width : height;
     this.shapeContainerMap = new Map();
@@ -46,27 +49,39 @@ class Collection {
     this.shapeContainerMap.set(shape, keys);
   }
 
-  public function collisionTest(callback:Shape->ShapeCollision->Void):Void {
+  public function collisionTestAll(callback:Shape->ShapeCollision->Void):Void {
     // Look through each container of shapes
     for (containerKey in containers.keys()) {
       var container = containers.get(containerKey);
       if (container.length == 0) continue;
       // test all shapes in the container with one another
-      this.collisionTest_container(container, callback);
+      this.collisionTest_innerLoop(container, callback);
     }
   }
 
-  inline function collisionTest_container(container:Array<Shape>, callback):Void {
+  public function collisionTestShape(shape:Shape, callback:Shape->ShapeCollision->Void):Void {
+    var keys = this.shapeContainerMap.get(shape);
+    for (containerKey in keys) {
+      var container = containers.get(containerKey);
+      if (container.length == 1) continue; // it's just our shape in there
+      // test our shape against the container's other shapes
+      this.collisionTest_shape(shape, container, callback);
+    }
+  }
+
+  inline function collisionTest_innerLoop(container:Array<Shape>, callback):Void {
     for (i in 0...container.length) this.collisionTest_shape(container[i], container, callback);
   }
 
-  inline function collisionTest_shape(shape:Shape, container:Array<Shape>, callback):Void {
+  inline function collisionTest_shape(shape:Shape, container:Array<Shape>, callback:Shape->ShapeCollision->Void):Void {
     for (i in 0...container.length) {
       var other:Shape = container[i];
       if (shape == other) continue;
       if (shape.test(other, shapeCollision) != null) callback(shape, shapeCollision);
     }
   }
+
+  // public function collisionTestSweep(shape:Shape, )
 
   public function add(shape:Shape):Void {
     this.shapeContainerMap.set(shape, []);
@@ -79,8 +94,8 @@ class Collection {
     }
   }
 
-  public function remove(shape:Shape):Void {
-    if (this.shapes.indexOf(shape) == -1) return;
+  public function remove(shape:Shape):Bool {
+    if (this.shapes.indexOf(shape) == -1) return false;
 
     var containerKeys = this.shapeContainerMap.get(shape);
 
@@ -92,7 +107,7 @@ class Collection {
     // remove that list from the map
     this.shapeContainerMap.remove(shape);
     // remove the shape
-    this.shapes.remove(shape);
+    return this.shapes.remove(shape);
   }
 
   // +-------------------------
@@ -146,7 +161,7 @@ class Collection {
     var g = debugShape.graphics;
     var xx = x * this.container_w;
     var yy = y * this.container_h;
-    g.lineStyle(1, 0x0000ff);
+    g.lineStyle(1, 0x999999, 0.3);
     g.moveTo(xx, yy);
     g.drawRect(xx, yy, this.container_w, this.container_h);
   }

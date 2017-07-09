@@ -46,7 +46,6 @@ class Polygon extends Shape {
   
   public function new(transformBody:DisplayObject, verts:Array<Point>) {
     super(transformBody);
-
     this.verts = verts;
     this.initTransformedVerts();
   }

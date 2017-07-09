@@ -1,8 +1,6 @@
 package newp.scenes;
 
 import newp.Lib;
-import newp.scenes.Scene;
-import newp.scenes.SceneMap;
 
 class Manager {
   

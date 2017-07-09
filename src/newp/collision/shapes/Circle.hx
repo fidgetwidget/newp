@@ -34,11 +34,7 @@ class Circle extends Shape {
   inline function get_transformedRadius():Float { return this.radius * this.scaleX; }
 
   override function get_bounds():Bounds {
-    return this._bounds.set(
-      this.x - this.transformedRadius, 
-      this.y - this.transformedRadius, 
-      this.x + this.transformedRadius,
-      this.y + this.transformedRadius);
+    return this._bounds.setCenterHalfs(this.x, this.y, this.transformedRadius, this.transformedRadius);
   }
 
 }

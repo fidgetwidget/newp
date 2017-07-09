@@ -5,12 +5,12 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.display.FPS;
-import newp.scenes.Scene;
+import newp.scenes.SimpleScene;
 import newp.math.Dice;
 import newp.Lib;
 
 
-class Simple extends Scene {
+class Simple extends SimpleScene {
   
   var spriteCounter:TextField;
 
@@ -26,7 +26,7 @@ class Simple extends Scene {
 
   function addFPS() {
     var fps = new FPS(10, 40, 0x555555);
-    this.addChild(fps);
+    this.container.addChild(fps);
   }  
 
   function addSpriteCounter() {
@@ -37,7 +37,7 @@ class Simple extends Scene {
     this.spriteCounter.defaultTextFormat = format;
     this.spriteCounter.selectable = false;
 
-    this.addChild(this.spriteCounter);
+    this.container.addChild(this.spriteCounter);
   }
 
   function addMessage() {
@@ -51,7 +51,7 @@ class Simple extends Scene {
     textField.selectable = false;
     textField.text = "Click to add some random squares!";
 
-    this.addChild(textField);
+    this.container.addChild(textField);
   }
 
   function createSomeRandomBoxes() {

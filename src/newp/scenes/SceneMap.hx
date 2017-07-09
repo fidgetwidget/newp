@@ -1,7 +1,5 @@
 package newp.scenes;
 
-import newp.scenes.Scene;
-
 class SceneMap {
   
   var map:Map<String, Scene>;
