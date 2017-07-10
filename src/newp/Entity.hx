@@ -12,12 +12,10 @@ class Entity {
 
   var components:Map<String, Component>;
   
-  @:allow(newp.scenes.Scene)
-  var scene:Scene = null;
-
   var parent:Entity = null;
   var children:Array<Entity>;
 
+  public var scene(default, null):Scene;
 
   public var sprite(get, never):Sprite;
   public var x(get, set):Float;
@@ -30,6 +28,13 @@ class Entity {
   public var bounds(get, never):Bounds;
 
   public var motion(get, never):Motion;
+  public var vx(get, set):Float;
+  public var vy(get, set):Float;
+  public var ax(get, set):Float;
+  public var ay(get, set):Float;
+  public var rs(get, set):Float;
+  public var ra(get, set):Float;
+
 
   public function new() {
     this.components = new Map();
@@ -41,9 +46,9 @@ class Entity {
     }
   }
 
-  // 
-  // 
-  // 
+  // +-------------------------
+  // | Components 
+  // +-------------------------
 
   public function addComponent(c:Component):Entity {
     this.components.set(c.type, c);
@@ -67,9 +72,9 @@ class Entity {
     return this;
   }
 
-  // 
-  // 
-  // 
+  // +-------------------------
+  // | Scene 
+  // +-------------------------
 
   public function addedToScene(s:Scene):Void {
     this.scene = s;
@@ -87,9 +92,14 @@ class Entity {
     }
   }
 
+  // +-------------------------
+  // | Properties
+  // +-------------------------
 
   inline function get_sprite():Sprite { 
-    return this.hasComponent(SpriteComponent) ? cast(this.getComponent(SpriteComponent), SpriteComponent).sprite : null;
+    return this.hasComponent(SpriteComponent) ? 
+      cast(this.getComponent(SpriteComponent), SpriteComponent).sprite : 
+      null;
   }
 
   inline function get_x():Float { return this.sprite == null ? 0 : this.sprite.x; }
@@ -123,15 +133,57 @@ class Entity {
   }
 
   inline function get_collider():Shape {
-    return this.hasComponent(ShapeComponent) ? cast(this.getComponent(ShapeComponent), ShapeComponent).shape : null;
+    return this.hasComponent(ShapeComponent) ? 
+      cast(this.getComponent(ShapeComponent), ShapeComponent).shape : 
+      null;
   }
 
-  inline function get_bounds():Bounds {
-    return this.collider == null ? null : this.collider.bounds;
+  inline function get_bounds():Bounds { 
+    return this.collider != null ? 
+      this.collider.bounds :
+      null;
   }
 
   inline function get_motion():Motion {
-    return this.hasComponent(MotionComponent) ? cast(this.getComponent(MotionComponent), MotionComponent).motion : null;
+    return this.hasComponent(MotionComponent) ? 
+      cast(this.getComponent(MotionComponent), MotionComponent).motion : 
+      null;
+  }
+
+  inline function get_vx():Float { return this.motion == null ? 0 : this.motion.vx; }
+  inline function set_vx(val:Float):Float {
+    if (this.motion != null) this.motion.vx = val;
+    return val;
+  }
+
+  inline function get_vy():Float { return this.motion == null ? 0 : this.motion.vy; }
+  inline function set_vy(val:Float):Float {
+    if (this.motion != null) this.motion.vy = val;
+    return val;
+  }
+
+  inline function get_ax():Float { return this.motion == null ? 0 : this.motion.ax; }
+  inline function set_ax(val:Float):Float {
+    if (this.motion != null) this.motion.ax = val;
+    return val;
+  }
+
+  inline function get_ay():Float { return this.motion == null ? 0 : this.motion.ay; }
+  inline function set_ay(val:Float):Float {
+    if (this.motion != null) this.motion.ay = val;
+    return val;
+  }
+
+  inline function get_rs():Float { return this.motion == null ? 0 : this.motion.rs; }
+  inline function set_rs(val:Float):Float {
+    if (this.motion != null) this.motion.rs = val;
+    return val;
+  }
+
+  inline function get_ra():Float { return this.motion == null ? 0 : this.motion.ra; }
+  inline function set_ra(val:Float):Float {
+    if (this.motion != null) this.motion.ra = val;
+    return val;
   }
 
 }

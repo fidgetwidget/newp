@@ -1,9 +1,8 @@
 package samples;
 
-import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
+import openfl.text.TextFieldAutoSize;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import newp.collision.shapes.*;
@@ -68,19 +67,15 @@ class Pong extends BasicScene {
   }
 
   function initPlayers() {
-    trace('addPlayers');
     this.lPlayer = new Player(1, this.field);
     this.rPlayer = new Player(2, this.field);
     this.addEntity(this.lPlayer);
     this.addEntity(this.rPlayer);
-    trace('addPlayers -- COMPLETE');
   }
 
   function initBall() {
-    trace('addBall');
     this.ball = new Ball(this.field);
     this.addEntity(this.ball);
-    trace('addBall -- COMPLETE');
   }
 
   function initScores() {
@@ -232,7 +227,7 @@ class Pong extends BasicScene {
   inline function makeScoreText(format):TextField {
     var txt = new TextField();
     txt.defaultTextFormat = format;
-    txt.autoSize = openfl.text.TextFieldAutoSize.CENTER;
+    txt.autoSize = TextFieldAutoSize.CENTER;
     txt.selectable = false;
     txt.width = 40;
     return txt;

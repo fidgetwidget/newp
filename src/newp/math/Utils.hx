@@ -7,7 +7,7 @@ import openfl.geom.Matrix;
 class Utils {
 
   // Beacuse Math doesn't have a sign function
-  public static inline function sign(val:Float):Int { return val > 0 ? 1 : -1; }
+  public static inline function sign(val:Float):Int { return val > 0 ? 1 : val < 0 ? -1 : 0; }
 
 
   public static inline function vec_dot(xa:Float, ya:Float, xb:Float, yb:Float) :Float {

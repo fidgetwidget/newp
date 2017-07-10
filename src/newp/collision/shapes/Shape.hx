@@ -6,6 +6,9 @@ import newp.collision.ShapeCollision;
 import newp.collision.Bounds;
 
 
+// TODO: change transformBody to just the transform 
+//   just need to build a transform helper to 
+//   get the x, y, rotation, scaleX, scaleY from a transform
 class Shape {
 
   public var tags:Map<String, String>;
