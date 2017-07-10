@@ -32,15 +32,23 @@ class BasicScene implements Scene {
   function init():Void {
     this.entities = [];
     this.sprites = [];
+    this.renderTarget = new Sprite();
+    this.init_layers();
+    this.init_colliders();
+  }
+
+  function init_layers():Void {
     this.layers = [
       'container' => new Sprite(),
       'hud' => new Sprite(),
       'debug' => new Sprite()];
-    this.colliders = new ShapeCollection();
-    this.renderTarget = new Sprite();
     this.renderTarget.addChild(this.layers.get('container'));
     this.renderTarget.addChild(this.layers.get('hud'));
     this.renderTarget.addChild(this.layers.get('debug'));
+  }
+
+  function init_colliders():Void { 
+    this.colliders = new ShapeCollection(); 
   }
 
   public function update():Void { }

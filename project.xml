@@ -3,6 +3,8 @@
 	
 	<meta title="newp" package="fidgetwidget.newp" version="1.0.0" company="fidgetwidget" />
 	<app main="Main" path="bin" file="newp" />
+
+	<window width="1024" height="768" fps="60" vsync="true" />
 	
 	<source path="src" />
 	

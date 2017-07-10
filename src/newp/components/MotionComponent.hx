@@ -22,7 +22,6 @@ class MotionComponent implements Component implements Updatable {
   }
 
   public function update():Void {
-    trace('motion component update');
     this.motion.update();
   }
 

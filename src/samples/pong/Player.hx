@@ -2,12 +2,14 @@ package samples.pong;
 
 import openfl.display.Sprite;
 import newp.collision.shapes.Polygon;
+import newp.components.*;
 import newp.math.Motion;
 import newp.utils.Draw;
+import newp.Entity;
 import newp.Lib;
 
 
-class Player {
+class Player extends Entity {
 
   public static inline var LEFT_SIDE:Int = 1;
   public static inline var RIGHT_SIDE:Int = 2;
@@ -16,40 +18,45 @@ class Player {
   public var thickness(get, set):Int;
   public var width(get, set):Int;
   public var color(get, set):Int;
-  public var sprite:Sprite;
-  public var collider:Polygon;
-  public var motion:Motion;
-  public var x(get, set):Float;
-  public var y(get, set):Float;
-  public var top(get, never):Float;
-  public var bottom(get, never):Float;
+  public var top(get, set):Float;
+  public var bottom(get, set):Float;
+  var middle:Float;
 
-  public function new (side:Int = Player.LEFT_SIDE) {
+  public function new (side:Int = Player.LEFT_SIDE, field:PlayField) {
+    super();
     this.side = side;
-    
+    this.middle = field.centerY;
     this._thickness = 10;
     this._width = 80;
     this._color = 0x555555;
 
-    this.sprite = new Sprite();
-    this.sprite.y = Lib.stage.stageHeight * 0.5;
-    switch (this.side) {
-      case Player.LEFT_SIDE:
-        this.sprite.x = 60;
-      case Player.RIGHT_SIDE:
-        this.sprite.x = Lib.stage.stageWidth - 60;
-    }
-    this.collider = Polygon.rectangle(this.sprite, this.thickness, this.width);
-    this.motion = new Motion();
-    this.motion.target = this.sprite;
-    this.motion.drag = 10;
+    var sprite = new Sprite();
+    var collider = Polygon.rectangle(sprite, this.thickness, this.width);
+    var motion = new Motion();
+    motion.drag = 200;
+    motion.max_velocity = 200;
 
+    this.addComponent(new SpriteComponent(sprite));
+    this.addComponent(new ShapeComponent(collider));
+    this.addComponent(new MotionComponent(motion));
+
+    this.initPosition(side, field);
     this.redrawSprite();
   }
 
-  public function update():Void {
-    this.motion.update();
-  } 
+  function initPosition(side:Int, field:PlayField) {
+    switch (this.side) {
+      case Player.LEFT_SIDE:  this.sprite.x = field.left + 30;
+      case Player.RIGHT_SIDE: this.sprite.x = field.right - 30;
+    }
+    this.resetPosition();
+  }
+
+  public function resetPosition() {
+    this.sprite.y = this.middle;
+    this.motion.ay = 0;
+    this.motion.vy = 0;
+  }
 
   function redrawSprite():Void {
     Draw.start( this.sprite.graphics )
@@ -60,14 +67,12 @@ class Player {
   }
 
 
-  inline function get_x():Float { return this.sprite.x; }
-  inline function set_x(val:Float):Float { return this.sprite.x = val; }
-
-  inline function get_y():Float { return this.sprite.y; }
-  inline function set_y(val:Float):Float { return this.sprite.y = val; }
 
   inline function get_top():Float { return this.sprite.y - width * 0.5; }
+  inline function set_top(val:Float):Float { return this.sprite.y = val + width * 0.5; }
+
   inline function get_bottom():Float { return this.sprite.y + width * 0.5; }
+  inline function set_bottom(val:Float):Float { return this.sprite.y = val - width * 0.5; }
 
   inline function get_thickness():Int { return this._thickness; }
   function set_thickness(val:Int):Int {

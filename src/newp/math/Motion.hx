@@ -51,9 +51,10 @@ class Motion {
   }
 
   public function apply(thing:DisplayObject):Void {
-    thing.x += this.vx;
-    thing.y += this.vy;
-    thing.rotation += this.rs;
+    var d = Lib.delta;
+    thing.x += this.vx * d;
+    thing.y += this.vy * d;
+    thing.rotation += this.rs * d;
   }
 
   // +-------------------------

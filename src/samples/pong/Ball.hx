@@ -4,6 +4,7 @@ import openfl.display.Sprite;
 import newp.collision.shapes.Circle;
 import newp.components.*;
 import newp.math.Motion;
+import newp.math.Dice;
 import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;
@@ -11,34 +12,48 @@ import newp.Lib;
 
 class Ball extends Entity {
   
+  static inline var DEFAULT_SPEED:Float = 150;
+
   public var size(get, set):Int;
   public var color(get, set):Int;
   public var speed:Float;
+  var initX:Float;
+  var initY:Float;
 
-  public function new () {
+  public function new (field:PlayField) {
     super();
+    this.initX = field.centerX;
+    this.initY = field.top + 50;
     this._size = 15;
+
     var sprite = new Sprite();
     var collider = new Circle(sprite, this.size);
     var motion = new Motion();
     motion.drag = 0;
+    motion.max_velocity = 250;
+
     this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent(collider));
     this.addComponent(new MotionComponent(motion));
+
     this.resetPosition();
     this.redrawSprite();
   }
 
   public function resetPosition() {
-    this.sprite.x = Lib.stage.stageWidth * 0.5;
-    this.sprite.y = 80;
+    this.sprite.x = this.initX;
+    this.sprite.y = this.initY;
   }
 
-  public function startMotion() {
-    var dir:Int = (Std.random(1)+1) > 1 ? 1 : -1;
-    var angle:Float = Math.random() * Math.PI;
-    this.speed = 10;
-    this.motion.moveAtAngle(this.speed, angle * dir);
+  public function startMotion(?dir:Int) {
+    dir = dir == null ? (Dice.roll(2) > 1 ? 1 : -1) : dir;
+    var maxAngle = (Math.PI / 6) * 5;
+    var minAngle = Math.PI / 2;
+    var angle:Float = (Math.random() * (maxAngle-minAngle)) + minAngle;
+    angle = angle * dir;
+    angle -= minAngle;
+    this.speed = DEFAULT_SPEED;
+    this.motion.moveAtAngle(this.speed, angle);
   }
 
   function redrawSprite() {
