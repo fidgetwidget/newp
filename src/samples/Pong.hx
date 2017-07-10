@@ -21,16 +21,26 @@ class Pong extends BasicScene {
   var ball:Ball;
   var lPlayer:Player;
   var rPlayer:Player;
+  var lPlayerScore:Int = 0;
+  var rPlayerScore:Int = 0;
+  var scoreBoard:Sprite;
+  var lPlayerScoreTxt:TextField;
+  var rPlayerScoreTxt:TextField;
   var speed:Float = 180;
   var textField:TextField;
 
   public function new () {
     super();
-    this.addFPS();
-    this.addPlayField();
-    this.addPlayers();
-    this.addBall();
+    this.initGame();
     this.resetGame();
+  }
+
+  function initGame() {
+    this.initFPS();
+    this.initPlayField();
+    this.initPlayers();
+    this.initBall();
+    this.initScores();
   }
 
   override function init_colliders() {
@@ -39,7 +49,7 @@ class Pong extends BasicScene {
 
   // Methods
 
-  function addFPS() {
+  function initFPS() {
     var fps = new FPS(10, 10, 0x555555);
     this.container.addChild(fps);
 
@@ -52,12 +62,12 @@ class Pong extends BasicScene {
     this.container.addChild(this.textField);
   } 
 
-  function addPlayField() {
+  function initPlayField() {
     this.field = new PlayField();
     this.container.addChild(this.field.sprite);
   }
 
-  function addPlayers() {
+  function initPlayers() {
     trace('addPlayers');
     this.lPlayer = new Player(1, this.field);
     this.rPlayer = new Player(2, this.field);
@@ -66,20 +76,48 @@ class Pong extends BasicScene {
     trace('addPlayers -- COMPLETE');
   }
 
-  function addBall() {
+  function initBall() {
     trace('addBall');
     this.ball = new Ball(this.field);
     this.addEntity(this.ball);
     trace('addBall -- COMPLETE');
   }
 
-  function resetGame() {
-    trace('resetGame');
+  function initScores() {
+    this.scoreBoard = new Sprite();
+    var format = new TextFormat("Verdana", 42, 0x333333, true);
+
+    this.lPlayerScoreTxt = this.makeScoreText(format);
+    this.lPlayerScoreTxt.y = field.top + 10;
+    this.lPlayerScoreTxt.x = field.centerX - 60;
+    this.lPlayerScoreTxt.text = '$lPlayerScore';
+
+    this.rPlayerScoreTxt = this.makeScoreText(format);
+    this.rPlayerScoreTxt.y = field.top + 10;
+    this.rPlayerScoreTxt.x = field.centerX + 20;
+    this.rPlayerScoreTxt.text = '$rPlayerScore';
+
+    this.scoreBoard.addChild(lPlayerScoreTxt);
+    this.scoreBoard.addChild(rPlayerScoreTxt);
+
+    this.addSprite(this.scoreBoard);
+  } 
+
+  function resetPositions() {
     this.lPlayer.resetPosition();
     this.rPlayer.resetPosition();
     this.ball.resetPosition();
     this.ball.startMotion();
-    trace('resetGame -- COMPLETE');
+  }
+
+  function resetScores() {
+    this.lPlayerScore = 0;
+    this.rPlayerScore = 0;
+  }
+
+  function resetGame() {
+    this.resetPositions();
+    this.resetScores();
   }
 
   // Update Loop
@@ -97,7 +135,7 @@ class Pong extends BasicScene {
 
     this.update_collision();
 
-    this.textField.text = Lib.delta;
+    // this.textField.text = Lib.delta;
   } 
 
   function update_controllerInput() {
@@ -151,10 +189,10 @@ class Pong extends BasicScene {
       }
     }
 
-    for (goal in goals) {
+    for (side in goals.keys()) {
+      var goal = goals.get(side);
       if (b.test(goal, data) != null) {
-        this.ball.x -= data.separationX;
-        this.ball.motion.vx *= -1;
+        playerScored(side);
       }
     }
 
@@ -171,6 +209,33 @@ class Pong extends BasicScene {
       ball.motion.vx *= -1;
       ball.motion.vy += rPlayer.motion.vy * 0.2;
     }
+  }
+
+  function playerScored(playerSide:Int) {
+    switch (playerSide) {
+      case 1:
+        rPlayerScore++;
+        rPlayerScoreTxt.text = '$rPlayerScore';
+      case 2:
+        lPlayerScore++;
+        lPlayerScoreTxt.text = '$lPlayerScore';
+    }
+
+    if (lPlayerScore > 9 || rPlayerScore > 9) {
+      this.resetGame();
+    } else {
+      this.resetPositions();
+    }
+  }
+
+
+  inline function makeScoreText(format):TextField {
+    var txt = new TextField();
+    txt.defaultTextFormat = format;
+    txt.autoSize = openfl.text.TextFieldAutoSize.CENTER;
+    txt.selectable = false;
+    txt.width = 40;
+    return txt;
   }
   
 }

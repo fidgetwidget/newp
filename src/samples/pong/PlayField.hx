@@ -8,7 +8,7 @@ import newp.Lib;
 class PlayField {
 
   public var sprite:Sprite;
-  public var scoreColliders:Array<Shape>;
+  public var scoreColliders:Map<Int,Shape>;
   public var wallColliders:Array<Shape>;
   public var centerX(get, never):Float;
   public var centerY(get, never):Float;
@@ -22,7 +22,7 @@ class PlayField {
 
   public function new () {
     this.sprite = new Sprite();
-    this.scoreColliders = [];
+    this.scoreColliders = new Map();
     this.wallColliders = [];
     this.height = 480;
     this.width = 640;
@@ -59,8 +59,8 @@ class PlayField {
     var lWallCollider = Polygon.rectangle(lWall, 1, height);
     var rWallCollider = Polygon.rectangle(rWall, 1, height);
 
-    this.scoreColliders.push(lWallCollider);
-    this.scoreColliders.push(rWallCollider);
+    this.scoreColliders.set(1, lWallCollider);
+    this.scoreColliders.set(2, rWallCollider);
   }
 
   function createWalls() {
