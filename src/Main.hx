@@ -3,7 +3,7 @@ package;
 import openfl.display.Sprite;
 import newp.Engine;
 import samples.*;
-import games.tennis.Tennis;
+import games.vollybox.VollyBox;
 
 class Main extends Sprite {
   
@@ -16,9 +16,9 @@ class Main extends Sprite {
     var simple = new Simple();
     var simpleCollisions = new SimpleCollisions();
 
-    var tennis = new Tennis();
+    var vollybox = new VollyBox();
     
-    engine.start(tennis);
+    engine.start(vollybox);
   }
   
 }

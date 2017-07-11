@@ -40,14 +40,14 @@ class Shape {
   // | Collision Methods
   // +-------------------------
 
-  public function test(shape:Shape, ?into:ShapeCollision):ShapeCollision {
+  public function test(shape:Shape, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {
     if (Std.is(shape, Circle))
-      return this.testCircle(cast shape, into, true);
+      return this.testCircle(cast shape, into, !flip);
     
     if (Std.is(shape, Polygon))
-      return this.testPolygon(cast shape, into, true);
+      return this.testPolygon(cast shape, into, !flip);
 
-    return SAT.testBoundsVsBounds(this, shape, into);
+    return SAT.testBoundsVsBounds(flip ? shape : this, flip ? this : shape, into);
   } 
 
   public function testCircle(circle:Circle, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {

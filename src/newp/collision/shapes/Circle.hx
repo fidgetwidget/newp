@@ -18,8 +18,8 @@ class Circle extends Shape {
   }
 
 
-  override public function test(shape:Shape, ?into:ShapeCollision):ShapeCollision {
-    return shape.testCircle(this, into, true);
+  override public function test(shape:Shape, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
+    return shape.testCircle(this, into, !flip);
   }
 
   override public function testCircle(circle:Circle, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
