@@ -21,6 +21,10 @@ class VollyBox extends BasicScene {
   public var playField:PlayField;
   public var net:Net;
 
+  var backgroundSprites:Array<Sprite> = [];
+  var sortedSprties:Array<Sprite> = [];
+  var foregroundSprites:Array<Sprite> = [];
+
   var nowServing:Player;
 
   public function new() {
@@ -28,11 +32,11 @@ class VollyBox extends BasicScene {
     this.drawBackground();
 
     playField = new PlayField();
-    net = new Net(playField);
-    scoreBoard = new ScoreBoard(playField);
-    player1 = new Player(1, playField);
-    player2 = new Player(2, playField);
-    ball = new Ball(playField);
+    net = new Net(this);
+    scoreBoard = new ScoreBoard(this);
+    player1 = new Player(1, this);
+    player2 = new Player(2, this);
+    ball = new Ball(this);
 
     nowServing = player1;
   }
@@ -61,11 +65,16 @@ class VollyBox extends BasicScene {
     }
 
     this.update_collisionTests();
+    this.update_sort_rendering();
   }
+
 
   function update_collisionTests() {
     this._player_net_collision(this.player1);
+    this._player_score_collision(this.player1);
+
     this._player_net_collision(this.player2);
+    this._player_score_collision(this.player2);
   }
 
 
@@ -80,21 +89,83 @@ class VollyBox extends BasicScene {
       }
     }
   }
+
+  function _player_score_collision(p:Player) {
+    var collider = this.scoreBoard.player1ScoreCollider;
+    if (collider.test(p.boxCollider, collisionData, true) != null) {
+      if (collisionData.separationX != 0) {
+        p.x -= collisionData.separationX;
+        p.vx *= -1;
+      } else {
+        p.y -= collisionData.separationY;
+        p.vy *= -1;
+      }
+    }
+    collider = this.scoreBoard.player2ScoreCollider;
+    if (collider.test(p.boxCollider, collisionData, true) != null) {
+      if (collisionData.separationX != 0) {
+        p.x -= collisionData.separationX;
+        p.vx *= -1;
+      } else {
+        p.y -= collisionData.separationY;
+        p.vy *= -1;
+      }
+    }
+  }
+
   var collisionData:ShapeCollision = new ShapeCollision();
 
 
+  function update_sort_rendering() {
+    this.sortedSprties.sort(
+      function (a, b):Int { 
+        return a.y == b.y ? 0 : a.y < b.y ? -1 : 1; 
+      });
+
+    var offset = 0;
+    offset = this.setSpriteIndexFor(backgroundSprites, offset);
+    offset = this.setSpriteIndexFor(sortedSprties, offset);
+    this.setSpriteIndexFor(foregroundSprites, offset);
+  }
+
+  inline function setSpriteIndexFor(collection:Array<Sprite>, offset:Int = 0):Int {
+    for (i in 0...collection.length) {
+      this.setSpriteIndex(collection[i], i+offset);
+    }
+    return offset + collection.length;
+  }
+
   override public function begin() {
     super.begin();
+    // background
     this.addSprite(bg);
     this.addSprite(playField);
-    this.addSprite(scoreBoard);
     this.addSprite(net.netBottom);
     this.addSprite(net.shadow);
+
+    // sortable
+    this.addSprite(scoreBoard);
+
     this.addEntity(ball);
     this.addEntity(player1);
     this.addEntity(player2);
+
+    // foreground
     this.addSprite(net.net);
     this.addSprite(ball.ball);
+
+    // collections
+    this.backgroundSprites.push(bg);
+    this.backgroundSprites.push(playField);
+
+    this.sortedSprties.push(scoreBoard);
+    this.sortedSprties.push(ball.sprite);
+    this.sortedSprties.push(player1.sprite);
+    this.sortedSprties.push(player2.sprite);
+
+    this.foregroundSprites.push(net.net);
+    this.foregroundSprites.push(ball.ball);
+
   }
 
   override public function end() {

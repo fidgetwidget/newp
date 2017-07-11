@@ -18,7 +18,8 @@ class Player extends Entity {
   inline static var MAX_MOVE_SPEED:Int = 200;
   inline static var DRAG:Int = 300;
 
-  var field:PlayField;
+  var game:VollyBox;
+  var field(get, never):PlayField;
   var playerNo:Int;
   var width:Float;
   var height:Float;
@@ -29,10 +30,10 @@ class Player extends Entity {
 
   public var moving(get, never):Bool;
 
-  public function new(player:Int, field:PlayField) {
+  public function new(player:Int, game:VollyBox) {
     super();
     this.playerNo = player;
-    this.field = field;
+    this.game = game;
     this.width = 20;
     this.height = 20;
     this.hitDistance = 20;
@@ -151,5 +152,7 @@ class Player extends Entity {
   var _min_speed:Float = 9;
 
   inline function get_moving():Bool { return Math.abs(this.vx) > _min_speed || Math.abs(this.vy) > _min_speed; }
+
+  inline function get_field():PlayField { return this.game.playField; }
 
 }

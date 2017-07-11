@@ -15,7 +15,8 @@ class Ball extends Entity {
 
   static inline var MAX_HEIGHT:Float = 20;
 
-  var field:PlayField;
+  var game:VollyBox;
+  var field(get, never):PlayField;
 
   public var ball:Sprite;
   var shadow:Sprite;
@@ -31,9 +32,9 @@ class Ball extends Entity {
   public var onGround:Bool = false;
   public var inService:Bool = true;
 
-  public function new(field:PlayField) {
+  public function new(game:VollyBox) {
     super();
-    this.field = field;
+    this.game = game;
 
     var sprite = new Sprite();
     this.ball = new Sprite();
@@ -120,5 +121,8 @@ class Ball extends Entity {
     this.prevX = this.initX = player.x;
     this.prevY = this.initY = player.y;
   }
+
+
+  inline function get_field():PlayField { return this.game.playField; }
 
 }

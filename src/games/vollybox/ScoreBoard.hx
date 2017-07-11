@@ -4,70 +4,92 @@ import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFieldAutoSize;
+import newp.collision.shapes.Shape;
 import newp.utils.Draw;
 
 
 class ScoreBoard extends Sprite {
 
+  var HEIGHT:Float = 50;
+  var WIDTH:Float = 40;
+
   var player1ScoreSpr:Sprite;
   var player1ScoreTxt:TextField;
   var player2ScoreSpr:Sprite;
   var player2ScoreTxt:TextField;
+
+  public var player1ScoreCollider:Shape;
+  public var player2ScoreCollider:Shape;
   
-  var field:PlayField;
+  var game:VollyBox;
+  var field(get, never):PlayField;
 
   public var player1Score(get, set):Int;
   public var player2Score(get, set):Int;
 
-  public function new(field:PlayField) {
+  public function new(game:VollyBox) {
     super();
-    this.field = field;
+    this.game = game;
+    this.x = field.centerX;
+    this.y = field.top - 25;
 
     this.player1ScoreSpr = this.makeScoreCard(); 
-    this.player1ScoreSpr.x = field.centerX - 60;
-    this.player1ScoreSpr.y = field.top - 75;
+    this.player1ScoreSpr.x = -40;
     this.addChild(this.player1ScoreSpr);
 
     this.player2ScoreSpr = this.makeScoreCard();
-    this.player2ScoreSpr.x = field.centerX + 20;
-    this.player2ScoreSpr.y = field.top - 75;
+    this.player2ScoreSpr.x = 40;
     this.addChild(this.player2ScoreSpr);
     
     var format = new TextFormat("Verdana", 34, 0xafafaf, true);
     this.player1ScoreTxt = this.makeScoreText(format);
-    this.player1ScoreTxt.x = 0;
-    this.player1ScoreTxt.y = 0;
+    this.player1ScoreTxt.x = -WIDTH/2;
+    this.player1ScoreTxt.y = -HEIGHT;
     this.player1ScoreSpr.addChild(this.player1ScoreTxt);
 
     this.player2ScoreTxt = this.makeScoreText(format);
-    this.player2ScoreTxt.x = 0;
-    this.player2ScoreTxt.y = 0;
+    this.player2ScoreTxt.x = -WIDTH/2;
+    this.player2ScoreTxt.y = -HEIGHT;
     this.player2ScoreSpr.addChild(this.player2ScoreTxt);
+
+    this.player1ScoreCollider = this.makeScoreCollider(this.player1ScoreSpr);
+    this.player2ScoreCollider = this.makeScoreCollider(this.player2ScoreSpr);
   }
 
 
-  inline function makeScoreCard():Sprite {
+  function makeScoreCard():Sprite {
     var spr = new Sprite();
     Draw.start(spr.graphics)
       .beginFill(0x555555, 0.1)
-      .drawEllipse(-2, 45, 43, 10)
+      .drawEllipse(-WIDTH/2 - 1, -HEIGHT - 5, WIDTH+2, 10)
       .endFill()
       .beginFill(0xfff8dc)
-      .drawRect(0, 0, 40, 50)
+      .drawRect(-WIDTH/2, -HEIGHT, WIDTH, HEIGHT)
       .endFill()
       .lineStyle(1, 0xf5deb3)
-      .drawRect(0, 0, 40, 50);
+      .drawRect(-WIDTH/2, -HEIGHT, WIDTH, HEIGHT);
     return spr;
   }
 
-  inline function makeScoreText(format:TextFormat):TextField {
+  function makeScoreText(format:TextFormat):TextField {
     var txt = new TextField();
     txt.defaultTextFormat = format;
     txt.autoSize = TextFieldAutoSize.CENTER;
     txt.selectable = false;
-    txt.width = 40;
+    txt.width = WIDTH;
     txt.text = '${0}';
     return txt;
+  }
+
+  function makeScoreCollider(sprite:Sprite):Shape {
+    var mask = new Sprite();
+    Draw.start(mask.graphics)
+      .beginFill(0xffffff, 0)
+      .drawRect(-WIDTH/2, -30, WIDTH, 30)
+      .endFill();
+    sprite.addChild(mask);
+
+    return new Shape(mask);
   }
 
 
@@ -87,5 +109,7 @@ class ScoreBoard extends Sprite {
 
   var _player1Score:Int = 0;
   var _player2Score:Int = 0;
+
+  inline function get_field():PlayField { return this.game.playField; }
 
 }

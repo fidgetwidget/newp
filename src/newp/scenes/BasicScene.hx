@@ -90,6 +90,10 @@ class BasicScene implements Scene {
     this.sprites.remove(sprite);
   }
 
+  public function setSpriteIndex (sprite:Sprite, index:Int) :Void {
+    this.container.setChildIndex(sprite, index);
+  }
+
   // Collider
   // ========
 

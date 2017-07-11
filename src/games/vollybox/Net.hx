@@ -11,15 +11,16 @@ class Net {
 
   inline static var SHADOW_DEPTH:Float = 4;
 
-  var field:PlayField;
+  var game:VollyBox;
+  var field(get, never):PlayField;
   var baseline:Sprite;
   public var shadow:Sprite;
   public var net:Sprite;
   public var netBottom:Sprite;
   public var collider:Shape;
 
-  public function new(field:PlayField) {
-    this.field = field;
+  public function new(game:VollyBox) {
+    this.game = game;
     
     this.baseline = new Sprite();
 
@@ -76,5 +77,8 @@ class Net {
       .lineStyle(2, 0x333333)
       .drawLine([0, 15], 0, this.field.bottom-20);
   }
+
+
+  inline function get_field():PlayField { return this.game.playField; }
 
 }
