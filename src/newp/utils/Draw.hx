@@ -2,10 +2,11 @@ package newp.utils;
 
 import openfl.display.Graphics;
 
-// TODO: impliment the rest of the Graphics features
-
+// A Drawing helper that makes writing graphics draw functions cleaner
+// eg. Draw.start(graphics).lineStyle(1, 0xffffff).moveTo(0, 0).lineTo(100, 100);
 class Draw {
-
+  // TODO: impliment the rest of the Graphics features
+  
   static var instance:Draw = null;
 
   public static function start(graphics:Graphics):Draw {
