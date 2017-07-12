@@ -15,20 +15,28 @@ import openfl.display.Sprite;
 class Player extends Entity {
 
   inline static var BASE_MOVE_SPEED:Int = 300;
+  inline static var SERVICE_MOVE_SPEED:Int = 200;
   inline static var MAX_MOVE_SPEED:Int = 200;
   inline static var DRAG:Int = 300;
 
   var game:VollyBox;
+
   var field(get, never):PlayField;
+  var ball(get, never):Ball;
+
   var playerNo:Int;
   var width:Float;
   var height:Float;
   var hitDistance:Float; // how far away from the player they can still hit the ball
+  var speed:Float;
   var box:Sprite;
-  public var boxCollider:Shape;
   var shadow:Sprite;
+  var inputs:Map<String, Int>;
 
+  public var boxCollider:Shape;
+  public var hasBall:Bool = false;
   public var moving(get, never):Bool;
+
 
   public function new(player:Int, game:VollyBox) {
     super();
@@ -38,24 +46,64 @@ class Player extends Entity {
     this.height = 20;
     this.hitDistance = 20;
 
-    var sprite = new Sprite();
-    this.makePlayerSprites(sprite);
-
-    var collider = Polygon.rectangle(this.box, this.width + this.hitDistance, this.height + this.hitDistance);
-    var collisionMask:Sprite = new Sprite();
-    this.drawCollisionMask(collisionMask.graphics);
-    this.shadow.addChild(collisionMask);
-    this.boxCollider = new Shape(collisionMask);
-    
-    var motion = new Motion();
-
-    motion.drag = DRAG;
-    motion.max_velocity = MAX_MOVE_SPEED;
+    var sprite = this.makeSprites();
+    var collider = this.makeColliders();
+    var motion = this.makeMotion();
 
     this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent(collider));
     this.addComponent(new MotionComponent(motion));
 
+    this.makeInputs();
+    this.initPosition();
+  }
+
+  // Init
+  // ====
+
+  function makeColliders() {
+    trace('makeColliders');
+    var collisionMask:Sprite = new Sprite();
+    this.drawCollisionMask(collisionMask.graphics);
+    this.shadow.addChild(collisionMask);
+    this.boxCollider = new Shape(collisionMask);
+
+    return Polygon.rectangle(this.box, this.width + this.hitDistance, this.height + this.hitDistance);
+  }
+
+  function makeMotion() {
+    trace('makeMotion');
+    var m = new Motion();
+    m.drag = DRAG;
+    m.max_velocity = MAX_MOVE_SPEED;
+    return m;
+  }
+
+  function makeInputs() {
+    trace('makeInputs');
+    switch (this.playerNo) {
+      case 1:
+        this.inputs = [
+          'left'  => 65,
+          'up'    => 87,
+          'right' => 68,
+          'down'  => 83,
+          'bump'  => 0,
+          'set'   => 0,
+        ];
+      case 2:
+        this.inputs = [
+          'left'  => 37,
+          'up'    => 38,
+          'right' => 39,
+          'down'  => 40,
+          'bump'  => 0,
+          'set'   => 0,
+        ];
+    }
+  }
+
+  inline function initPosition() {
     this.y = field.centerY;
     switch(this.playerNo) {
       case 1:
@@ -65,74 +113,80 @@ class Player extends Entity {
     }
   }
 
-  function drawCollisionMask(g) {
-    Draw.start(g)
-      .lineStyle(1, 0xffffff, 0)
-      .drawRect(-width/2, 0, width, height/2);
-  }
+  function makeSprites() {
+    trace('makeSprites');
+    var parent = new Sprite();
 
-  function makePlayerSprites(parent) {
     this.box = new Sprite();
     this.shadow = new Sprite();
-    var g;
-    g = this.box.graphics;
+
+    this.drawBox(this.box.graphics);
+    this.drawShadow(this.shadow.graphics);
+
+    parent.addChild(shadow);
+    parent.addChild(box);
+    return parent;
+  }
+
+  inline function drawBox(g) {
     Draw.start(g)
       .beginFill(0xf5deb3)
       .lineStyle(1, 0xfff8dc)
       .drawRect(-width/2, -height/2, width, height)
       .endFill();
+  }
 
-    g = this.shadow.graphics;
+  inline function drawShadow(g) {
     Draw.start(g)
       .beginFill(0x555555, 0.1)
       .drawEllipse(-width/2, height/2 - 5, width, 10)
       .endFill();
+  }
 
-    parent.addChild(shadow);
-    parent.addChild(box);
+  inline function drawCollisionMask(g) {
+    Draw.start(g)
+      .lineStyle(1, 0xffffff, 0)
+      .drawRect(-width/2, 0, width, height/2);
+  }
+
+  // Update
+  // ======
+
+  override public function update() {
+    this.update_playerInput();
+
+    super.update();
+
+    this.update_playerAnimation();
   }
 
 
-  override public function update() {
+  function update_playerInput() {
+    speed = this.hasBall ? SERVICE_MOVE_SPEED : BASE_MOVE_SPEED;
+
     var k = Lib.inputs.keyboard;
-    var up:Int=0, down:Int=0, left:Int=0, right:Int=0;
-    switch (this.playerNo) {
-      case 1:
-        up = 87;
-        down = 83;
-        left = 65;
-        right = 68;
-      case 2:
-        left = 37;
-        up = 38;
-        right = 39;
-        down = 40;
-    }
-
-    var speed = BASE_MOVE_SPEED;
-
-    if (k.down(up)) {
+    if (k.down(this.inputs['up'])) {
       this.ay = -speed;
       if (this.vy != 0 && MathUtils.sign(this.ay) != MathUtils.sign(this.vy)) this.vy *= 0.25;
-    } else if (k.down(down)) {
+    } else if (k.down(this.inputs['down'])) {
       this.ay = speed;
       if (this.vy != 0 && MathUtils.sign(this.ay) != MathUtils.sign(this.vy)) this.vy *= 0.25;
     } else {
       this.ay = 0;
     }
 
-    if (k.down(left)) {
+    if (k.down(this.inputs['left'])) {
       this.motion.ax = -speed;
       if (this.vx != 0 && MathUtils.sign(this.ax) != MathUtils.sign(this.vx)) this.vx *= 0.25;
-    } else if (k.down(right)) {
+    } else if (k.down(this.inputs['right'])) {
       this.motion.ax = speed;
       if (this.vx != 0 && MathUtils.sign(this.ax) != MathUtils.sign(this.vx)) this.vx *= 0.25;
     } else {
       this.motion.ax = 0;
     }
+  }
 
-    super.update();
-
+  function update_playerAnimation() {
     if (this.moving) {
       if (_bounceVal > _maxBounce) { _bounceDir = -1; _bounceVal = _maxBounce; }
       if (_bounceVal < 0) {_bounceDir = 1; _bounceVal = 0; }
@@ -154,5 +208,6 @@ class Player extends Entity {
   inline function get_moving():Bool { return Math.abs(this.vx) > _min_speed || Math.abs(this.vy) > _min_speed; }
 
   inline function get_field():PlayField { return this.game.playField; }
+  inline function get_ball():Ball { return this.game.ball; }
 
 }

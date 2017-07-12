@@ -13,7 +13,7 @@ import openfl.display.DisplayObjectContainer;
 class BasicScene implements Scene {
   
   var sprites:Array<Sprite>;
-  var renderTarget:Sprite;  
+  var renderTarget:Sprite;
   var layers:Map<String, Sprite>;
   var entities:Array<Entity>;
   var colliders:ShapeBins;

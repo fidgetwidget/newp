@@ -29,6 +29,7 @@ interface Scene {
 
   public function addSprite (sprite:Sprite) :Void;
   public function removeSprite (sprite:Sprite) :Void;
+  public function setSpriteIndex (sprite:Sprite, index:Int) :Void;
 
   // Collider
   // ========

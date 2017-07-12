@@ -14,9 +14,7 @@ class VollyBox extends BasicScene {
 
   public var player1:Player;
   public var player2:Player;
-
   public var ball:Ball;
-
   public var scoreBoard:ScoreBoard;
   public var playField:PlayField;
   public var net:Net;
@@ -24,8 +22,6 @@ class VollyBox extends BasicScene {
   var backgroundSprites:Array<Sprite> = [];
   var sortedSprties:Array<Sprite> = [];
   var foregroundSprites:Array<Sprite> = [];
-
-  var nowServing:Player;
 
   public function new() {
     super();
@@ -38,7 +34,7 @@ class VollyBox extends BasicScene {
     player2 = new Player(2, this);
     ball = new Ball(this);
 
-    nowServing = player1;
+    ball.serving(player1);
   }
 
   function drawBackground() {
@@ -58,12 +54,6 @@ class VollyBox extends BasicScene {
       e.update();
     }
 
-    if (this.ball.inService) {
-      var side = nowServing.x > playField.centerX ? -1 : 1;
-      this.ball.x = nowServing.x + 10 * side;
-      this.ball.y = nowServing.y + 4;
-    }
-
     this.update_collisionTests();
     this.update_sort_rendering();
   }
@@ -77,6 +67,7 @@ class VollyBox extends BasicScene {
     this._player_score_collision(this.player2);
   }
 
+  
 
   function _player_net_collision(p:Player) {
     if (this.net.collider.test(p.boxCollider, collisionData, true) != null) {
@@ -116,6 +107,8 @@ class VollyBox extends BasicScene {
   var collisionData:ShapeCollision = new ShapeCollision();
 
 
+  // Sorting
+
   function update_sort_rendering() {
     this.sortedSprties.sort(
       function (a, b):Int { 
@@ -134,6 +127,8 @@ class VollyBox extends BasicScene {
     }
     return offset + collection.length;
   }
+
+  // adding stuff to the scene on begin
 
   override public function begin() {
     super.begin();
@@ -157,6 +152,8 @@ class VollyBox extends BasicScene {
     // collections
     this.backgroundSprites.push(bg);
     this.backgroundSprites.push(playField);
+    this.backgroundSprites.push(net.netBottom);
+    this.backgroundSprites.push(net.shadow);
 
     this.sortedSprties.push(scoreBoard);
     this.sortedSprties.push(ball.sprite);

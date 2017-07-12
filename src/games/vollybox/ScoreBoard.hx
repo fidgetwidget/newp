@@ -61,7 +61,7 @@ class ScoreBoard extends Sprite {
     var spr = new Sprite();
     Draw.start(spr.graphics)
       .beginFill(0x555555, 0.1)
-      .drawEllipse(-WIDTH/2 - 1, -HEIGHT - 5, WIDTH+2, 10)
+      .drawEllipse(-WIDTH/2 - 1, -5, WIDTH+2, 10)
       .endFill()
       .beginFill(0xfff8dc)
       .drawRect(-WIDTH/2, -HEIGHT, WIDTH, HEIGHT)
