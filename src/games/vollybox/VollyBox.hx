@@ -2,8 +2,8 @@ package games.vollybox;
 
 import openfl.display.Sprite;
 import newp.scenes.BasicScene;
-import newp.collision.ShapeCollision;
-import newp.collision.Collection as ShapeCollection;
+import newp.collision.response.ShapeCollision;
+import newp.collision.collections.ShapeBins;
 import newp.utils.Draw;
 import newp.Lib;
 
@@ -50,7 +50,7 @@ class VollyBox extends BasicScene {
   }
 
   override function init_colliders() {
-    this.colliders = new ShapeCollection(Lib.stage.stageWidth, Lib.stage.stageHeight); 
+    this.colliders = new ShapeBins(Lib.stage.stageWidth, Lib.stage.stageHeight); 
   }
 
   override public function update() {

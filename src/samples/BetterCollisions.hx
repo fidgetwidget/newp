@@ -8,8 +8,7 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import newp.scenes.BasicScene;
 import newp.collision.shapes.Shape;
-import newp.collision.ShapeCollision;
-import newp.collision.Collection;
+import newp.collision.response.ShapeCollision;
 import newp.math.Dice;
 import newp.utils.Draw;
 import newp.Entity;
@@ -83,7 +82,7 @@ class BetterCollisions extends BasicScene {
     }
 
     for (shape in colliders.shapes) {
-      colliders.updateShape(shape);
+      colliders.update(shape);
 
       var bounds = shape.bounds;
       if (bounds.minX > Lib.stage.stageWidth || 

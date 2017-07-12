@@ -1,9 +1,7 @@
 package newp.scenes;
 
 import newp.collision.shapes.Shape;
-import newp.collision.Collection as ShapeCollection;
-import newp.collision.SAT;
-import newp.collision.ShapeCollision;
+import newp.collision.response.ShapeCollision;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.DisplayObject;

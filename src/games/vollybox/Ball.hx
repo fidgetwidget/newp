@@ -3,7 +3,7 @@ package games.vollybox;
 import newp.components.*;
 import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
-import newp.collision.ShapeCollision;
+import newp.collision.response.ShapeCollision;
 import newp.math.Utils as MathUtils;
 import newp.utils.Draw;
 import newp.Entity;

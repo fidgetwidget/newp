@@ -1,8 +1,8 @@
 package newp.collision.shapes;
 
 import openfl.display.DisplayObject;
-import newp.collision.SAT;
-import newp.collision.ShapeCollision;
+import newp.collision.sat.*;
+import newp.collision.response.ShapeCollision;
 
 
 class Circle extends Shape {
@@ -23,11 +23,11 @@ class Circle extends Shape {
   }
 
   override public function testCircle(circle:Circle, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
-    return SAT.testCircleVsCircle(this, circle, into, flip);
+    return CircleVsCircle.test(this, circle, into, flip);
   }
 
   override public function testPolygon(poly:Polygon, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
-    return SAT.testCircleVsPolygon(this, poly, into, flip); 
+    return CircleVsPolygon.test(this, poly, into, flip); 
   }
   
 

@@ -6,8 +6,8 @@ import openfl.text.TextFieldAutoSize;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import newp.collision.shapes.*;
-import newp.collision.Collection as ShapeCollection;
-import newp.collision.ShapeCollision;
+import newp.collision.collections.ShapeBins;
+import newp.collision.response.ShapeCollision;
 import newp.scenes.BasicScene;
 import newp.math.Dice;
 import newp.utils.Draw;
@@ -43,7 +43,7 @@ class Pong extends BasicScene {
   }
 
   override function init_colliders() {
-    this.colliders = new ShapeCollection(Lib.stage.stageWidth, Lib.stage.stageHeight); 
+    this.colliders = new ShapeBins(Lib.stage.stageWidth, Lib.stage.stageHeight); 
   }
 
   // Methods
@@ -125,7 +125,7 @@ class Pong extends BasicScene {
 
     for (e in this.entities) {
       e.update();
-      if (e.collider != null) colliders.updateShape(e.collider);
+      if (e.collider != null) colliders.update(e.collider);
     }
 
     this.update_collision();

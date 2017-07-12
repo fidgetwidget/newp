@@ -8,7 +8,7 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import newp.scenes.SimpleScene;
 import newp.collision.shapes.Shape;
-import newp.collision.ShapeCollision;
+import newp.collision.response.ShapeCollision;
 import newp.math.Dice;
 import newp.utils.Draw;
 import newp.Lib;

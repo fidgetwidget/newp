@@ -88,7 +88,6 @@ class ScoreBoard extends Sprite {
       .drawRect(-WIDTH/2, -30, WIDTH, 30)
       .endFill();
     sprite.addChild(mask);
-
     return new Shape(mask);
   }
 

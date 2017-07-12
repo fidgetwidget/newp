@@ -26,10 +26,18 @@ class Bounds {
   public var minY(get, never):Float;
   public var maxX(get, never):Float;
   public var maxY(get, never):Float;
+
+  public var top(get, never):Float;
+  public var right(get, never):Float;
+  public var bottom(get, never):Float;
+  public var left(get, never):Float;
+
   public var centerX(get, never):Float;
   public var centerY(get, never):Float;
+
   public var width(get, never):Float;
   public var halfWidth(get, never):Float;
+
   public var height(get, never):Float;
   public var halfHeight(get, never):Float;
 
@@ -67,6 +75,12 @@ class Bounds {
   inline function get_minY():Float        { return this.cy - this.hh; }
   inline function get_maxX():Float        { return this.cx + this.hw; }
   inline function get_maxY():Float        { return this.cy + this.hh; }
+
+  inline function get_top():Float         { return this.cy - this.hh; }
+  inline function get_right():Float       { return this.cx + this.hw; }
+  inline function get_bottom():Float      { return this.cy + this.hh; }
+  inline function get_left():Float        { return this.cx - this.hw; }
+
   inline function get_width():Float       { return this.hw * 2; }
   inline function get_halfWidth():Float   { return this.hw; }
   inline function get_height():Float      { return this.hh * 2; }

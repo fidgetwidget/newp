@@ -1,9 +1,8 @@
 package newp.scenes;
 
 import newp.collision.shapes.Shape;
-import newp.collision.Collection as ShapeCollection;
-import newp.collision.SAT;
-import newp.collision.ShapeCollision;
+import newp.collision.collections.ShapeBins;
+import newp.collision.response.ShapeCollision;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.DisplayObject;
@@ -17,7 +16,7 @@ class BasicScene implements Scene {
   var renderTarget:Sprite;  
   var layers:Map<String, Sprite>;
   var entities:Array<Entity>;
-  var colliders:ShapeCollection;
+  var colliders:ShapeBins;
 
   public var name (default, null) :String;
   public var container (get, never) :DisplayObjectContainer;
@@ -48,7 +47,7 @@ class BasicScene implements Scene {
   }
 
   function init_colliders():Void { 
-    this.colliders = new ShapeCollection(); 
+    this.colliders = new ShapeBins(); 
   }
 
   public function update():Void { }

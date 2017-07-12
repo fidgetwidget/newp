@@ -1,8 +1,8 @@
 package newp.collision.shapes;
 
 import openfl.display.DisplayObject;
-import newp.collision.SAT;
-import newp.collision.ShapeCollision;
+import newp.collision.sat.*;
+import newp.collision.response.ShapeCollision;
 import newp.collision.Bounds;
 
 
@@ -11,7 +11,7 @@ import newp.collision.Bounds;
 //   get the x, y, rotation, scaleX, scaleY from a transform
 class Shape {
 
-  public var tags:Map<String, String>;
+  public var tags:Map<String, String>; // categorization of the shape / collision groups
 
   public var valid(get, never):Bool;
 
@@ -41,21 +41,19 @@ class Shape {
   // +-------------------------
 
   public function test(shape:Shape, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {
-    if (Std.is(shape, Circle))
-      return this.testCircle(cast shape, into, !flip);
+    if (Std.is(shape, Circle)) return this.testCircle(cast shape, into, !flip);
     
-    if (Std.is(shape, Polygon))
-      return this.testPolygon(cast shape, into, !flip);
+    if (Std.is(shape, Polygon)) return this.testPolygon(cast shape, into, !flip);
 
-    return SAT.testBoundsVsBounds(flip ? shape : this, flip ? this : shape, into);
+    return BoundsVsBounds.test(flip ? shape : this, flip ? this : shape, into);
   } 
 
   public function testCircle(circle:Circle, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {
-    return SAT.testCircleVsBounds(circle, this, into, flip);
+    return CircleVsBounds.test(circle, this, into, flip);
   }
 
   public function testPolygon(poly:Polygon, ?into:ShapeCollision, flip:Bool = false):ShapeCollision {
-    return SAT.testPolygonVsBounds(poly, this, into, flip);
+    return PolygonVsBounds.test(poly, this, into, flip);
   }
 
 

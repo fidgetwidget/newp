@@ -1,4 +1,4 @@
-package newp.collision;
+package newp.collision.response;
 
 import newp.collision.shapes.Shape;
 
