@@ -62,7 +62,6 @@ class Player extends Entity {
   // ====
 
   function makeColliders() {
-    trace('makeColliders');
     var collisionMask:Sprite = new Sprite();
     this.drawCollisionMask(collisionMask.graphics);
     this.shadow.addChild(collisionMask);
@@ -72,7 +71,6 @@ class Player extends Entity {
   }
 
   function makeMotion() {
-    trace('makeMotion');
     var m = new Motion();
     m.drag = DRAG;
     m.max_velocity = MAX_MOVE_SPEED;
@@ -80,7 +78,6 @@ class Player extends Entity {
   }
 
   function makeInputs() {
-    trace('makeInputs');
     switch (this.playerNo) {
       case 1:
         this.inputs = [
@@ -114,7 +111,6 @@ class Player extends Entity {
   }
 
   function makeSprites() {
-    trace('makeSprites');
     var parent = new Sprite();
 
     this.box = new Sprite();

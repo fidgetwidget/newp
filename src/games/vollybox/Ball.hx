@@ -51,7 +51,6 @@ class Ball extends Entity {
   }
 
   function makeSprites() {
-    trace('makeSprites');
     var parent = new Sprite();
     this.ball = new Sprite();
     this.shadow = new Sprite();
@@ -78,7 +77,6 @@ class Ball extends Entity {
   }
 
   function makeColliders() {
-    trace('makeColliders');
     return new Circle(this.shadow, RADIUS);
   }
 

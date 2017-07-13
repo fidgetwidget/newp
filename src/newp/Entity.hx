@@ -10,8 +10,8 @@ import openfl.display.Sprite;
 
 class Entity {
 
+  var name:String; 
   var components:Map<String, Component>;
-  
   var parent:Entity = null;
   var children:Array<Entity>;
 
@@ -36,8 +36,10 @@ class Entity {
   public var ra(get, set):Float;
 
 
-  public function new() {
+  public function new(?name:String) {
+    this.name = name != null ? name : Type.getClassName(Type.getClass(this));
     this.components = new Map();
+    if (newp.Lib.debug) trace('Entity[${this.name}] created');
   }
 
   public function update():Void { 

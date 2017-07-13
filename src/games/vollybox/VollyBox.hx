@@ -1,11 +1,12 @@
 package games.vollybox;
 
-import openfl.display.Sprite;
-import newp.scenes.BasicScene;
 import newp.collision.response.ShapeCollision;
 import newp.collision.collections.ShapeBins;
+import newp.display.SpriteCollection;
+import newp.scenes.BasicScene;
 import newp.utils.Draw;
 import newp.Lib;
+import openfl.display.Sprite;
 
 
 class VollyBox extends BasicScene {
@@ -45,6 +46,14 @@ class VollyBox extends BasicScene {
       .endFill();
   }
 
+  override function init_sprites() {
+    this.sprites = new SpriteCollection(['background', 'camera', 'foreground', 'hud', 'debug']);
+    this.sprites.getLayer('camera').sortBy(
+      function (a:Sprite, b:Sprite):Int { 
+        return a.y == b.y ? 0 : a.y < b.y ? -1 : 1; 
+      });
+  }
+
   override function init_colliders() {
     this.colliders = new ShapeBins(Lib.stage.stageWidth, Lib.stage.stageHeight); 
   }
@@ -55,7 +64,7 @@ class VollyBox extends BasicScene {
     }
 
     this.update_collisionTests();
-    this.update_sort_rendering();
+    this.sprites.sortLayer('camera');
   }
 
 
@@ -107,62 +116,25 @@ class VollyBox extends BasicScene {
   var collisionData:ShapeCollision = new ShapeCollision();
 
 
-  // Sorting
-
-  function update_sort_rendering() {
-    this.sortedSprties.sort(
-      function (a, b):Int { 
-        return a.y == b.y ? 0 : a.y < b.y ? -1 : 1; 
-      });
-
-    var offset = 0;
-    offset = this.setSpriteIndexFor(backgroundSprites, offset);
-    offset = this.setSpriteIndexFor(sortedSprties, offset);
-    this.setSpriteIndexFor(foregroundSprites, offset);
-  }
-
-  inline function setSpriteIndexFor(collection:Array<Sprite>, offset:Int = 0):Int {
-    for (i in 0...collection.length) {
-      this.setSpriteIndex(collection[i], i+offset);
-    }
-    return offset + collection.length;
-  }
-
   // adding stuff to the scene on begin
 
   override public function begin() {
     super.begin();
     // background
-    this.addSprite(bg);
-    this.addSprite(playField);
-    this.addSprite(net.netBottom);
-    this.addSprite(net.shadow);
+    this.addSprite(bg, 'background');
+    this.addSprite(playField, 'background');
+    this.addSprite(net.netBottom, 'background');
+    this.addSprite(net.shadow, 'background');
 
     // sortable
-    this.addSprite(scoreBoard);
-
+    this.addSprite(scoreBoard, 'camera');
     this.addEntity(ball);
     this.addEntity(player1);
     this.addEntity(player2);
 
     // foreground
-    this.addSprite(net.net);
-    this.addSprite(ball.ball);
-
-    // collections
-    this.backgroundSprites.push(bg);
-    this.backgroundSprites.push(playField);
-    this.backgroundSprites.push(net.netBottom);
-    this.backgroundSprites.push(net.shadow);
-
-    this.sortedSprties.push(scoreBoard);
-    this.sortedSprties.push(ball.sprite);
-    this.sortedSprties.push(player1.sprite);
-    this.sortedSprties.push(player2.sprite);
-
-    this.foregroundSprites.push(net.net);
-    this.foregroundSprites.push(ball.ball);
-
+    this.addSprite(net.net, 'foreground');
+    this.addSprite(ball.ball, 'foreground');
   }
 
   override public function end() {

@@ -25,7 +25,7 @@ class BetterCollisions extends BasicScene {
     super.init();
     this.shapeEntityMap = new Map();
 
-    var hudLayer = this.layers.get('hud');
+    var hudLayer = this.sprites.getLayer('hud').container;
 
     this.fps = new FPS(10, 40, 0x555555);
     hudLayer.addChild(this.fps);

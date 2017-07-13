@@ -3,6 +3,7 @@ package newp.scenes;
 import newp.collision.shapes.Shape;
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
+import newp.display.SpriteCollection;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.DisplayObject;
@@ -12,9 +13,8 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  var sprites:Array<Sprite>;
-  var renderTarget:Sprite;
-  var layers:Map<String, Sprite>;
+  var renderTarget(get, never):Sprite;
+  var sprites:SpriteCollection;
   var entities:Array<Entity>;
   var colliders:ShapeBins;
 
@@ -26,24 +26,17 @@ class BasicScene implements Scene {
   public function new (?name:String) { 
     this.name = name != null ? name : Type.getClassName(Type.getClass(this));
     this.init();
+    if (newp.Lib.debug) trace('Scene[${this.name}] created');
   }
 
   function init():Void {
     this.entities = [];
-    this.sprites = [];
-    this.renderTarget = new Sprite();
-    this.init_layers();
+    this.init_sprites();
     this.init_colliders();
   }
 
-  function init_layers():Void {
-    this.layers = [
-      'container' => new Sprite(),
-      'hud' => new Sprite(),
-      'debug' => new Sprite()];
-    this.renderTarget.addChild(this.layers.get('container'));
-    this.renderTarget.addChild(this.layers.get('hud'));
-    this.renderTarget.addChild(this.layers.get('debug'));
+  function init_sprites():Void {
+    this.sprites = new SpriteCollection(['camera', 'hud', 'debug']);
   }
 
   function init_colliders():Void { 
@@ -54,12 +47,16 @@ class BasicScene implements Scene {
 
   // When the scene is made active
   public function begin () :Void {
+    if (newp.Lib.debug) trace('$name has begun');
+
     Lib.main.addChild(this.renderTarget);
   }
 
   // When the scene is removed
   public function end () :Void {
     Lib.main.removeChild(this.renderTarget);
+
+    if (newp.Lib.debug) trace('$name has ended');
   }
 
   // Entity
@@ -78,19 +75,16 @@ class BasicScene implements Scene {
   // Sprite
   // ======
 
-  public function addSprite (sprite:Sprite) :Void {
-    this.container.addChild(sprite);
-    this.sprites.push(sprite);
+  public function addSprite (sprite:Sprite, ?layer:String = 'camera') :Void {
+    this.sprites.addSprite(sprite, layer);
   }
 
   public function removeSprite (sprite:Sprite) :Void {
-    if (!this.container.contains(sprite)) return;
-    this.container.removeChild(sprite);
-    this.sprites.remove(sprite);
+    this.sprites.removeSprite(sprite);
   }
 
   public function setSpriteIndex (sprite:Sprite, index:Int) :Void {
-    this.container.setChildIndex(sprite, index);
+    this.sprites.setSpriteIndex(sprite, index);
   }
 
   // Collider
@@ -106,7 +100,9 @@ class BasicScene implements Scene {
 
   // Properties
   
-  function get_container():DisplayObjectContainer { return this.layers.get('container'); }
+  function get_container():DisplayObjectContainer { return this.sprites.getLayer('camera').container; }
+
+  function get_renderTarget():Sprite { return this.sprites; }
 
   inline function get_x():Float { return this.container.x; }
   inline function set_x(val:Float):Float { return this.container.x = val; }

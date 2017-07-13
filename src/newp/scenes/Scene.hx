@@ -27,7 +27,7 @@ interface Scene {
   // Sprite
   // ======
 
-  public function addSprite (sprite:Sprite) :Void;
+  public function addSprite (sprite:Sprite, ?layer:String) :Void;
   public function removeSprite (sprite:Sprite) :Void;
   public function setSpriteIndex (sprite:Sprite, index:Int) :Void;
 

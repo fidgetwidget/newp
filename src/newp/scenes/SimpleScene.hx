@@ -50,7 +50,7 @@ class SimpleScene implements Scene {
   // Sprite
   // ======
 
-  public function addSprite (sprite:Sprite) :Void {
+  public function addSprite (sprite:Sprite, ?layer:String) :Void {
     this.container.addChild(sprite);
     this.sprites.push(sprite);
   }

@@ -32,7 +32,7 @@ class SimpleCollisions extends SimpleScene {
   }
 
   // Adjust it to add them to a different layer
-  public override function addSprite(sprite:Sprite):Void {
+  public override function addSprite(sprite:Sprite, ?layer:String):Void {
     this.spriteLayer.addChild(sprite);
     this.sprites.push(sprite);
   }
