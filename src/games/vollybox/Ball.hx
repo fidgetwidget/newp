@@ -31,7 +31,7 @@ class Ball extends Entity {
   var hitTimer:Float = 0;
 
   public var ball:Sprite;
-
+  public var collider:Shape;
   public var onGround(get, never):Bool;
   public var inService(get, never):Bool;
 
@@ -53,7 +53,7 @@ class Ball extends Entity {
 
     this.ball = new Sprite();
     this.drawBall(this.ball.graphics);
-    this.addComponent(new SpriteComponent(ball));
+    this.addComponent(new SpriteComponent(ball, 'foreground'));
   }
 
   inline function drawBall(g) {
@@ -71,7 +71,7 @@ class Ball extends Entity {
   }
 
   function makeColliders() {
-    var collider = new Circle(this.shadow, RADIUS);
+    this.collider = new Circle(this.shadow, RADIUS);
     this.addComponent(new ShapeComponent(collider));
   }
 

@@ -5,6 +5,7 @@ import openfl.geom.Point;
 import newp.collision.sat.*;
 import newp.collision.response.ShapeCollision;
 import newp.math.Utils as MathUtils;
+import newp.utils.Draw;
 
 
 class Polygon extends Shape {
@@ -61,6 +62,9 @@ class Polygon extends Shape {
     }
   }
 
+  // +-------------------------
+  // | Collision Methods
+  // +-------------------------
 
   override public function test(shape:Shape, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
     return shape.testPolygon(this, into, !flip);
@@ -74,6 +78,26 @@ class Polygon extends Shape {
     return PolygonVsPolygon.test(poly, this, into, flip);
   }
 
+  // +-------------------------
+  // | Debug Render Helper
+  // +-------------------------
+
+  override public function debug_render(g) {
+    trace('polygon debug_render');
+    // var d = Draw.start(g)
+    //   .lineStyle(0xff0000, 1);
+    // for (i in 0...this._transformedVerts.length) {
+    //   var v = this._transformedVerts[i];
+    //   if (i == 0) d.moveTo(v.x, v.y);
+    //   else d.lineTo(v.x, v.y);
+    // }
+    // var v = this._transformedVerts[0];
+    // d.lineTo(v.x, v.y);
+  }
+
+  // +-------------------------
+  // | Properties
+  // +-------------------------
 
   inline function get_transformedVerts():Array<Point> {
     var matrix = this.transformBody.transform.matrix;

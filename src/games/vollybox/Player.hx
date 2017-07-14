@@ -1,7 +1,7 @@
 package games.vollybox;
 
 import newp.components.*;
-import newp.collision.shapes.Polygon;
+import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 import newp.math.Motion;
@@ -34,6 +34,7 @@ class Player extends Entity {
   var inputs:Map<String, Int>;
 
   public var boxCollider:Shape;
+  public var hitCollider:Circle;
   public var hasBall:Bool = false;
   public var moving(get, never):Bool;
 
@@ -46,35 +47,74 @@ class Player extends Entity {
     this.height = 20;
     this.hitDistance = 20;
 
-    var sprite = this.makeSprites();
-    var collider = this.makeColliders();
-    var motion = this.makeMotion();
-
-    this.addComponent(new SpriteComponent(sprite));
-    this.addComponent(new ShapeComponent(collider));
-    this.addComponent(new MotionComponent(motion));
-
+    this.makeSprites();
+    this.makeColliders();
+    this.makeMotion();
     this.makeInputs();
+    
     this.initPosition();
   }
 
   // Init
   // ====
 
-  function makeColliders() {
-    var collisionMask:Sprite = new Sprite();
-    this.drawCollisionMask(collisionMask.graphics);
-    this.shadow.addChild(collisionMask);
-    this.boxCollider = new Shape(collisionMask);
+  // Sprites
+  function makeSprites() {
+    var parent = cast(this.body, Sprite);
 
-    return Polygon.rectangle(this.box, this.width + this.hitDistance, this.height + this.hitDistance);
+    this.box = new Sprite();
+    this.shadow = new Sprite();
+
+    this.drawBox(this.box.graphics);
+    this.drawShadow(this.shadow.graphics);
+
+    parent.addChild(shadow);
+    parent.addChild(box);
+
+    this.addComponent(new SpriteComponent(parent));
   }
 
+  inline function drawBox(g) {
+    Draw.start(g)
+      .beginFill(0xf5deb3)
+      .lineStyle(1, 0xfff8dc)
+      .drawRect(-width/2, -height/2, width, height)
+      .endFill();
+  }
+
+  inline function drawShadow(g) {
+    Draw.start(g)
+      .beginFill(0x555555, 0.1)
+      .drawEllipse(-width/2, height/2 - 5, width, 10)
+      .endFill();
+  }
+
+  inline function drawMask(g) {
+    Draw.start(g)
+      .lineStyle(1, 0xffffff, 0)
+      .drawRect(-width/2, 0, width, height/2);
+  }
+
+  // Colliders
+  function makeColliders() {
+    var maskSprite:Sprite = new Sprite();
+    this.drawMask(maskSprite.graphics);
+    this.addComponent(new SpriteComponent(maskSprite));
+
+    this.boxCollider = new Shape(maskSprite);
+    this.hitCollider = new Circle(this.box, this.width + this.hitDistance);
+
+    this.addComponent(new ShapeComponent(hitCollider));
+    this.addComponent(new ShapeComponent(boxCollider));
+  }
+
+  // Motion
   function makeMotion() {
-    var m = new Motion();
-    m.drag = DRAG;
-    m.max_velocity = MAX_MOVE_SPEED;
-    return m;
+    var motion = new Motion();
+    motion.drag = DRAG;
+    motion.max_velocity = MAX_MOVE_SPEED;
+    
+    this.addComponent(new MotionComponent(motion));
   }
 
   function makeInputs() {
@@ -108,41 +148,6 @@ class Player extends Entity {
       case 2:
         this.x = field.right - 50;
     }
-  }
-
-  function makeSprites() {
-    var parent = new Sprite();
-
-    this.box = new Sprite();
-    this.shadow = new Sprite();
-
-    this.drawBox(this.box.graphics);
-    this.drawShadow(this.shadow.graphics);
-
-    parent.addChild(shadow);
-    parent.addChild(box);
-    return parent;
-  }
-
-  inline function drawBox(g) {
-    Draw.start(g)
-      .beginFill(0xf5deb3)
-      .lineStyle(1, 0xfff8dc)
-      .drawRect(-width/2, -height/2, width, height)
-      .endFill();
-  }
-
-  inline function drawShadow(g) {
-    Draw.start(g)
-      .beginFill(0x555555, 0.1)
-      .drawEllipse(-width/2, height/2 - 5, width, 10)
-      .endFill();
-  }
-
-  inline function drawCollisionMask(g) {
-    Draw.start(g)
-      .lineStyle(1, 0xffffff, 0)
-      .drawRect(-width/2, 0, width, height/2);
   }
 
   // Update

@@ -33,7 +33,6 @@ class VollyBox extends BasicScene {
     player1 = new Player(1, this);
     player2 = new Player(2, this);
     ball = new Ball(this);
-
     ball.serving(player1);
   }
 
@@ -60,6 +59,7 @@ class VollyBox extends BasicScene {
   override public function update() {
     for (e in this.entities) {
       e.update();
+      for (c in e.colliders) this.colliders.update(c);
     }
 
     this.update_collisionTests();
@@ -68,52 +68,64 @@ class VollyBox extends BasicScene {
 
 
   function update_collisionTests() {
-    this._player_net_collision(this.player1);
-    this._player_score_collision(this.player1);
+    this.colliders.collisionTestAll(function (shape, data) {
+      if (shape == this.player1.boxCollider && data.shape2 != this.ball.collider) {
+        resolve_playerCollision(this.player1, data);
+      }
 
-    this._player_net_collision(this.player2);
-    this._player_score_collision(this.player2);
+      if (shape == this.player2.boxCollider && data.shape2 != this.ball.collider) {
+        resolve_playerCollision(this.player2, data);
+      }
+    });
+
+    // this._player_net_collision(this.player1);
+    // this._player_score_collision(this.player1);
+
+    // this._player_net_collision(this.player2);
+    // this._player_score_collision(this.player2);
+  }
+
+  function resolve_playerCollision(player:Player, collisionData:ShapeCollision) {
+    if (collisionData.separationX != 0) {
+      player.x -= collisionData.separationX;
+      player.vx *= -1;
+    }
+    else {
+      player.y -= collisionData.separationY;
+      player.vy *= -1;
+    }
   }
 
   
 
-  function _player_net_collision(p:Player) {
-    if (this.net.collider.test(p.boxCollider, collisionData, true) != null) {
-      if (collisionData.separationX != 0) {
-        p.x -= collisionData.separationX;
-        p.vx *= -1;
-      } else {
-        p.y -= collisionData.separationY;
-        p.vy *= -1;
-      }
-    }
-  }
+  // function _player_net_collision(p:Player) {
+  //   if (this.net.collider.test(p.boxCollider, collisionData, true) != null) {
+  //     if (collisionData.separationX != 0) {
+  //       p.x -= collisionData.separationX;
+  //       p.vx *= -1;
+  //     } else {
+  //       p.y -= collisionData.separationY;
+  //       p.vy *= -1;
+  //     }
+  //   }
+  // }
 
-  function _player_score_collision(p:Player) {
-    var collider = this.scoreBoard.player1ScoreCollider;
-    if (collider.test(p.boxCollider, collisionData, true) != null) {
-      if (collisionData.separationX != 0) {
-        p.x -= collisionData.separationX;
-        p.vx *= -1;
-      } else {
-        p.y -= collisionData.separationY;
-        p.vy *= -1;
-      }
-    }
-    collider = this.scoreBoard.player2ScoreCollider;
-    if (collider.test(p.boxCollider, collisionData, true) != null) {
-      if (collisionData.separationX != 0) {
-        p.x -= collisionData.separationX;
-        p.vx *= -1;
-      } else {
-        p.y -= collisionData.separationY;
-        p.vy *= -1;
-      }
-    }
-  }
+  // function _player_score_collision(p:Player) {
+  //   for (sb_collider in this.scoreBoard.colliders) {
 
-  var collisionData:ShapeCollision = new ShapeCollision();
+  //     if (sb_collider.test(p.boxCollider, collisionData, true) != null) {
+  //       if (collisionData.separationX != 0) {
+  //         p.x -= collisionData.separationX;
+  //         p.vx *= -1;
+  //       } else {
+  //         p.y -= collisionData.separationY;
+  //         p.vy *= -1;
+  //       }
+  //     }
+  //   }
+  // }
 
+  // var collisionData:ShapeCollision = new ShapeCollision();
 
   // adding stuff to the scene on begin
 
@@ -126,14 +138,14 @@ class VollyBox extends BasicScene {
     this.addSprite(net.shadow, 'background');
 
     // sortable
-    this.addSprite(scoreBoard, 'camera');
+    this.addEntity(scoreBoard);
     this.addEntity(ball);
     this.addEntity(player1);
     this.addEntity(player2);
 
     // foreground
     this.addSprite(net.net, 'foreground');
-    this.addSprite(ball.ball, 'foreground');
+    this.colliders.drawDebug = true;
   }
 
   override public function end() {

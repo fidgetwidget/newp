@@ -4,6 +4,7 @@ import openfl.display.DisplayObject;
 import newp.collision.sat.*;
 import newp.collision.response.ShapeCollision;
 import newp.collision.Bounds;
+import newp.utils.Draw;
 
 
 // TODO: change transformBody to just the transform 
@@ -56,6 +57,14 @@ class Shape {
     return PolygonVsBounds.test(poly, this, into, flip);
   }
 
+  // +-------------------------
+  // | Debug Render Helper
+  // +-------------------------
+
+  public function debug_render(g) {
+    var b = this.bounds;
+    g.drawRect(b.left, b.top, b.width, b.height);
+  }
 
   // +-------------------------
   // | Properties

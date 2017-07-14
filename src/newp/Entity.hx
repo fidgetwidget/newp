@@ -11,10 +11,11 @@ import openfl.display.Sprite;
 
 class Entity {
 
-  var name:String; 
   var components:ComponentCollection;
   var parent:Entity = null;
   var children:Array<Entity>;
+
+  public var name(default, null):String; 
 
   public var scene(default, null):Scene;
 
@@ -105,14 +106,22 @@ class Entity {
   }
 
   inline function addComponentToScene(c:Component) {
-    if (c.renderable) this.scene.addSprite((cast(c, Renderable)).sprite);
-    if (c.collidable) this.scene.addCollider((cast(c, Collidable)).shape);
+    if (c.renderable) this.addRenderableToScene(cast(c, Renderable));
+    if (c.collidable) this.addCollidableToScene(cast(c, Collidable));
   }
 
   inline function removeComponentFromScene(c:Component) {
-    if (c.renderable) this.scene.removeSprite((cast(c, Renderable)).sprite);
-    if (c.collidable) this.scene.removeCollider((cast(c, Collidable)).shape);
+    if (c.renderable) this.removeRenderableFromScene(cast(c, Renderable));
+    if (c.collidable) this.removeCollidableFromScene(cast(c, Collidable));
   }
+
+  inline function addRenderableToScene(c:Renderable)      { this.scene.addSprite(c.sprite, c.layer); }
+
+  inline function removeRenderableFromScene(c:Renderable) { this.scene.removeSprite(c.sprite); }
+
+  inline function addCollidableToScene(c:Collidable)      { this.scene.addCollider(c.shape); }
+
+  inline function removeCollidableFromScene(c:Collidable) { this.scene.removeCollider(c.shape); }
 
   // +-------------------------
   // | Properties
@@ -173,6 +182,7 @@ class Entity {
   }
 
   inline function get_renderable():Bool { return this.components.has(Renderable); }
+  
   inline function get_collidable():Bool { return this.components.has(Collidable); }
 
   inline function get_hasMotion():Bool { return this.motion != null; }
