@@ -11,8 +11,6 @@ import openfl.display.Sprite;
 
 class VollyBox extends BasicScene {
 
-  var bg:Sprite;
-
   public var player1:Player;
   public var player2:Player;
   public var ball:Ball;
@@ -20,6 +18,7 @@ class VollyBox extends BasicScene {
   public var playField:PlayField;
   public var net:Net;
 
+  var bg:Sprite;
   var backgroundSprites:Array<Sprite> = [];
   var sortedSprties:Array<Sprite> = [];
   var foregroundSprites:Array<Sprite> = [];

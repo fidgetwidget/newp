@@ -19,7 +19,7 @@ class ShapeComponent implements Component implements Collidable {
   @:access(newp.collision.shapes.Shape.transformBody)
   public function addedToEntity(e:Entity):Void {
     this.entity = e;
-    if (e.sprite != null) this.shape.transformBody = e.sprite;
+    this.shape.transformBody = e.body;
   }
 
   @:access(newp.collision.shapes.Shape.transformBody)

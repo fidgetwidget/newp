@@ -5,6 +5,7 @@ import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
 import newp.scenes.Scene;
 import newp.math.Motion;
+import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 
@@ -12,22 +13,24 @@ class Entity {
 
   var name:String; 
   var components:Map<String, Component>;
+  var renderables:Array<Sprite>;
+  var collidables:Array<Shape>;
   var parent:Entity = null;
   var children:Array<Entity>;
 
   public var scene(default, null):Scene;
 
-  public var sprite(get, never):Sprite;
+  public var body(default, null):DisplayObject;
+  public var sprites(get, never):Array<Sprite>;
+  public var colliders(get, never):Array<Shape>;
+  public var motion(default, null):Motion;
+
   public var x(get, set):Float;
   public var y(get, set):Float;
   public var rotation(get, set):Float;
   public var scaleX(get, set):Float;
   public var scaleY(get, set):Float;
 
-  public var collider(get, never):Shape;
-  public var bounds(get, never):Bounds;
-
-  public var motion(get, never):Motion;
   public var vx(get, set):Float;
   public var vy(get, set):Float;
   public var ax(get, set):Float;
@@ -35,10 +38,15 @@ class Entity {
   public var rs(get, set):Float;
   public var ra(get, set):Float;
 
+  public var renderable(get, never):Bool;
+  public var collidable(get, never):Bool;
+  public var hasMotion(get, never):Bool;
+  public var inScene(get, never):Bool;
 
   public function new(?name:String) {
     this.name = name != null ? name : Type.getClassName(Type.getClass(this));
     this.components = new Map();
+    this.addComponent(new TransformComponent());
     if (newp.Lib.debug) trace('Entity[${this.name}] created');
   }
 
@@ -53,8 +61,28 @@ class Entity {
   // +-------------------------
 
   public function addComponent(c:Component):Entity {
+    if (c.type == Type.getClassName(TransformComponent)) {
+      if (this.hasComponent(TransformComponent)) throw "An Entity can have only one TransformComponent";
+      this.body = cast (c, TransformComponent).body;
+    }
+    if (c.type == Type.getClassName(MotionComponent)) {
+      if (this.hasComponent(MotionComponent)) throw "An Entity can have only one MotionComponent";
+      this.motion = cast (c, MotionComponent).motion;
+    }
+    if (c.renderable) {
+      if (this.renderables == null) this.renderables = [];
+      this.renderables.push(cast (c, Renderable).sprite);
+    }
+    if (c.collidable) {
+      if (this.collidables == null) this.collidables = [];
+      this.collidables.push(cast (c, Collidable).shape);
+    }
+
     this.components.set(c.type, c);
     c.addedToEntity(this);
+
+    if (this.inScene) this.addComponentToScene(c);
+
     return this;
   }
 
@@ -69,8 +97,16 @@ class Entity {
   }
 
   public function removeComponent(c:Component):Entity {
+    if (c.type == Type.getClassName(TransformComponent)) throw "An Entity must have a TransformComponent";
+    if (c.type == Type.getClassName(MotionComponent)) { this.motion = null; }
+    if (c.renderable) { this.renderables.remove(cast (c, Renderable).sprite); }
+    if (c.collidable) { this.collidables.remove(cast (c, Collidable).shape); }
+
     this.components.remove(c.type);
     c.removedFromEntity(this);
+
+    if (this.inScene) this.removeComponentFromScene(c);
+
     return this;
   }
 
@@ -80,77 +116,45 @@ class Entity {
 
   public function addedToScene(s:Scene):Void {
     this.scene = s;
-    for (c in this.components) {
-      if (c.renderable) s.addSprite((cast(c, Renderable)).sprite);
-      if (c.collidable) s.addCollider((cast(c, Collidable)).shape);
-    }
+    for (c in this.components) this.addComponentToScene(c);
   }
 
   public function removedFromScene(s:Scene):Void {
     this.scene = null;
-    for (c in this.components) {
-      if (c.renderable) s.removeSprite((cast(c, Renderable)).sprite);
-      if (c.collidable) s.removeCollider((cast(c, Collidable)).shape);
-    }
+    for (c in this.components) this.removeComponentFromScene(c);
+  }
+
+  inline function addComponentToScene(c:Component) {
+    if (c.renderable) this.scene.addSprite((cast(c, Renderable)).sprite);
+    if (c.collidable) this.scene.addCollider((cast(c, Collidable)).shape);
+  }
+
+  inline function removeComponentFromScene(c:Component) {
+    if (c.renderable) this.scene.removeSprite((cast(c, Renderable)).sprite);
+    if (c.collidable) this.scene.removeCollider((cast(c, Collidable)).shape);
   }
 
   // +-------------------------
   // | Properties
   // +-------------------------
 
-  inline function get_sprite():Sprite { 
-    return this.hasComponent(SpriteComponent) ? 
-      cast(this.getComponent(SpriteComponent), SpriteComponent).sprite : 
-      null;
-  }
+  inline function get_sprites():Array<Sprite> { return this.renderables; }
+  inline function get_colliders():Array<Shape> { return this.collidables; }
 
-  inline function get_x():Float { return this.sprite == null ? 0 : this.sprite.x; }
-  inline function set_x(val:Float):Float {
-    if (this.sprite != null) this.sprite.x = val;
-    return val;
-  }
+  inline function get_x():Float { return this.body.x; }
+  inline function set_x(val:Float):Float { return this.body.x = val; }
 
-  inline function get_y():Float { return this.sprite == null ? 0 : this.sprite.y; }
-  inline function set_y(val:Float):Float {
-    if (this.sprite != null) this.sprite.y = val;
-    return val;
-  }
+  inline function get_y():Float { return this.body.y; }
+  inline function set_y(val:Float):Float { return this.body.y = val; }
 
-  inline function get_rotation():Float { return this.sprite == null ? 0 : this.sprite.rotation; }
-  inline function set_rotation(val:Float):Float {
-    if (this.sprite != null) this.sprite.rotation = val;
-    return val;
-  }
+  inline function get_rotation():Float { return this.body.rotation; }
+  inline function set_rotation(val:Float):Float { this.body.rotation = val; }
 
-  inline function get_scaleX():Float { return this.sprite == null ? 0 : this.sprite.scaleX; }
-  inline function set_scaleX(val:Float):Float {
-    if (this.sprite != null) this.sprite.scaleX = val;
-    return val;
-  }
+  inline function get_scaleX():Float { return this.body.scaleX; }
+  inline function set_scaleX(val:Float):Float { this.body.scaleX = val; }
 
-  inline function get_scaleY():Float { return this.sprite == null ? 0 : this.sprite.scaleY; }
-  inline function set_scaleY(val:Float):Float {
-    if (this.sprite != null) this.sprite.scaleY = val;
-    return val;
-  }
-
-  inline function get_collider():Shape {
-    return this.hasComponent(ShapeComponent) ? 
-      cast(this.getComponent(ShapeComponent), ShapeComponent).shape : 
-      null;
-  }
-
-  inline function get_bounds():Bounds { 
-    return this.collider != null ? 
-      this.collider.bounds :
-      null;
-  }
-
-  inline function get_motion():Motion {
-    return this.hasComponent(MotionComponent) ? 
-      cast(this.getComponent(MotionComponent), MotionComponent).motion : 
-      null;
-  }
+  inline function get_scaleY():Float { return this.body.scaleY; }
+  inline function set_scaleY(val:Float):Float { this.body.scaleY = val; }
 
   inline function get_vx():Float { return this.motion == null ? 0 : this.motion.vx; }
   inline function set_vx(val:Float):Float {
@@ -187,5 +191,10 @@ class Entity {
     if (this.motion != null) this.motion.ra = val;
     return val;
   }
+
+  inline function get_renderable():Bool { return this.renderables != null && this.renderables.length > 0; }
+  inline function get_collidable():Bool { return this.collidables != null && this.collidables.length > 0; }
+  inline function get_hasMotion():Bool { return this.motion != null; }
+  inline function get_inScene():Bool { return this.scene != null; }
 
 }
