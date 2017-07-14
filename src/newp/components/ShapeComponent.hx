@@ -6,7 +6,7 @@ class ShapeComponent implements Component implements Collidable {
 
   public var entity:Entity;
   public var type:String;
-  public var updatable:Bool = false;
+  public var updateable:Bool = false;
   public var renderable:Bool = false;
   public var collidable:Bool = true;
   public var shape:Shape;

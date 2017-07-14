@@ -21,18 +21,20 @@ class Box extends Entity {
   public var width:Int;
   public var height:Int;
   public var color(get, set):Int;
+  var sprite:Sprite;
 
   public function new (scene:Scene, width:Int, height:Int) {
     super();
     this.width = width;
     this.height = height;
     this._color = 0x555555;
-    this.addComponent(new SpriteComponent());
+    sprite = cast(this.body, Sprite);
+    this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent());
-    this.redrawSprite();
+    this.redraw();
   }
 
-  function redrawSprite() {
+  function redraw() {
     Draw.start(this.sprite.graphics)
       .clear()
       .lineStyle(1, this.color)
@@ -42,7 +44,7 @@ class Box extends Entity {
   inline function get_color():Int { return this._color; }
   function set_color(val:Int):Int {
     this._color = val;
-    this.redrawSprite();
+    this.redraw();
     return this._color;
   }
   var _color:Int;

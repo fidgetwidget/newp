@@ -4,11 +4,11 @@ import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 
-class TransformComponent implements Component implements Collidable {
+class TransformComponent implements Component {
 
   public var entity:Entity;
   public var type:String;
-  public var updatable:Bool = false;
+  public var updateable:Bool = false;
   public var renderable:Bool = false;
   public var collidable:Bool = false;
   public var body:DisplayObject;

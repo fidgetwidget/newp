@@ -6,11 +6,11 @@ import newp.math.Motion;
 import newp.Entity;
 
 
-class MotionComponent implements Component implements Updatable {
+class MotionComponent implements Component implements Updateable {
 
   public var entity:Entity;
   public var type:String;
-  public var updatable:Bool = true;
+  public var updateable:Bool = true;
   public var renderable:Bool = false;
   public var collidable:Bool = false;
 
@@ -27,7 +27,7 @@ class MotionComponent implements Component implements Updatable {
 
   public function addedToEntity(e:Entity):Void {
     this.entity = e;
-    if (e.sprite != null) this.motion.target = e.sprite;
+    this.motion.target = e.body;
   }
 
   public function removedFromEntity(e:Entity):Void {

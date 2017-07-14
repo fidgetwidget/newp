@@ -1,6 +1,7 @@
 package samples.pong;
 
 import openfl.display.Sprite;
+import newp.collision.shapes.Shape;
 import newp.collision.shapes.Circle;
 import newp.components.*;
 import newp.math.Motion;
@@ -17,6 +18,8 @@ class Ball extends Entity {
   public var size(get, set):Int;
   public var color(get, set):Int;
   public var speed:Float;
+  public var collider:Shape;
+  var sprite:Sprite;
   var initX:Float;
   var initY:Float;
 
@@ -26,12 +29,14 @@ class Ball extends Entity {
     this.initY = field.top + 50;
     this._size = 15;
 
-    var collider = new Circle(body, this.size);
+    sprite = cast(body, Sprite);
+    collider = new Circle(body, this.size);
+    
     var motion = new Motion();
     motion.drag = 0;
     motion.max_velocity = 250;
 
-    this.addComponent(new SpriteComponent(cast(body, Sprite)));
+    this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent(collider));
     this.addComponent(new MotionComponent(motion));
 
@@ -56,7 +61,7 @@ class Ball extends Entity {
   }
 
   function redraw() {
-    Draw.start(cast (this.body, Sprite).graphics)
+    Draw.start(sprite.graphics)
       .clear()
       .beginFill(this.color)
       .drawCircle(0, 0, this.size)

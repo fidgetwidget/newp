@@ -1,6 +1,7 @@
 package samples.pong;
 
 import openfl.display.Sprite;
+import newp.collision.shapes.Shape;
 import newp.collision.shapes.Polygon;
 import newp.components.*;
 import newp.math.Motion;
@@ -20,7 +21,9 @@ class Player extends Entity {
   public var color(get, set):Int;
   public var top(get, set):Float;
   public var bottom(get, set):Float;
+  public var collider:Shape;
   var middle:Float;
+  var sprite:Sprite;
 
   public function new (side:Int = Player.LEFT_SIDE, field:PlayField) {
     super();
@@ -30,12 +33,14 @@ class Player extends Entity {
     this._width = 80;
     this._color = 0x555555;
 
-    var collider = Polygon.rectangle(body, this.thickness, this.width);
+    sprite = cast(body, Sprite);
+    collider = Polygon.rectangle(body, this.thickness, this.width);
+    
     var motion = new Motion();
     motion.drag = 200;
     motion.max_velocity = 200;
 
-    this.addComponent(new SpriteComponent(cast(body, Sprite)));
+    this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent(collider));
     this.addComponent(new MotionComponent(motion));
 
@@ -58,7 +63,7 @@ class Player extends Entity {
   }
 
   function redraw():Void {
-    Draw.start( cast (this.body, Sprite).graphics )
+    Draw.start(sprite.graphics )
       .clear()
       .beginFill(this.color)
       .drawRect(-this.thickness * 0.5, -this.width * 0.5, this.thickness, this.width)
