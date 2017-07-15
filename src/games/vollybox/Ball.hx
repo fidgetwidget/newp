@@ -82,11 +82,11 @@ class Ball extends Entity {
     this.inServiceTo = player;
   }
 
-  public function ballHit(player:Player) {
+  public function hitBall(player:Player, dest:Point) {
     this.lastHitBy = player;
-    this.hitTimer = 1;
-    this._prevX = this._hitX = player.x;
-    this._prevY = this._hitY = player.y;
+    this.hitDestinationX = dest.x;
+    this.hitDestinationY = dest.y;
+    this.hitDestinationDistance = MathUtils.vec_length(this.x - dest.x, this.y - dest.y);
   }
 
   // Update

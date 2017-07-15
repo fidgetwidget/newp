@@ -23,6 +23,10 @@ class Player extends Entity {
   inline static var HIT_SIZE:Float = 5;
   inline static var MAX_HIT_SIZE:Float = 19;
 
+  inline static var BUMPING:String = "bumping";
+  inline static var HITTING:String = "hitting";
+  inline static var NONE:String = "none";
+
   var game:VollyBox;
 
   var field(get, never):PlayField;
@@ -31,9 +35,10 @@ class Player extends Entity {
   var playerNo:Int;
   var width:Float;
   var height:Float;
-  var hitDistance:Float; // how far away from the player they can still hit the ball
   var speed:Float;
-
+  var hitDistance:Float; // how far away from the player they can still hit the ball
+  var actionDelayed:Bool = false; // if the player is trying to hit the ball
+  var hitType:String = ""; // which type of hitting the ball the player has triggered
   var tweener:TweenerComponent;
   var inputs:Map<String, Int>;
   // Sprites
@@ -46,8 +51,6 @@ class Player extends Entity {
   public var hasBall:Bool = false;
   public var moving(get, never):Bool;
 
-  var actionDelayed:Bool = false;
-
   public function new(player:Int, game:VollyBox) {
     super();
     this.playerNo = player;
@@ -55,6 +58,7 @@ class Player extends Entity {
     this.width = 20;
     this.height = 20;
     this.hitDistance = HIT_SIZE;
+    this.collisionData = new ShapeCollision();
 
     this.makeSprites();
     this.makeColliders();
@@ -209,24 +213,25 @@ class Player extends Entity {
     if (!this.actionDelayed) {
       if (k.pressed(this.inputs['bump']) || k.pressed(this.inputs['hit'])) {
         this.actionDelayed = true;
+        this.hasBall = false;
       }
 
       if (k.pressed(this.inputs['bump'])) {
         this.hitDistance = MAX_HIT_SIZE;
-        this.tweener.start('bump');
-        if (this.hasBall) {} else {}
-        // TODO: test for collision with ball
-        //  and respond with a no direction hit (mostly straight up)
+        this.tweener.start('bump'); 
+        this.hitType = BUMPING;
       }
       if (k.pressed(this.inputs['hit'])) {
-        if (this.hasBall) {} else {}
-        // TODO: test for collision with ball
-        //  and respond with a directional hit
+        this.tweener.start('hit'); 
+        this.hitType = HITTING;
       }
+
     } else {
+      this.game.colliders.collisionTestWithTag(this.hitCollider, ['ball'], _hitBall);
       this.hitCollider.radius = this.width/1 + this.hitDistance;
     }
   }
+  var collisionData:ShapeCollision;
 
   function update_playerAnimation() {
     if (this.moving) {
@@ -253,6 +258,13 @@ class Player extends Entity {
   function _hitRadiusReset(tween):Void {
     this.hitDistance = HIT_SIZE;
     this.actionDelayed = false;
+    this.hitType = NONE;
+  }
+
+  function _hitBall(shape, collisionData):Void {
+    this.game.ball.hitBall(this);
+    this.actionDelayed = false;
+    this.hitType = NONE;
   }
 
   var _bounceVal:Float = 0;
