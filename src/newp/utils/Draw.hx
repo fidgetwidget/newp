@@ -28,7 +28,7 @@ class Draw {
   function new() { }
 
   public function lineStyle(thickness:Int, color:Int, alpha:Float = 1):Draw { 
-    g.lineStyle(thickness, color, alpha); 
+    g.lineStyle(thickness, color, alpha);
     return this; 
   }
 

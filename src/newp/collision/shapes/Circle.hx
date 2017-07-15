@@ -3,6 +3,7 @@ package newp.collision.shapes;
 import openfl.display.DisplayObject;
 import newp.collision.sat.*;
 import newp.collision.response.ShapeCollision;
+import newp.utils.Draw;
 
 
 class Circle extends Shape {
@@ -17,6 +18,9 @@ class Circle extends Shape {
     this.radius = radius;
   }
 
+  // +-------------------------
+  // | Collision Methods
+  // +-------------------------
 
   override public function test(shape:Shape, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
     return shape.testCircle(this, into, !flip);
@@ -29,9 +33,20 @@ class Circle extends Shape {
   override public function testPolygon(poly:Polygon, ?into:ShapeCollision, flip:Bool = false ):ShapeCollision {
     return CircleVsPolygon.test(this, poly, into, flip); 
   }
+
+  // +-------------------------
+  // | Properties
+  // +-------------------------
   
 
-  inline function get_transformedRadius():Float { return this.radius * this.scaleX; }
+  inline function get_transformedRadius():Float { 
+    var tr = this.radius * this.scaleX;
+    if (Lib.debug) {
+      var g = Lib.debugLayer.graphics;
+      g.drawCircle(x, y, tr);
+    }
+    return tr; 
+  }
 
   override function get_bounds():Bounds {
     return this._bounds.setCenterHalfs(this.x, this.y, this.transformedRadius, this.transformedRadius);

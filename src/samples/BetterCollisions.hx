@@ -57,15 +57,16 @@ class BetterCollisions extends BasicScene {
   
   override public function addEntity (entity:Entity) :Void {
     super.addEntity(entity);
-    if (entity.collider != null) {
-      this.shapeEntityMap.set(entity.collider, entity);
+    if (entity.collidable) {
+      for (collider in entity.colliders) this.shapeEntityMap.set(collider, entity);
     }
   }
 
   override public function removeEntity (entity:Entity) :Void {
     super.removeEntity(entity);
-    if (entity.collider != null) 
-      this.shapeEntityMap.remove(entity.collider);
+    if (entity.collidable) {
+      for (collider in entity.colliders) this.shapeEntityMap.remove(collider);
+    }
   }
 
   // Update Loop

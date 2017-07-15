@@ -1,6 +1,6 @@
 package newp.components;
 
-interface Updatable {
+interface Updateable {
 
   public function update():Void;
 

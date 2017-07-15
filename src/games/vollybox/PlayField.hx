@@ -13,12 +13,6 @@ class PlayField extends Sprite {
   inline static var FIELD_COLOR:Int = 0xfff8dc;
 
   var field:Sprite;
-  var net:Sprite;
-  public var netLine:Sprite;
-  var netShadow:Sprite;
-
-  var netColliderSprite:Sprite;
-  public var netCollider:Shape;
   
   public var centerX(get, never):Float;
   public var centerY(get, never):Float;

@@ -13,12 +13,16 @@ class Engine {
   public var clock (default, null) :Clock;
   public var main (default, null) :Sprite;
   public var stage (get, never) :Stage;
+  public var sceneLayer (default, null) :Sprite;
+  public var debugLayer (default, null) :Sprite;
   public var scenes (default, null) :SceneManager;
   public var inputs (default, null) :InputManager;
 
   public function new( main:Sprite ) {
     newp.Lib.engine = this;
     this.main = main;
+    this.sceneLayer = new Sprite();
+    this.debugLayer = new Sprite();
     this.scenes = new SceneManager();
     this.inputs = new InputManager();
     this.clock = new Clock();
@@ -26,12 +30,20 @@ class Engine {
 
   public function start(scene:Scene = null):Void {
     this.stage.addEventListener (Event.ENTER_FRAME, this.update);
+
+    this.main.addChild(sceneLayer);
+    this.main.addChild(debugLayer);
+
     if (scene == null) { return; }
     this.scenes.setScene(scene);
   }
 
   function update(e:Event):Void {
     this.clock.tick();
+    if (Lib.debug) {
+      this.debugLayer.graphics.clear();
+      this.debugLayer.graphics.lineStyle(1, 0xff0000, 0.5);  
+    }
     this.inputs.update();
     this.scenes.update();
   }

@@ -1,6 +1,7 @@
 package samples.pong;
 
 import openfl.display.Sprite;
+import newp.collision.shapes.Shape;
 import newp.collision.shapes.Circle;
 import newp.components.*;
 import newp.math.Motion;
@@ -17,6 +18,8 @@ class Ball extends Entity {
   public var size(get, set):Int;
   public var color(get, set):Int;
   public var speed:Float;
+  public var collider:Shape;
+  var sprite:Sprite;
   var initX:Float;
   var initY:Float;
 
@@ -26,8 +29,9 @@ class Ball extends Entity {
     this.initY = field.top + 50;
     this._size = 15;
 
-    var sprite = new Sprite();
-    var collider = new Circle(sprite, this.size);
+    sprite = cast(body, Sprite);
+    collider = new Circle(body, this.size);
+    
     var motion = new Motion();
     motion.drag = 0;
     motion.max_velocity = 250;
@@ -37,12 +41,12 @@ class Ball extends Entity {
     this.addComponent(new MotionComponent(motion));
 
     this.resetPosition();
-    this.redrawSprite();
+    this.redraw();
   }
 
   public function resetPosition() {
-    this.sprite.x = this.initX;
-    this.sprite.y = this.initY;
+    this.x = this.initX;
+    this.y = this.initY;
   }
 
   public function startMotion(?dir:Int) {
@@ -56,26 +60,25 @@ class Ball extends Entity {
     this.motion.moveAtAngle(this.speed, angle);
   }
 
-  function redrawSprite() {
-    Draw.start(this.sprite.graphics)
+  function redraw() {
+    Draw.start(sprite.graphics)
       .clear()
       .beginFill(this.color)
       .drawCircle(0, 0, this.size)
       .endFill();
   }
 
-
   inline function get_size():Int { return this._size; }
   function set_size(val:Int):Int {
     this._size = val;
-    this.redrawSprite();
+    this.redraw();
     return this._size;
   }
 
   inline function get_color():Int { return this._color; }
   function set_color(val:Int):Int {
     this._color = val;
-    this.redrawSprite();
+    this.redraw();
     return this._color;
   }
   

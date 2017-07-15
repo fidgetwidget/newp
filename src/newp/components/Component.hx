@@ -8,7 +8,7 @@ interface Component {
 
   public var type:String;
 
-  public var updatable:Bool;
+  public var updateable:Bool;
 
   public var renderable:Bool;
 

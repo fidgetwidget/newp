@@ -29,17 +29,11 @@ class SimpleScene implements Scene {
     this.renderTarget = new Sprite();
   }
 
+  public function begin () :Void { }
+
+  public function end () :Void { }
+
   public function update () :Void { }
-
-  // When the scene is made active
-  public function begin () :Void {
-    Lib.main.addChild(this.renderTarget);
-  }
-
-  // When the scene is removed
-  public function end () :Void {
-    Lib.main.removeChild(this.renderTarget);
-  }
 
   // Entity
   // ======
@@ -75,10 +69,10 @@ class SimpleScene implements Scene {
   
   function get_container():DisplayObjectContainer { return this.renderTarget; }
 
-  inline function get_x():Float { return this.renderTarget.x; }
-  inline function set_x(val:Float):Float { return this.renderTarget.x = val; }
+  inline function get_x():Float { return this.container.x; }
+  inline function set_x(val:Float):Float { return this.container.x = val; }
 
-  inline function get_y():Float { return this.renderTarget.y; }
-  inline function set_y(val:Float):Float { return this.renderTarget.y = val; }
+  inline function get_y():Float { return this.container.y; }
+  inline function set_y(val:Float):Float { return this.container.y = val; }
 
 }

@@ -120,6 +120,9 @@ class ShapeBins implements Collection {
     this.shapes.remove(shape);
   }
 
+
+  public function iterator():Iterator<Shape> { return this.shapes.iterator(); }
+
   // +-------------------------
   // | Internal 
   // +-------------------------
@@ -132,7 +135,7 @@ class ShapeBins implements Collection {
     for (i in 0...container.length) {
       var other:Shape = container[i];
       if (shape == other) continue;
-      if (!this.hasTag(shape, tags)) continue;
+      if (!hasTag(other, tags) || !hasTag(shape, tags)) continue;
       if (shape.test(other, shapeCollision) != null) callback(shape, shapeCollision);
     }
   }
@@ -174,7 +177,6 @@ class ShapeBins implements Collection {
   inline function getContainer(key:String):Array<Shape> {
     if (!this.bins.exists(key)) {
       this.bins.set(key, []);
-      if (this.drawDebug) this.debugDraw_bin(key);
     }
     return this.bins.get(key);
   }

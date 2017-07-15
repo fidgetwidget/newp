@@ -1,7 +1,11 @@
 package newp.components;
 
+import openfl.display.Sprite;
+
+
 interface Renderable {
 
-  public var sprite:openfl.display.Sprite;
+  public var sprite:Sprite;
+  public var layer:String;
 
 }

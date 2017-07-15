@@ -19,7 +19,6 @@ class Ball extends Entity {
   var game:VollyBox;
   var field(get, never):PlayField;
 
-  
   var shadow:Sprite;
   var lastHitBy:Player = null;
   var inServiceTo:Player = null;
@@ -32,7 +31,7 @@ class Ball extends Entity {
   var hitTimer:Float = 0;
 
   public var ball:Sprite;
-
+  public var collider:Shape;
   public var onGround(get, never):Bool;
   public var inService(get, never):Bool;
 
@@ -40,26 +39,21 @@ class Ball extends Entity {
     super();
     this.game = game;
 
-    var sprite = this.makeSprites();
-    var collider = this.makeColliders();
-
-    this.addComponent(new SpriteComponent(sprite));
-    this.addComponent(new ShapeComponent(collider));
+    this.makeSprites();
+    this.makeColliders();
 
     this.x = field.centerX - 60;
     this.y = field.centerY;
   }
 
   function makeSprites() {
-    var parent = new Sprite();
-    this.ball = new Sprite();
     this.shadow = new Sprite();
-
-    this.drawBall(this.ball.graphics);
     this.drawShadow(this.shadow.graphics);
+    this.addComponent(new SpriteComponent(shadow, 'background'));
 
-    parent.addChild(shadow);
-    return parent;
+    this.ball = new Sprite();
+    this.drawBall(this.ball.graphics);
+    this.addComponent(new SpriteComponent(ball, 'foreground'));
   }
 
   inline function drawBall(g) {
@@ -77,7 +71,8 @@ class Ball extends Entity {
   }
 
   function makeColliders() {
-    return new Circle(this.shadow, RADIUS);
+    this.collider = new Circle(this.shadow, RADIUS);
+    this.addComponent(new ShapeComponent(collider, ['ball']));
   }
 
   // Methods
@@ -103,9 +98,7 @@ class Ball extends Entity {
     } else {
       update_inPlayPosition();
     }
-
-    this.ball.x = this.x;
-    this.ball.y = this.y;
+    super.update();
   }
 
   function update_heldPosition():Void {
