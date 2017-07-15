@@ -8,7 +8,7 @@ import openfl.display.Stage;
 
 class Lib {
   
-  public static var debug(default, null):Bool = false;
+  public static var debug(get, set):Bool;
 
   @:allow(newp.Engine)
   public static var engine (default, null) :Engine;
@@ -22,6 +22,9 @@ class Lib {
   public static var delta (get, never) :Float;
 
   // Properties
+  static inline function get_debug() :Bool { return Lib.engine != null ? Lib.engine.debug : false; }
+  static inline function set_debug(val:Bool) :Bool { return Lib.engine != null ? Lib.engine.debug = val : false; }
+
   static inline function get_main () :Sprite { return Lib.engine != null ? Lib.engine.main : null; }
   static inline function get_stage () :Stage { return Lib.engine != null ? Lib.engine.stage : null; }
   static inline function get_sceneLayer () :Sprite { return Lib.engine != null ? Lib.engine.sceneLayer : null; }

@@ -10,6 +10,7 @@ import openfl.events.Event;
 
 class Engine {
 
+  public var debug (get, set) :Bool;
   public var clock (default, null) :Clock;
   public var main (default, null) :Sprite;
   public var stage (get, never) :Stage;
@@ -50,5 +51,12 @@ class Engine {
 
   // Properties
   inline function get_stage():Stage { return this.main.stage; }
+
+  inline function get_debug():Bool { return this._debug; }
+  inline function set_debug(val:Bool):Bool {
+    if (!val) this.debugLayer.graphics.clear();
+    return this._debug = val;
+  }
+  var _debug:Bool = false;
 
 }
