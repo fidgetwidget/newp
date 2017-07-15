@@ -1,10 +1,11 @@
 package newp.collision.shapes;
 
-import openfl.display.DisplayObject;
 import newp.collision.sat.*;
 import newp.collision.response.ShapeCollision;
 import newp.collision.Bounds;
 import newp.utils.Draw;
+import openfl.display.DisplayObject;
+import openfl.geom.Point;
 
 
 // TODO: change transformBody to just the transform 
@@ -20,6 +21,10 @@ class Shape {
 
   public var y(get, set):Float;
 
+  public var offsetX(get, set):Float;
+
+  public var offsetY(get, set):Float;
+
   public var rotation(get, set):Float;
 
   public var scaleX(get, set):Float;
@@ -28,13 +33,18 @@ class Shape {
 
   public var bounds(get, never):Bounds;
 
+  public var offset:Point;
+
   public var transformBody(default, null):DisplayObject;
 
 
-  public function new(?transformBody:DisplayObject) {
+  public function new(?transformBody:DisplayObject, offsetX:Float = 0, offsetY:Float = 0) {
     this._bounds = new Bounds();
+    this.offset = new Point(0, 0);
     this.tags = new Map();
     this.transformBody = transformBody;
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
   }
 
   // +-------------------------
@@ -63,17 +73,25 @@ class Shape {
 
   inline function get_valid():Bool { return this.transformBody != null; }
 
-  inline function get_x():Float { return this.valid ? this.transformBody.x : 0; }
+  inline function get_x():Float { return this.valid ? this.transformBody.x + this.offsetX : this.offsetX; }
   inline function set_x(val:Float):Float { 
+    val -= this.offsetX;
     if (this.valid) this.transformBody.x = val;
     return val; 
   }
 
-  inline function get_y():Float { return this.valid ? this.transformBody.y : 0; }
+  inline function get_y():Float { return this.valid ? this.transformBody.y + this.offsetY : this.offsetY; }
   inline function set_y(val:Float):Float { 
+    val -= this.offsetY;
     if (this.valid) this.transformBody.y = val;
     return val; 
   }
+
+  inline function get_offsetX():Float { return this.offset.x; }
+  inline function set_offsetX(val:Float):Float { return this.offset.x = val; }
+
+  inline function get_offsetY():Float { return this.offset.y; }
+  inline function set_offsetY(val:Float):Float { return this.offset.y = val; }
 
   inline function get_rotation():Float { return this.valid ? this.transformBody.rotation : 0; }
   inline function set_rotation(val:Float):Float { 
