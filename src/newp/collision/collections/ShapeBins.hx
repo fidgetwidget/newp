@@ -135,7 +135,7 @@ class ShapeBins implements Collection {
     for (i in 0...container.length) {
       var other:Shape = container[i];
       if (shape == other) continue;
-      if (!this.hasTag(shape, tags)) continue;
+      if (!hasTag(other, tags) || !hasTag(shape, tags)) continue;
       if (shape.test(other, shapeCollision) != null) callback(shape, shapeCollision);
     }
   }

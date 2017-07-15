@@ -19,10 +19,12 @@ class ScoreBoard extends Entity {
   public var player2Score(get, set):Int;
 
   var p1ScoreSpr:Sprite;
+  var p1ScoreMask:Sprite;
   var p1ScoreTF:TextField;
   var p1ScoreShape:Shape;
 
   var p2ScoreSpr:Sprite;
+  var p2ScoreMask:Sprite;
   var p2ScoreTF:TextField;
   var p2ScoreShape:Shape;
   
@@ -47,19 +49,28 @@ class ScoreBoard extends Entity {
 
   function makeSprites() {
     var parent = cast(this.body, Sprite);
-    // Player 1 Score Board
-    this.p1ScoreSpr = new Sprite();
-    this.p1ScoreSpr.x = -40;
 
-    // Player 2 Score Board
+    this.p1ScoreSpr = new Sprite();
     this.p2ScoreSpr = new Sprite();
+
+    this.p1ScoreSpr.x = -40;
     this.p2ScoreSpr.x = 40;
     
     this.drawScoreCard(this.p1ScoreSpr.graphics);
     this.drawScoreCard(this.p2ScoreSpr.graphics);
 
+
+    this.p1ScoreMask = new Sprite();
+    this.p2ScoreMask = new Sprite();
+
+    this.drawCollisionMask(this.p1ScoreMask.graphics);
+    this.drawCollisionMask(this.p2ScoreMask.graphics);
+
     parent.addChild(this.p1ScoreSpr);
     parent.addChild(this.p2ScoreSpr);
+
+    this.p1ScoreSpr.addChild(p1ScoreMask);
+    this.p2ScoreSpr.addChild(p2ScoreMask);
 
     this.addComponent(new SpriteComponent(parent));
   }
@@ -102,21 +113,10 @@ class ScoreBoard extends Entity {
 
 
   function makeColliders() {
-    // var parent = cast(this.body, Sprite);
-    var p1ScoreMask = new Sprite();
-    var p2ScoreMask = new Sprite();
-
-    this.drawCollisionMask(p1ScoreMask.graphics);
-    this.drawCollisionMask(p2ScoreMask.graphics);
-
-    this.addComponent(new SpriteComponent(p1ScoreMask, 'background'));
-    this.addComponent(new SpriteComponent(p2ScoreMask, 'background'));
-
-    this.p1ScoreShape = new Shape(p1ScoreMask);
-    this.p2ScoreShape = new Shape(p2ScoreMask);
-
-    this.addComponent(new ShapeComponent(this.p1ScoreShape));
-    this.addComponent(new ShapeComponent(this.p2ScoreShape));
+    this.p1ScoreShape = new Shape(this.p1ScoreMask);
+    this.p2ScoreShape = new Shape(this.p2ScoreMask);
+    this.addComponent(new ShapeComponent(this.p1ScoreShape, ['score']));
+    this.addComponent(new ShapeComponent(this.p2ScoreShape, ['score']));
   }
 
   inline function drawCollisionMask(g) {

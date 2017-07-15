@@ -13,7 +13,6 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  var renderTarget(get, never):Sprite;
   var sprites:SpriteCollection;
   var entities:Array<Entity>;
   var colliders:ShapeBins;
@@ -43,21 +42,11 @@ class BasicScene implements Scene {
     this.colliders = new ShapeBins(); 
   }
 
+  public function begin () :Void { }
+
+  public function end () :Void { }
+
   public function update():Void { }
-
-  // When the scene is made active
-  public function begin () :Void {
-    if (newp.Lib.debug) trace('$name has begun');
-
-    Lib.main.addChild(this.renderTarget);
-  }
-
-  // When the scene is removed
-  public function end () :Void {
-    Lib.main.removeChild(this.renderTarget);
-
-    if (newp.Lib.debug) trace('$name has ended');
-  }
 
   // Entity
   // ======
@@ -100,9 +89,7 @@ class BasicScene implements Scene {
 
   // Properties
   
-  function get_container():DisplayObjectContainer { return this.sprites.getLayer('camera').container; }
-
-  function get_renderTarget():Sprite { return this.sprites; }
+  function get_container():DisplayObjectContainer { return this.sprites; }
 
   inline function get_x():Float { return this.container.x; }
   inline function set_x(val:Float):Float { return this.container.x = val; }

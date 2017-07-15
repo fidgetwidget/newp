@@ -29,6 +29,7 @@ class Manager {
   // make the scene the active scene
   public function setScene (scene:Scene) :Void {
     if (!this.contains(scene)) { this.addScene(scene); }
+    Lib.sceneLayer.addChild(scene.container);
     scene.begin();
     if (this.active(scene)) { return; }
     this.activeScenes.insert(0, scene);
@@ -37,6 +38,7 @@ class Manager {
   // drop the scene from the active set
   public function dropScene (scene:Scene) :Void {
     scene.end();
+    Lib.sceneLayer.removeChild(scene.container);
     if (!this.active(scene)) { return; }
     this.activeScenes.remove(scene);
   }

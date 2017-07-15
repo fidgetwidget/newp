@@ -72,7 +72,7 @@ class Ball extends Entity {
 
   function makeColliders() {
     this.collider = new Circle(this.shadow, RADIUS);
-    this.addComponent(new ShapeComponent(collider));
+    this.addComponent(new ShapeComponent(collider, ['ball']));
   }
 
   // Methods

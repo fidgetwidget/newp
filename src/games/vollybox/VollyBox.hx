@@ -4,6 +4,7 @@ import newp.collision.response.ShapeCollision;
 import newp.collision.collections.ShapeBins;
 import newp.display.SpriteCollection;
 import newp.scenes.BasicScene;
+import newp.math.Utils as MathUtil;
 import newp.utils.Draw;
 import newp.Lib;
 import openfl.display.Sprite;
@@ -68,84 +69,45 @@ class VollyBox extends BasicScene {
 
 
   function update_collisionTests() {
-    this.colliders.collisionTestAll(function (shape, data) {
-      if (shape == this.player1.boxCollider && data.shape2 != this.ball.collider) {
-        resolve_playerCollision(this.player1, data);
-      }
-
-      if (shape == this.player2.boxCollider && data.shape2 != this.ball.collider) {
-        resolve_playerCollision(this.player2, data);
-      }
-    });
-
-    // this._player_net_collision(this.player1);
-    // this._player_score_collision(this.player1);
-
-    // this._player_net_collision(this.player2);
-    // this._player_score_collision(this.player2);
+    var p1c = this.player1.boxCollider;
+    var p2c = this.player2.boxCollider;
+    this.colliders.collisionTestAllWithTag(
+      ['player', 'net', 'score'], 
+      function (shape, data) {
+        if (shape == p1c && data.shape2 != p2c) resolve_playerCollision(this.player1, data);
+        if (shape == p2c && data.shape2 != p1c) resolve_playerCollision(this.player2, data);
+      });
   }
 
   function resolve_playerCollision(player:Player, collisionData:ShapeCollision) {
     if (collisionData.separationX != 0) {
+      var sign = MathUtil.sign(collisionData.separationX);
       player.x -= collisionData.separationX;
       player.vx *= -1;
+      player.ax = 0;
     }
     else {
+      var sign = MathUtil.sign(collisionData.separationY);
       player.y -= collisionData.separationY;
       player.vy *= -1;
+      player.ay = 0;
     }
   }
-
-  
-
-  // function _player_net_collision(p:Player) {
-  //   if (this.net.collider.test(p.boxCollider, collisionData, true) != null) {
-  //     if (collisionData.separationX != 0) {
-  //       p.x -= collisionData.separationX;
-  //       p.vx *= -1;
-  //     } else {
-  //       p.y -= collisionData.separationY;
-  //       p.vy *= -1;
-  //     }
-  //   }
-  // }
-
-  // function _player_score_collision(p:Player) {
-  //   for (sb_collider in this.scoreBoard.colliders) {
-
-  //     if (sb_collider.test(p.boxCollider, collisionData, true) != null) {
-  //       if (collisionData.separationX != 0) {
-  //         p.x -= collisionData.separationX;
-  //         p.vx *= -1;
-  //       } else {
-  //         p.y -= collisionData.separationY;
-  //         p.vy *= -1;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // var collisionData:ShapeCollision = new ShapeCollision();
 
   // adding stuff to the scene on begin
 
   override public function begin() {
-    super.begin();
     // background
     this.addSprite(bg, 'background');
     this.addSprite(playField, 'background');
-    this.addSprite(net.netBottom, 'background');
-    this.addSprite(net.shadow, 'background');
 
-    // sortable
+    this.addEntity(net);
     this.addEntity(scoreBoard);
     this.addEntity(ball);
     this.addEntity(player1);
     this.addEntity(player2);
 
-    // foreground
-    this.addSprite(net.net, 'foreground');
-    this.colliders.drawDebug = true;
+    // this.colliders.drawDebug = true;
   }
 
   override public function end() {

@@ -58,15 +58,6 @@ class Shape {
   }
 
   // +-------------------------
-  // | Debug Render Helper
-  // +-------------------------
-
-  public function debug_render(g) {
-    var b = this.bounds;
-    g.drawRect(b.left, b.top, b.width, b.height);
-  }
-
-  // +-------------------------
   // | Properties
   // +-------------------------
 
@@ -107,10 +98,12 @@ class Shape {
   function get_bounds():Bounds {
     if (!this.valid) return null;
     var _rect = this.transformBody.getBounds(Lib.stage);
+    if (Lib.debug) {
+      var g = Lib.debugLayer.graphics;
+      g.drawRect(_rect.left, _rect.top, _rect.width, _rect.height);  
+    }
     return this._bounds.copyFromRectangle( _rect );
   }
-
-
   var _bounds:Bounds;
 
 }

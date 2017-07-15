@@ -102,10 +102,10 @@ class Player extends Entity {
     this.addComponent(new SpriteComponent(maskSprite));
 
     this.boxCollider = new Shape(maskSprite);
-    this.hitCollider = new Circle(this.box, this.width + this.hitDistance);
+    this.hitCollider = new Circle(this.body, this.width + this.hitDistance);
 
-    this.addComponent(new ShapeComponent(hitCollider));
-    this.addComponent(new ShapeComponent(boxCollider));
+    this.addComponent(new ShapeComponent(hitCollider, ['ball']));
+    this.addComponent(new ShapeComponent(boxCollider, ['net', 'player', 'score']));
   }
 
   // Motion
