@@ -60,7 +60,7 @@ class ShapeBins implements Collection {
   // +-------------------------
 
   public function collisionTest(shape:Shape, callback:Shape->ShapeCollision->Void):Void {
-    this.collisionTestWithTag(shape, [], callback);
+    this.collisionTestWithTag(shape, no_tags, callback);
   }
 
   public function collisionTestWithTag(shape:Shape, tags:Dynamic, callback:Shape->ShapeCollision->Void):Void {
@@ -75,7 +75,7 @@ class ShapeBins implements Collection {
   }
 
   public function collisionTestAll(callback:Shape->ShapeCollision->Void):Void {
-    this.collisionTestAllWithTag([], callback);
+    this.collisionTestAllWithTag(no_tags, callback);
   }
 
   public function collisionTestAllWithTag(tags:Dynamic, callback:Shape->ShapeCollision->Void):Void {
@@ -86,6 +86,7 @@ class ShapeBins implements Collection {
       if (container.length == 0) continue;
       // test all shapes in the container with one another
       this.collisionTestAll_innerLoop(tagArray, container, callback);
+      if (this.drawDebug) this.debugDraw_bin(containerKey);
     }
   }
 
@@ -128,14 +129,16 @@ class ShapeBins implements Collection {
   // +-------------------------
 
   inline function collisionTestAll_innerLoop(tags:Array<String>, container:Array<Shape>, callback):Void {
-    for (i in 0...container.length) this.collisionTest_shape(container[i], tags, container, callback);
+    for (i in 0...container.length) {
+      this.collisionTest_shape(container[i], tags, container, callback);
+    }
   }
 
   inline function collisionTest_shape(shape:Shape, tags:Array<String>, container:Array<Shape>, callback:Shape->ShapeCollision->Void):Void {
     for (i in 0...container.length) {
       var other:Shape = container[i];
       if (shape == other) continue;
-      if (!hasTag(other, tags) || !hasTag(shape, tags)) continue;
+      if (tags.length > 0 && (!hasTag(other, tags) || !hasTag(shape, tags))) continue;
       if (shape.test(other, shapeCollision) != null) callback(shape, shapeCollision);
     }
   }
@@ -151,7 +154,7 @@ class ShapeBins implements Collection {
     } else if ( Std.is(tags, Array) ) { 
       tagArray = tags; 
     } else { 
-      throw "tags must be either a String, or an Array of Strings"; 
+      tagArray = no_tags;
     }
     return tagArray;
   }
@@ -175,9 +178,7 @@ class ShapeBins implements Collection {
   }
 
   inline function getContainer(key:String):Array<Shape> {
-    if (!this.bins.exists(key)) {
-      this.bins.set(key, []);
-    }
+    if (!this.bins.exists(key)) this.bins.set(key, new Array<Shape>());
     return this.bins.get(key);
   }
 
@@ -240,5 +241,7 @@ class ShapeBins implements Collection {
   // reused arrays
   var keys_to_remove:Array<String> = [];
   var keys_to_add:Array<String> = [];
+
+  var no_tags:Array<String> = [];
 
 }
