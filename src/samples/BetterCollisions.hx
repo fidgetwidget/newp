@@ -116,7 +116,7 @@ class BetterCollisions extends BasicScene {
   function createShape(x:Float, y:Float, w:Int, h:Int) {
     var box = Box.create(this, x, y, w, h);
     this.addEntity(box);
-    this.spriteCounter.text = Std.string(this.sprites.length);
+    this.spriteCounter.text = Std.string(this.entities.length);
   }
   
 }
