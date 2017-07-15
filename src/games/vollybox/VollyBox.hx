@@ -63,6 +63,11 @@ class VollyBox extends BasicScene {
       for (c in e.colliders) this.colliders.update(c);
     }
 
+    var k = Lib.inputs.keyboard;
+    if (k.pressed(32)) { // Spacebar
+      Lib.debug = !Lib.debug;
+    }
+
     this.update_collisionTests();
     this.sprites.sortLayer('camera');
   }
@@ -84,12 +89,16 @@ class VollyBox extends BasicScene {
       var sign = MathUtil.sign(collisionData.separationX);
       player.x -= collisionData.separationX;
       player.vx *= -1;
+      player.x += player.vx * Lib.delta;
+      player.vx = 0;
       player.ax = 0;
     }
     else {
       var sign = MathUtil.sign(collisionData.separationY);
       player.y -= collisionData.separationY;
       player.vy *= -1;
+      player.y += player.vy * Lib.delta;
+      player.vy = 0;
       player.ay = 0;
     }
   }

@@ -18,6 +18,10 @@ class Player extends Entity {
   inline static var SERVICE_MOVE_SPEED:Int = 200;
   inline static var MAX_MOVE_SPEED:Int = 200;
   inline static var DRAG:Int = 300;
+  inline static var ACTION_TIME:Float = 0.3;
+
+  inline static var HIT_SIZE:Float = 5;
+  inline static var MAX_HIT_SIZE:Float = 19;
 
   var game:VollyBox;
 
@@ -29,15 +33,20 @@ class Player extends Entity {
   var height:Float;
   var hitDistance:Float; // how far away from the player they can still hit the ball
   var speed:Float;
+
+  var tweener:TweenerComponent;
+  var inputs:Map<String, Int>;
+  // Sprites
   var box:Sprite;
   var shadow:Sprite;
-  var inputs:Map<String, Int>;
+  var mask:Sprite;
 
   public var boxCollider:Shape;
   public var hitCollider:Circle;
   public var hasBall:Bool = false;
   public var moving(get, never):Bool;
 
+  var actionDelayed:Bool = false;
 
   public function new(player:Int, game:VollyBox) {
     super();
@@ -45,11 +54,12 @@ class Player extends Entity {
     this.game = game;
     this.width = 20;
     this.height = 20;
-    this.hitDistance = 20;
+    this.hitDistance = HIT_SIZE;
 
     this.makeSprites();
     this.makeColliders();
     this.makeMotion();
+    this.makeTweener();
     this.makeInputs();
     
     this.initPosition();
@@ -64,6 +74,7 @@ class Player extends Entity {
 
     this.box = new Sprite();
     this.shadow = new Sprite();
+    this.shadow.y = height/2;
 
     this.drawBox(this.box.graphics);
     this.drawShadow(this.shadow.graphics);
@@ -85,7 +96,7 @@ class Player extends Entity {
   inline function drawShadow(g) {
     Draw.start(g)
       .beginFill(0x555555, 0.1)
-      .drawEllipse(-width/2, height/2 - 5, width, 10)
+      .drawEllipse(-width/2, -5, width, 10)
       .endFill();
   }
 
@@ -97,12 +108,15 @@ class Player extends Entity {
 
   // Colliders
   function makeColliders() {
-    var maskSprite:Sprite = new Sprite();
-    this.drawMask(maskSprite.graphics);
-    this.addComponent(new SpriteComponent(maskSprite));
+    this.mask = new Sprite();
+    this.drawMask(mask.graphics);
+    this.shadow.addChild(this.mask);
 
-    this.boxCollider = new Shape(maskSprite);
-    this.hitCollider = new Circle(this.body, this.width + this.hitDistance);
+    this.addComponent(new SpriteComponent(mask));
+
+    this.boxCollider = new Shape(this.mask);
+    this.hitCollider = new Circle(this.body, this.width/2 + this.hitDistance);
+    this.hitCollider.offsetY = height/4;
 
     this.addComponent(new ShapeComponent(hitCollider, ['ball']));
     this.addComponent(new ShapeComponent(boxCollider, ['net', 'player', 'score']));
@@ -117,25 +131,31 @@ class Player extends Entity {
     this.addComponent(new MotionComponent(motion));
   }
 
+  function makeTweener() {
+    this.tweener = new TweenerComponent();
+    this.addComponent(tweener);
+    this.tweener.add('bump', ACTION_TIME, _updateHitRadius, _hitRadiusReset);
+  }
+
   function makeInputs() {
     switch (this.playerNo) {
       case 1:
         this.inputs = [
-          'left'  => 65,
-          'up'    => 87,
-          'right' => 68,
-          'down'  => 83,
-          'bump'  => 0,
-          'set'   => 0,
+          'left'  => 65, // A
+          'up'    => 87, // W
+          'right' => 68, // D
+          'down'  => 83, // S
+          'bump'  => 69, // E
+          'hit'   => 82, // R
         ];
       case 2:
         this.inputs = [
-          'left'  => 37,
-          'up'    => 38,
-          'right' => 39,
-          'down'  => 40,
-          'bump'  => 0,
-          'set'   => 0,
+          'left'  => 37, // ARROW_LEFT
+          'up'    => 38, // ARROW_UP
+          'right' => 39, // ARROW_RIGHT
+          'down'  => 40, // ARROW_DOWN
+          'bump'  => 191, // /
+          'hit'   => 190, // .
         ];
     }
   }
@@ -185,6 +205,27 @@ class Player extends Entity {
     } else {
       this.motion.ax = 0;
     }
+
+    if (!this.actionDelayed) {
+      if (k.pressed(this.inputs['bump']) || k.pressed(this.inputs['hit'])) {
+        this.actionDelayed = true;
+      }
+
+      if (k.pressed(this.inputs['bump'])) {
+        this.hitDistance = MAX_HIT_SIZE;
+        this.tweener.start('bump');
+        if (this.hasBall) {} else {}
+        // TODO: test for collision with ball
+        //  and respond with a no direction hit (mostly straight up)
+      }
+      if (k.pressed(this.inputs['hit'])) {
+        if (this.hasBall) {} else {}
+        // TODO: test for collision with ball
+        //  and respond with a directional hit
+      }
+    } else {
+      this.hitCollider.radius = this.width/1 + this.hitDistance;
+    }
   }
 
   function update_playerAnimation() {
@@ -200,6 +241,20 @@ class Player extends Entity {
     } // moving
   }
 
+  function update_hitAnimation() {
+
+  }
+
+
+  function _updateHitRadius(val:Float, tween):Void {
+    this.hitDistance = lerp(MAX_HIT_SIZE, HIT_SIZE, val);
+  }
+
+  function _hitRadiusReset(tween):Void {
+    this.hitDistance = HIT_SIZE;
+    this.actionDelayed = false;
+  }
+
   var _bounceVal:Float = 0;
   var _maxBounce:Int = 8;
   var _bounceSpeed:Float = 68;
@@ -210,5 +265,10 @@ class Player extends Entity {
 
   inline function get_field():PlayField { return this.game.playField; }
   inline function get_ball():Ball { return this.game.ball; }
+
+
+  inline function lerp(start:Float, end:Float, t:Float) {
+    return (1 - t) * start + t * end;
+  }
 
 }
