@@ -8,7 +8,7 @@ import newp.utils.Draw;
 
 class Circle extends Shape {
 
-  public var radius(default, null):Float;
+  public var radius:Float;
 
   public var transformedRadius(get, never):Float;
   
