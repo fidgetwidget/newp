@@ -72,7 +72,7 @@ class Entity {
 
     if (this.inScene) this.addComponentToScene(c);
 
-    trace('Entity[${this.name}] - adding component ${c.type}');
+    if (newp.Lib.debug) trace('Entity[${this.name}] - adding component ${c.type}');
     return this;
   }
 
