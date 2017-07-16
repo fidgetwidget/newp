@@ -37,6 +37,8 @@ class Tween {
   }
 
   public function update():Void {
+    if (this.complete || this.paused) return;
+
     this.delta += Lib.delta;
     if (this.percent >= 0 && this.percent <= 1) {
       this.step(this.percent);

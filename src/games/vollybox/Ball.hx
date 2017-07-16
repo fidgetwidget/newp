@@ -9,6 +9,7 @@ import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;
 import openfl.display.Sprite;
+import openfl.geom.Point;
 
 
 class Ball extends Entity {
@@ -29,6 +30,9 @@ class Ball extends Entity {
   var dirY:Float = 0;
   var dist:Float = 0;
   var hitTimer:Float = 0;
+  var hitDestinationX:Float = 0;
+  var hitDestinationY:Float = 0;
+  var hitDestinationDistance:Float = 0;
 
   public var ball:Sprite;
   public var collider:Shape;
@@ -82,11 +86,11 @@ class Ball extends Entity {
     this.inServiceTo = player;
   }
 
-  public function hitBall(player:Player, dest:Point) {
+  public function hitBall(player:Player, x:Float, y:Float) {
     this.lastHitBy = player;
-    this.hitDestinationX = dest.x;
-    this.hitDestinationY = dest.y;
-    this.hitDestinationDistance = MathUtils.vec_length(this.x - dest.x, this.y - dest.y);
+    this.hitDestinationX = x;
+    this.hitDestinationY = y;
+    this.hitDestinationDistance = MathUtils.vec_length(this.x - x, this.y - y);
   }
 
   // Update

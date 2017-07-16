@@ -36,7 +36,8 @@ class Player extends Entity {
   var width:Float;
   var height:Float;
   var speed:Float;
-  var hitDistance:Float; // how far away from the player they can still hit the ball
+  var hitDistance(get, set):Float; // how far away from the player they can still hit the ball
+  var hitRadius(get, never):Float;
   var actionDelayed:Bool = false; // if the player is trying to hit the ball
   var hitType:String = ""; // which type of hitting the ball the player has triggered
   var tweener:TweenerComponent;
@@ -57,7 +58,6 @@ class Player extends Entity {
     this.game = game;
     this.width = 20;
     this.height = 20;
-    this.hitDistance = HIT_SIZE;
     this.collisionData = new ShapeCollision();
 
     this.makeSprites();
@@ -65,6 +65,8 @@ class Player extends Entity {
     this.makeMotion();
     this.makeTweener();
     this.makeInputs();
+
+    this.hitDistance = HIT_SIZE;
     
     this.initPosition();
   }
@@ -119,7 +121,7 @@ class Player extends Entity {
     this.addComponent(new SpriteComponent(mask));
 
     this.boxCollider = new Shape(this.mask);
-    this.hitCollider = new Circle(this.body, this.width/2 + this.hitDistance);
+    this.hitCollider = new Circle(this.body, this.hitRadius);
     this.hitCollider.offsetY = height/4;
 
     this.addComponent(new ShapeComponent(hitCollider, ['ball']));
@@ -139,6 +141,7 @@ class Player extends Entity {
     this.tweener = new TweenerComponent();
     this.addComponent(tweener);
     this.tweener.add('bump', ACTION_TIME, _updateHitRadius, _hitRadiusReset);
+    this.tweener.add('hit', ACTION_TIME, null, _hitRadiusReset);
   }
 
   function makeInputs() {
@@ -228,7 +231,6 @@ class Player extends Entity {
 
     } else {
       this.game.colliders.collisionTestWithTag(this.hitCollider, ['ball'], _hitBall);
-      this.hitCollider.radius = this.width/1 + this.hitDistance;
     }
   }
   var collisionData:ShapeCollision;
@@ -252,35 +254,63 @@ class Player extends Entity {
 
 
   function _updateHitRadius(val:Float, tween):Void {
+    trace('_updateHitRadius');
     this.hitDistance = lerp(MAX_HIT_SIZE, HIT_SIZE, val);
+    this.setHitRadius();
   }
 
   function _hitRadiusReset(tween):Void {
-    this.hitDistance = HIT_SIZE;
+    trace('_hitRadiusReset');
     this.actionDelayed = false;
     this.hitType = NONE;
+    this.hitDistance = HIT_SIZE;
+    this.setHitRadius();
   }
 
   function _hitBall(shape, collisionData):Void {
-    this.game.ball.hitBall(this);
+    // var l = MathUtils.vec_length(this.vx, this.vy);
+    // var dx = MathUtils.vec_normalize(this.vx, l);
+    // var dy = MathUtils.vec_normalize(this.vy, l);
+    // var dist:Float = 0;
+    // switch (this.hitType) {
+    //   case (HITTING): 
+    //     dist = PlayField.WIDTH / 2;
+    //   case (BUMPING):
+    //     dist = 1;
+    // }
+    // this.game.ball.hitBall(this, this.x + dx * dist, this.y + dy * dist);
     this.actionDelayed = false;
     this.hitType = NONE;
   }
 
-  var _bounceVal:Float = 0;
-  var _maxBounce:Int = 8;
-  var _bounceSpeed:Float = 68;
-  var _bounceDir:Int = 1;
-  var _min_speed:Float = 9;
+  inline function setHitRadius() {
+    this.hitCollider.radius = this.hitRadius;
+  }
+
 
   inline function get_moving():Bool { return Math.abs(this.vx) > _min_speed || Math.abs(this.vy) > _min_speed; }
 
   inline function get_field():PlayField { return this.game.playField; }
   inline function get_ball():Ball { return this.game.ball; }
 
+  inline function get_hitRadius():Float { return this.width/2 + this.hitDistance; }
+
+  inline function get_hitDistance():Float { return _hitDidstance; }
+  inline function set_hitDistance(val:Float):Float { 
+    _hitDidstance = val;
+    if (this.hitCollider != null) this.hitCollider.radius = this.hitRadius;
+    return _hitDidstance;
+  }
 
   inline function lerp(start:Float, end:Float, t:Float) {
     return (1 - t) * start + t * end;
   }
+
+  var _hitDidstance:Float = 0;
+  var _bounceVal:Float = 0;
+  var _maxBounce:Int = 8;
+  var _bounceSpeed:Float = 68;
+  var _bounceDir:Int = 1;
+  var _min_speed:Float = 9;
 
 }

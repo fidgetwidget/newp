@@ -23,7 +23,7 @@ class Utils {
   }
 
   public static inline function vec_normalize(length:Float, val:Float) :Float {
-    if(length == 0) return 0;
+    if (length == 0) return 0;
     return val /= length;
   }
 

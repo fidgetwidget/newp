@@ -15,8 +15,8 @@ class BasicScene implements Scene {
   
   var sprites:SpriteCollection;
   var entities:Array<Entity>;
-  var colliders:ShapeBins;
-
+  public var colliders:ShapeBins;
+  
   public var name (default, null) :String;
   public var container (get, never) :DisplayObjectContainer;
   public var x (get, set) :Float;
