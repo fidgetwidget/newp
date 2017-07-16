@@ -72,6 +72,9 @@ class VollyBox extends BasicScene {
     this.sprites.sortLayer('camera');
   }
 
+  public function ballHitGround() {
+    trace('ball hit ground');
+  }
 
   function update_collisionTests() {
     var p1c = this.player1.boxCollider;
