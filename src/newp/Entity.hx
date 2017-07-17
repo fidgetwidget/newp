@@ -26,6 +26,7 @@ class Entity {
 
   public var x(get, set):Float;
   public var y(get, set):Float;
+  public var z(default, default):Float = 0;
   public var rotation(get, set):Float;
   public var scaleX(get, set):Float;
   public var scaleY(get, set):Float;
