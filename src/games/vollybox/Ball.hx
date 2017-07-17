@@ -27,17 +27,19 @@ class Ball extends Entity {
   var lastHitBy:Player = null;
   var inServiceTo:Player = null;
 
-  var speed:Float = 0;
-  var height:Float = 1;
-  var hitHeight:Float = 0;
   var dirX:Float = 0;
   var dirY:Float = 0;
-  var dist:Float = 0;
-  var hitTimer:Float = 0;
+  var destZ:Float = 0;
   var hitX:Float = 0;
   var hitY:Float = 0;
-  var hitDist:Float = 0;
+  var airTime:Float = 0; // how long the hit is going to keep the ball in the air
+  var travelSpeed:Float = 0;
+  var travel:Float = 0;
+  var scale:Float = 1;
+  var yOffset:Float = 0;
   
+
+
   public var collider:Shape;
   public var onGround(get, never):Bool;
   public var inService(get, never):Bool;
@@ -98,14 +100,18 @@ class Ball extends Entity {
     this.lastHitBy = player;
     this.inServiceTo = null;
 
-    this.hitX = x != null ? x : this.x;
-    this.hitY = y != null ? y : this.y;
-    var dx = this.x - this.hitX;
-    var dy = this.y - this.hitY;
-    this.hitDist = MathUtil.vec_length(dx, dy);
-    this.hitHeight = 30;
-    this.speed = this.hitDist / 30;
-    this.hitTimer = HIT_TIME;
+    var xx = x != null ? x : this.x;
+    var yy = y != null ? y : this.y;
+    var dx = xx - this.x;
+    var dy = yy - this.y;
+    var d = MathUtil.vec_length(dx, dy); // distance
+    this.dirX = MathUtil.vec_normalize(d, dx);
+    this.dirY = MathUtil.vec_normalize(d, dy);
+    // NOTE: HIT_TIME is temp - how long the ball will take to get to it's destination
+    //  this should be determined by a number of factors, and not just be a constant
+    this.airTime = HIT_TIME;
+    this.travelSpeed = d / HIT_TIME;
+    trace('dx: $dx dy: $dy dirX: $dirX dirY: $dirY d: $d');
   }
 
   // Update
@@ -115,11 +121,11 @@ class Ball extends Entity {
     if (this.inService) {
       update_heldPosition();
     } else {
-      if (this.hitTimer > 0) update_inPlayPosition();
+      if (this.airTime > 0) update_inPlayPosition();
     }
 
-    this._ballY = this.height;
-    this.ballSpr.y = -this._ballY;
+    this.yOffset = this.z;
+    this.ballSpr.y = -this.yOffset;
 
     super.update();
   }
@@ -128,43 +134,40 @@ class Ball extends Entity {
     var side = this.inServiceTo.x > this.field.centerX ? -1 : 1;
     this.x = this.inServiceTo.x + 10 * side;
     this.y = this.inServiceTo.y + 4;
-    this.height = 2;
+    this.z = 2;
   }
 
   function update_inPlayPosition():Void {
     var d = Lib.delta;
-    this.hitTimer -= d;
+    this.airTime -= d;
+
+    var p = (HIT_TIME - this.airTime) / HIT_TIME;
+    if (this.airTime < HIT_TIME / 2) {
+      scale = MathUtil.lerp(5, 1, p);
+    } else {
+      scale = MathUtil.lerp(1, 5, p);
+    }
+    if (scale < 1) scale = 1;
+    this.ball.scaleX = scale;
+    this.ball.scaleY = scale;
 
     // update it's movement towards it's destination
-    _curDist += speed * d;
-    var p = (HIT_TIME - this.hitTimer) / HIT_TIME;
-    if (this.hitTimer < HIT_TIME / 2) {
-      _scale = MathUtil.lerp(5, 1, p);
-    } else {
-      _scale = MathUtil.lerp(1, 5, p);
-    }
-    if (_scale < 1) _scale = 1;
+    this.travel += travelSpeed * d;
+    this.x += dirX * travelSpeed * d;
+    this.y += dirY * travelSpeed * d;
+    trace('pos: $x | $y');
 
-    this.ball.scaleX = _scale;
-    this.ball.scaleY = _scale;
-
-    this.x += dirX * speed * d;
-    this.y += dirY * speed * d;
-    this.height = (_scale * 5) - 5;
-    if (this.height == 0) {
+    this.z = (scale * 5) - 5;
+    if (this.z == 0) {
       this.game.ballHitGround();
     }
   } 
-
-  var _scale:Float = 1;
-  var _ballY:Float = 0;
-  var _curDist:Float = 0;
 
   // Properties
   // ==========
 
   inline function get_field():PlayField { return this.game.playField; }
   inline function get_inService():Bool { return this.inServiceTo != null; }
-  inline function get_onGround():Bool { return this.height <= 1.333; }
+  inline function get_onGround():Bool { return this.z <= 1.333; }
 
 }

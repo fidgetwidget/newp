@@ -303,13 +303,21 @@ class Player extends Entity {
 
   function _hitBall(shape, collisionData):Void {
     trace('hit ball');
+    var dx:Float = this.ball.x;
+    var dy:Float = this.ball.y;
     switch (this.hitType) {
       case (HITTING): 
-        var dx:Float = this.ball.x;
-        var dy:Float = this.ball.y;
+        if (this.x < this.field.centerX) {
+          dx = this.field.centerX + 60;
+        } else {
+          dx = this.field.centerX - 60;
+        }
+        dy = this.field.centerY;
         this.ball.hitBall(this, dx, dy);
       case (BUMPING):
-        this.ball.hitBall(this);
+        dx += Math.random() * 6 - 3;
+        dy += Math.random() * 6 - 3;
+        this.ball.hitBall(this, dx, dy);
     }
     this.hasBall = false;
     this.actionDelayed = false;
