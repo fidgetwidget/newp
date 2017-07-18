@@ -52,23 +52,6 @@ class BetterCollisions extends BasicScene {
     hudLayer.addChild(textField);
   }
 
-  // Entity
-  // ======
-  
-  override public function addEntity (entity:Entity) :Void {
-    super.addEntity(entity);
-    if (entity.collidable) {
-      for (collider in entity.colliders) this.shapeEntityMap.set(collider, entity);
-    }
-  }
-
-  override public function removeEntity (entity:Entity) :Void {
-    super.removeEntity(entity);
-    if (entity.collidable) {
-      for (collider in entity.colliders) this.shapeEntityMap.remove(collider);
-    }
-  }
-
   // Update Loop
 
   public override function update():Void {

@@ -41,7 +41,9 @@ class SimpleScene implements Scene {
   // ======
 
   public function addEntity (entity:Entity) :Void { }
-  public function removeEntity (entity:Entity) :Void { }
+  public function removeEntity (target:Dynamic) :Void { }
+  public function hasEntity (target:Dynamic) :Bool { return false; }
+  public function getEntity (name:String) :Entity { return null; }
 
   // Sprite
   // ======

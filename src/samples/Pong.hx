@@ -125,7 +125,7 @@ class Pong extends BasicScene {
 
     for (e in this.entities) {
       e.update();
-      if (e.collidable) {
+      if (e.isCollidable) {
         for (c in e.colliders) colliders.update(c);
       }
     }

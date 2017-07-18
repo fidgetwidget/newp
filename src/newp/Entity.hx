@@ -1,7 +1,8 @@
 package newp;
 
 import newp.components.*;
-import newp.components.collection.Collection as ComponentCollection;
+import newp.components.collection.Collection as IComponentCollection;
+import newp.components.collection.ComponentCollection;
 import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
 import newp.scenes.Scene;
@@ -12,7 +13,7 @@ import openfl.display.Sprite;
 
 class Entity {
 
-  var components:ComponentCollection;
+  var components:IComponentCollection;
 
   var parent:Entity = null;
 
@@ -48,9 +49,13 @@ class Entity {
 
   public function new(?name:String) {
     this.name = name != null ? name : Type.getClassName(Type.getClass(this));
-    this.components = new ComponentCollection();
-    this.addComponent(new TransformComponent());
     if (newp.Lib.debug) trace('Entity[${this.name}] created');
+    this.init();
+  }
+
+  function init() {
+    this.components = new ComponentCollection();
+    this.addComponent(new TransformComponent(null, this.name));
   }
 
   public function update():Void { 
@@ -133,6 +138,7 @@ class Entity {
   // +-------------------------
 
   inline function get_sprites():Array<Sprite> { return this.components.sprites; }
+
   inline function get_colliders():Array<Shape> { return this.components.colliders; }
 
   inline function get_x():Float { return this.body.x; }

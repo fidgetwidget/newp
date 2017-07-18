@@ -17,4 +17,7 @@ interface Collection {
   // target can be either String or Entity
   public function hasEntity(target:Dynamic):Bool;
 
+
+  public function iterator():Iterator<Entity>;
+
 }

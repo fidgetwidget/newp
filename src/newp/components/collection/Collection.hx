@@ -1,5 +1,10 @@
 package newp.components.collection;
 
+import newp.collision.shapes.Shape;
+import newp.components.*;
+import openfl.display.Sprite;
+
+
 interface Collection {
 
   // Properties

@@ -4,7 +4,7 @@ import newp.Entity;
 
 interface Component {
 
-  public var name:String;
+  public var name(default, null):String;
 
   public var entity:Entity;
 

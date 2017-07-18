@@ -1,4 +1,4 @@
-package newp.display;
+package newp.entity.collection;
 
 import newp.Entity;
 
@@ -42,6 +42,9 @@ class EntityCollection implements Collection {
     return this.map.exists(name);
   }
 
+  public function iterator():Iterator<Entity> {
+    return this.map.iterator();
+  }
 
   inline function get_length():Int { return this.count; }
   var count:Int = 0;
@@ -51,7 +54,7 @@ class EntityCollection implements Collection {
     var n:String = '';
     if (Std.is(target, String)) {
       n = target;
-    } else if (Std.instance(target, Entity)) {
+    } else if (Std.is(target, Entity)) {
       n = cast(target, Entity).name;
     } else {
       throw "Unknown target type: Must be either a String, or an Entity.";

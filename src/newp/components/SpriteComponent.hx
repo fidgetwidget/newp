@@ -4,6 +4,9 @@ import openfl.display.Sprite;
 
 class SpriteComponent implements Component implements Renderable implements Updateable {
 
+  static var uid:Int = 0;
+
+  public var name(default, null):String;
   public var entity:Entity;
   public var type:String;
   public var updateable:Bool = true;
@@ -13,8 +16,9 @@ class SpriteComponent implements Component implements Renderable implements Upda
   public var layer:String;
   var sync:Bool;
 
-  public function new(?sprite:Sprite, ?layer:String, syncPosition:Bool = true) { 
+  public function new(?sprite:Sprite, ?layer:String, syncPosition:Bool = true, ?name:String) { 
     this.type = Type.getClassName(Type.getClass(this));
+    this.name = name == null ? '${this.type}${++SpriteComponent.uid}' : name;
     this.sprite = sprite == null ? new Sprite() : sprite;
     this.layer = layer;
     this.sync = syncPosition;

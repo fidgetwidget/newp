@@ -5,7 +5,7 @@ import newp.components.*;
 import openfl.display.Sprite;
 
 
-class ComponentCollection {
+class ComponentCollection implements Collection {
 
   var allComponents:Array<Component> = [];
   var componentTypeMap:Map<String, Array<Component>>;
