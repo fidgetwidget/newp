@@ -4,6 +4,7 @@ import newp.collision.collections.Collection as IShapeCollection;
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.collision.shapes.Shape;
+import newp.display.collection.Collection as ISpriteCollection;
 import newp.display.collection.SpriteCollection;
 import newp.entity.collection.Collection as IEntityCollection;
 import newp.entity.collection.EntityCollection;
@@ -16,7 +17,7 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  public var sprites:SpriteCollection;
+  public var sprites:ISpriteCollection;
   
   public var entities:IEntityCollection;
 
@@ -99,7 +100,7 @@ class BasicScene implements Scene {
 
   // Properties
   
-  function get_container():DisplayObjectContainer { return this.sprites; }
+  function get_container():DisplayObjectContainer { return this.sprites.container; }
 
   inline function get_x():Float { return this.container.x; }
   inline function set_x(val:Float):Float { return this.container.x = val; }

@@ -150,7 +150,7 @@ class Ball extends Entity {
     } else {
       scale = Easing.lerp(1.25, MAX_SCALE, p*2, Easing.expoOut);
     }
-    trace('p: $p scale: $scale');
+    // trace('p: $p scale: $scale');
     if (scale < 1) scale = 1;
     this.ball.scaleX = scale;
     this.ball.scaleY = scale;

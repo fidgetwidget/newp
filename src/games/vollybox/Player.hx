@@ -20,7 +20,7 @@ class Player extends Entity {
   inline static var DRAG:Int = 300;
   inline static var ACTION_TIME:Float = 0.3;
 
-  inline static var HIT_SIZE:Float = 5;
+  inline static var HIT_SIZE:Float = 2;
   inline static var MAX_HIT_SIZE:Float = 19;
 
   // Hit types
@@ -258,7 +258,7 @@ class Player extends Entity {
     this.hitDistance = MAX_HIT_SIZE; // bump expands your hit range briefly
     this.tweener.start('bump'); 
     this.hitType = BUMPING;
-    this.scale = 1.2;
+    this.scale = 1.33;
     // start the bump animation
   }
 
@@ -274,11 +274,11 @@ class Player extends Entity {
   function _hit() {
     this.tweener.start('hit'); 
     this.hitType = HITTING;
-    this.scale = 1.15;
+    this.scale = 1.2;
   }
 
   function _hitUpdate(val:Float, tween) {
-
+    this._updateScale();
   }
 
   function _hitDone(tween) {

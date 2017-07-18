@@ -1,11 +1,14 @@
 package newp.display.collection;
 
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 
 
 interface Collection {
 
   public var length(get, never):Int;
+
+  public var container(default, null):DisplayObjectContainer;
 
   // Layer Methods
   // =============
