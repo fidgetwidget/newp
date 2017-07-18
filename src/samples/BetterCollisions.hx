@@ -19,7 +19,7 @@ class BetterCollisions extends BasicScene {
   
   var spriteCounter:TextField;
   var shapeEntityMap:Map<Shape, Entity>;
-  var fps:FPS;  
+  var fps:FPS;
 
   override function init() {
     super.init();

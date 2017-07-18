@@ -56,6 +56,7 @@ class Player extends Entity {
   public function new(player:Int, game:VollyBox) {
     super();
     this.playerNo = player;
+    this.name = 'player'+this.playerNo;
     this.game = game;
     this.width = 20;
     this.height = 20;

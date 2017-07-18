@@ -1,10 +1,11 @@
-package newp.display;
+package newp.display.collection;
 
+import newp.display.Layer;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 
 
-class SpriteCollection extends Sprite {
+class SpriteCollection extends Sprite implements Collection {
 
   var layerNames:Array<String>;
   var layers:Map<String, Layer>;

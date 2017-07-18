@@ -2,7 +2,7 @@ package games.vollybox;
 
 import newp.collision.response.ShapeCollision;
 import newp.collision.collections.ShapeBins;
-import newp.display.SpriteCollection;
+import newp.display.collection.SpriteCollection;
 import newp.scenes.BasicScene;
 import newp.math.Utils as MathUtil;
 import newp.utils.Draw;

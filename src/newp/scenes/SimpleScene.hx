@@ -14,6 +14,8 @@ class SimpleScene implements Scene {
   var sprites:Array<Sprite>;
   var renderTarget:Sprite;
 
+  public var entities(default, null):Map<String,Entity>; // never initialized
+
   public var name (default, null) :String;
   public var container (get, never) :DisplayObjectContainer;
   public var x (get, set) :Float;

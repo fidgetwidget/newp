@@ -12,15 +12,19 @@ class ShapeBins implements Collection {
   var container_h:Int;
   var shapeBinMap:Map<Shape, Array<String>>;
   var bins:Map<String, Array<Shape>>;
+  var keys_prev:Array<String>; // pointer
 
-  public var drawDebug(get, set):Bool;
+  var shapeCollision:ShapeCollision = new ShapeCollision();
+  var keys_to_remove:Array<String> = [];
+  var keys_to_add:Array<String> = [];
+  var no_tags:Array<String> = [];
+
   public var shapes:Array<Shape> = [];
 
 
   public function new(width:Int = 256, ?height:Int = null) {
     this.container_w = width;
     this.container_h = height == null ? width : height;
-    
     this.bins = new Map();
     this.shapeBinMap = new Map();
   }
@@ -37,12 +41,12 @@ class ShapeBins implements Collection {
     this.aNotInB(keys_prev, keys, keys_to_remove);
     this.aNotInB(keys, keys_prev, keys_to_add);
     
-    for (key in keys_to_remove) {
-      this.getContainer(key).remove(shape);
+    // Empty them while we go...
+    while(keys_to_remove.length > 0) {
+      this.getContainer(keys_to_remove.pop()).remove(shape);
     }
-
-    for (key in keys_to_add) {
-      var container = this.getContainer(key);
+    while(keys_to_remove.length > 0) {
+      var container = this.getContainer(keys_to_remove.pop());
       if (container.indexOf(shape) < 0) container.push(shape);
     }
 
@@ -86,7 +90,7 @@ class ShapeBins implements Collection {
       if (container.length == 0) continue;
       // test all shapes in the container with one another
       this.collisionTestAll_innerLoop(tagArray, container, callback);
-      if (this.drawDebug) this.debugDraw_bin(containerKey);
+      if (Lib.debug) this.debugDraw_bin(containerKey);
     }
   }
 
@@ -171,8 +175,6 @@ class ShapeBins implements Collection {
   }
 
   inline function aNotInB(a:Array<String>, b:Array<String>, out:Array<String>):Array<String> {
-    // clear out
-    while(out.length > 0) out.pop();
     for (o in a) { if (b.indexOf(o) == -1) out.push(o); }
     return out;
   }
@@ -207,41 +209,12 @@ class ShapeBins implements Collection {
     var xy = key.split('|');
     var x = Std.parseInt(xy[0]);
     var y = Std.parseInt(xy[1]);
-    var g = debugSprite.graphics;
+    var g = Lib.debugLayer.graphics;
     var xx = x * this.container_w;
     var yy = y * this.container_h;
     g.lineStyle(1, 0x999999, 0.3);
     g.moveTo(xx, yy);
     g.drawRect(xx, yy, this.container_w, this.container_h);
   }
-
-
-  // +-------------------------
-  // | Properties
-  // +-------------------------
-
-  inline function get_drawDebug():Bool { return this._drawDebug; }
-  inline function set_drawDebug(val:Bool):Bool {
-    this._drawDebug = val;
-    if (val) {
-      if (this.debugSprite == null) this.debugSprite = new Sprite();
-      Lib.main.addChild(this.debugSprite);
-    } else {
-      Lib.main.removeChild(this.debugSprite);
-    }
-    return val;
-  }
-
-
-  var shapeCollision:ShapeCollision = new ShapeCollision();
-  var debugSprite:Sprite;
-  var _drawDebug:Bool = false;
-  // reused pointer
-  var keys_prev:Array<String>;
-  // reused arrays
-  var keys_to_remove:Array<String> = [];
-  var keys_to_add:Array<String> = [];
-
-  var no_tags:Array<String> = [];
 
 }

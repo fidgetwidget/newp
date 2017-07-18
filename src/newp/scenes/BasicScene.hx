@@ -3,7 +3,8 @@ package newp.scenes;
 import newp.collision.shapes.Shape;
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
-import newp.display.SpriteCollection;
+import newp.display.collection.SpriteCollection;
+import newp.entity.collection.EntityCollection;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.DisplayObject;
@@ -13,8 +14,10 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  var sprites:SpriteCollection;
-  var entities:Array<Entity>;
+  public var sprites:SpriteCollection;
+  
+  public var entities:EntityCollection;
+
   public var colliders:ShapeBins;
   
   public var name (default, null) :String;
@@ -29,7 +32,7 @@ class BasicScene implements Scene {
   }
 
   function init():Void {
-    this.entities = [];
+    this.entities = new Map();
     this.init_sprites();
     this.init_colliders();
   }
@@ -53,12 +56,28 @@ class BasicScene implements Scene {
 
   public function addEntity (entity:Entity) :Void {
     entity.addedToScene(this);
-    this.entities.push(entity);
+    this.entities.set(entity.name, entity);
   }
 
   public function removeEntity (entity:Entity) :Void {
     entity.removedFromScene(this);
-    this.entities.remove(entity);
+    this.entities.remove(entity.name);
+  }
+
+  public function hasEntity (target:Dynamic) :Bool {
+    var key:String = "";
+    if (Std.is(target, String)) {
+      key = target;
+    } else if (Std.instance(target, Entity)) {
+      key = cast (target, Entity).name;
+    } else {
+      throw "unrecognizable target: Must be either a String or an Entity";
+    }
+    return entities.exists(key);
+  }
+
+  public function getEntity (name:String) :Entity {
+    return entities.get(name);
   }
 
   // Sprite

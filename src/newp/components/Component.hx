@@ -4,6 +4,8 @@ import newp.Entity;
 
 interface Component {
 
+  public var name:String;
+
   public var entity:Entity;
 
   public var type:String;

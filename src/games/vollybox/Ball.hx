@@ -46,6 +46,7 @@ class Ball extends Entity {
 
   public function new(game:VollyBox) {
     super();
+    this.name = 'ball';
     this.game = game;
 
     this.makeSprites();

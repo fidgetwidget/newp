@@ -1,6 +1,7 @@
 package newp;
 
 import newp.components.*;
+import newp.components.collection.Collection as ComponentCollection;
 import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
 import newp.scenes.Scene;
@@ -12,7 +13,9 @@ import openfl.display.Sprite;
 class Entity {
 
   var components:ComponentCollection;
+
   var parent:Entity = null;
+
   var children:Array<Entity>;
 
   public var name(default, null):String; 
@@ -38,8 +41,8 @@ class Entity {
   public var rs(get, set):Float;
   public var ra(get, set):Float;
 
-  public var renderable(get, never):Bool;
-  public var collidable(get, never):Bool;
+  public var isRenderable(get, never):Bool;
+  public var isCollidable(get, never):Bool;
   public var hasMotion(get, never):Bool;
   public var inScene(get, never):Bool;
 
@@ -183,9 +186,9 @@ class Entity {
     return val;
   }
 
-  inline function get_renderable():Bool { return this.components.has(Renderable); }
+  inline function get_isRenderable():Bool { return this.components.has(Renderable); }
   
-  inline function get_collidable():Bool { return this.components.has(Collidable); }
+  inline function get_isCollidable():Bool { return this.components.has(Collidable); }
 
   inline function get_hasMotion():Bool { return this.motion != null; }
 
