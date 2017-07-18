@@ -19,7 +19,7 @@ class BetterCollisions extends BasicScene {
   
   var spriteCounter:TextField;
   var shapeEntityMap:Map<Shape, Entity>;
-  var fps:FPS;  
+  var fps:FPS;
 
   override function init() {
     super.init();
@@ -50,23 +50,6 @@ class BetterCollisions extends BasicScene {
     textField.text = "Click to add colliders to the stage";
 
     hudLayer.addChild(textField);
-  }
-
-  // Entity
-  // ======
-  
-  override public function addEntity (entity:Entity) :Void {
-    super.addEntity(entity);
-    if (entity.collidable) {
-      for (collider in entity.colliders) this.shapeEntityMap.set(collider, entity);
-    }
-  }
-
-  override public function removeEntity (entity:Entity) :Void {
-    super.removeEntity(entity);
-    if (entity.collidable) {
-      for (collider in entity.colliders) this.shapeEntityMap.remove(collider);
-    }
   }
 
   // Update Loop

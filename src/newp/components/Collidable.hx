@@ -1,7 +1,10 @@
 package newp.components;
 
+import newp.collision.shapes.Shape;
+
+
 interface Collidable {
 
-  public var shape:newp.collision.shapes.Shape;
+  public var shape:Shape;
 
 }

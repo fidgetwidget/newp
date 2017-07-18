@@ -5,6 +5,7 @@ import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 import newp.math.Utils as MathUtil;
+import newp.math.Easing;
 import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;
@@ -15,8 +16,9 @@ import openfl.geom.Point;
 class Ball extends Entity {
 
   static inline var MAX_HEIGHT:Float = 20;
+  static inline var MAX_SCALE:Float = 3.8;
   static inline var RADIUS:Float = 8;
-  static inline var HIT_TIME:Float = 3;
+  static inline var HIT_TIME:Float = 1;
 
   var game:VollyBox;
   var field(get, never):PlayField;
@@ -46,6 +48,7 @@ class Ball extends Entity {
 
   public function new(game:VollyBox) {
     super();
+    this.name = 'ball';
     this.game = game;
 
     this.makeSprites();
@@ -142,11 +145,12 @@ class Ball extends Entity {
     this.airTime -= d;
 
     var p = (HIT_TIME - this.airTime) / HIT_TIME;
-    if (this.airTime < HIT_TIME / 2) {
-      scale = MathUtil.lerp(5, 1, p);
+    if (p > 0.5) {
+      scale = Easing.lerp(MAX_SCALE, 1, (p-0.5)*2, Easing.sineIn);
     } else {
-      scale = MathUtil.lerp(1, 5, p);
+      scale = Easing.lerp(1.25, MAX_SCALE, p*2, Easing.expoOut);
     }
+    // trace('p: $p scale: $scale');
     if (scale < 1) scale = 1;
     this.ball.scaleX = scale;
     this.ball.scaleY = scale;
@@ -155,7 +159,7 @@ class Ball extends Entity {
     this.travel += travelSpeed * d;
     this.x += dirX * travelSpeed * d;
     this.y += dirY * travelSpeed * d;
-    trace('pos: $x | $y');
+    // trace('pos: $x | $y');
 
     this.z = (scale * 5) - 5;
     if (this.z == 0) {

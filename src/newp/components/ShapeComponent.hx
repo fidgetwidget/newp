@@ -4,6 +4,9 @@ import newp.collision.shapes.Shape;
 
 class ShapeComponent implements Component implements Collidable {
 
+  static var uid:Int = 0;
+
+  public var name(default, null):String;
   public var entity:Entity;
   public var type:String;
   public var updateable:Bool = false;
@@ -11,8 +14,9 @@ class ShapeComponent implements Component implements Collidable {
   public var collidable:Bool = true;
   public var shape:Shape;
 
-  public function new(?shape:Shape, ?tags:Array<String>) { 
+  public function new(?shape:Shape, ?tags:Array<String>, ?name:String) { 
     this.type = Type.getClassName(Type.getClass(this));
+    this.name = name == null ? '${this.type}${++ShapeComponent.uid}' : name;
     this.shape = shape == null ? new Shape() : shape;
     if (tags != null && tags.length > 0) {
       for (tag in tags) this.shape.tags.set(tag, tag);

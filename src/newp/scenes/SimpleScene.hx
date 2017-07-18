@@ -14,6 +14,8 @@ class SimpleScene implements Scene {
   var sprites:Array<Sprite>;
   var renderTarget:Sprite;
 
+  public var entities(default, null):Map<String,Entity>; // never initialized
+
   public var name (default, null) :String;
   public var container (get, never) :DisplayObjectContainer;
   public var x (get, set) :Float;
@@ -39,7 +41,9 @@ class SimpleScene implements Scene {
   // ======
 
   public function addEntity (entity:Entity) :Void { }
-  public function removeEntity (entity:Entity) :Void { }
+  public function removeEntity (target:Dynamic) :Void { }
+  public function hasEntity (target:Dynamic) :Bool { return false; }
+  public function getEntity (name:String) :Entity { return null; }
 
   // Sprite
   // ======

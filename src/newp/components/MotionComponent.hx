@@ -8,6 +8,9 @@ import newp.Entity;
 
 class MotionComponent implements Component implements Updateable {
 
+  static var uid:Int = 0;
+
+  public var name(default, null):String;
   public var entity:Entity;
   public var type:String;
   public var updateable:Bool = true;
@@ -16,8 +19,9 @@ class MotionComponent implements Component implements Updateable {
 
   public var motion:Motion;
 
-  public function new(?motion:Motion) {
+  public function new(?motion:Motion, ?name:String) {
     this.type = Type.getClassName(Type.getClass(this));
+    this.name = name == null ? '${this.type}${++MotionComponent.uid}' : name;
     this.motion = motion == null ? new Motion() : motion;
   }
 

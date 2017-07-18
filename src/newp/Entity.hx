@@ -1,6 +1,8 @@
 package newp;
 
 import newp.components.*;
+import newp.components.collection.Collection as IComponentCollection;
+import newp.components.collection.ComponentCollection;
 import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
 import newp.scenes.Scene;
@@ -11,8 +13,10 @@ import openfl.display.Sprite;
 
 class Entity {
 
-  var components:ComponentCollection;
+  var components:IComponentCollection;
+
   var parent:Entity = null;
+
   var children:Array<Entity>;
 
   public var name(default, null):String; 
@@ -38,16 +42,20 @@ class Entity {
   public var rs(get, set):Float;
   public var ra(get, set):Float;
 
-  public var renderable(get, never):Bool;
-  public var collidable(get, never):Bool;
+  public var isRenderable(get, never):Bool;
+  public var isCollidable(get, never):Bool;
   public var hasMotion(get, never):Bool;
   public var inScene(get, never):Bool;
 
   public function new(?name:String) {
     this.name = name != null ? name : Type.getClassName(Type.getClass(this));
-    this.components = new ComponentCollection();
-    this.addComponent(new TransformComponent());
     if (newp.Lib.debug) trace('Entity[${this.name}] created');
+    this.init();
+  }
+
+  function init() {
+    this.components = new ComponentCollection();
+    this.addComponent(new TransformComponent(null, this.name));
   }
 
   public function update():Void { 
@@ -130,6 +138,7 @@ class Entity {
   // +-------------------------
 
   inline function get_sprites():Array<Sprite> { return this.components.sprites; }
+
   inline function get_colliders():Array<Shape> { return this.components.colliders; }
 
   inline function get_x():Float { return this.body.x; }
@@ -183,9 +192,9 @@ class Entity {
     return val;
   }
 
-  inline function get_renderable():Bool { return this.components.has(Renderable); }
+  inline function get_isRenderable():Bool { return this.components.has(Renderable); }
   
-  inline function get_collidable():Bool { return this.components.has(Collidable); }
+  inline function get_isCollidable():Bool { return this.components.has(Collidable); }
 
   inline function get_hasMotion():Bool { return this.motion != null; }
 

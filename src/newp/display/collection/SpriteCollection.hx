@@ -1,20 +1,23 @@
-package newp.display;
+package newp.display.collection;
 
+import newp.display.Layer;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 
 
-class SpriteCollection extends Sprite {
+class SpriteCollection implements Collection {
 
   var layerNames:Array<String>;
   var layers:Map<String, Layer>;
   var spriteLayerMap:Map<Sprite, Layer>;
+  var count:Int = 0;
 
   public var length(get, never):Int;
 
+  public var container(default, null):DisplayObjectContainer;
 
   public function new(?layerNames:Array<String>) {
-    super();
+    this.container = new Sprite();
     this.layers = new Map();
     this.layerNames = [];
     this.spriteLayerMap = new Map();
@@ -38,7 +41,7 @@ class SpriteCollection extends Sprite {
 
     layer = new Layer(name);
     this.layerNames.push(name);
-    this.addChild(layer.container);
+    this.container.addChild(layer.container);
     this.layers.set(name, layer);
     return layer;
   }
@@ -83,6 +86,8 @@ class SpriteCollection extends Sprite {
 
     if (this.spriteLayerMap.exists(sprite)) {
       this.spriteLayerMap[sprite].remove(sprite);
+    } else {
+      count++;
     }
 
     this.spriteLayerMap.set(sprite, this.layers[layer]);
@@ -94,6 +99,7 @@ class SpriteCollection extends Sprite {
 
     this.spriteLayerMap[sprite].remove(sprite);
     this.spriteLayerMap.remove(sprite);
+    count--;
   }
 
   public function setSpriteIndex(sprite:Sprite, index:Int):Void {
@@ -105,5 +111,5 @@ class SpriteCollection extends Sprite {
 
   // 
 
-  inline function get_length():Int { return 0; }
+  inline function get_length():Int { return count; }
 }

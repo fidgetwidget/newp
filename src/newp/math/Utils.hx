@@ -6,8 +6,9 @@ import openfl.geom.Matrix;
 
 class Utils {
 
-  // Beacuse Math doesn't have a sign function
-  public static inline function sign(val:Float):Int { return val > 0 ? 1 : val < 0 ? -1 : 0; }
+  public static inline function sign(val:Float):Int { 
+    return val > 0 ? 1 : val < 0 ? -1 : 0; 
+  }
 
   public static inline function lerp(start:Float, end:Float, t:Float) {
     return (1 - t) * start + t * end;
@@ -33,7 +34,6 @@ class Utils {
   public static inline function clamp_float(val:Float, min:Float, max:Float) {
     return (val > max) ? max : (val < min) ? min : val;
   }
-
 
   public static function transformPoint(point:Point, transform:Matrix, ?out:Point = null):Void {
     if (out == null) { out = point; }

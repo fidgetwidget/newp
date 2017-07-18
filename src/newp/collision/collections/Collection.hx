@@ -8,9 +8,9 @@ interface Collection {
 
   // Properties
 
-  public var drawDebug(get, set):Bool;
-
   public var shapes:Array<Shape>;
+
+  public function iterator():Iterator<Shape>;
 
   // Methods
 

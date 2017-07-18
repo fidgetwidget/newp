@@ -24,6 +24,7 @@ class Net extends Entity {
 
   public function new(game:VollyBox) {
     super();
+    this.name = 'net';
     this.game = game;
 
     this.makeSprites();
