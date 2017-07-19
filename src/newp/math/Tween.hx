@@ -2,27 +2,30 @@ package newp.math;
 
 import haxe.Timer;
 
+
 class Tween {
 
-  var complete:Bool = false;
+  var completed:Bool = false;
+
+  public var delay(get, set):Float;
   public var duration(get, set):Float;
   public var paused(default, null):Bool = false;
   public var delta(default, null):Float = 0;
   public var percent(get, never):Float;
 
-  public var onStart:Tween->Void = null;
   public var onStep:Float->Tween->Void = null;
   public var onDone:Tween->Void = null;
 
-  public function new(length:Float) {
-    this.duration = length;
+  public function new(duration:Float, delay:Float = 0) {
+    this.duration = duration;
+    this.delay = delay;
     this.restart();
+    this.pause();
   }
 
   public function restart():Tween {
     this.delta = 0;
-    this.complete = false;
-    this.begin();
+    this.completed = false;
     return this;
   }
 
@@ -37,19 +40,16 @@ class Tween {
   }
 
   public function update():Void {
-    if (this.complete || this.paused) return;
+    if (this.completed || this.paused) return;
 
     this.delta += Lib.delta;
+
     if (this.percent >= 0 && this.percent <= 1) {
       this.step(this.percent);
     } else if (this.percent >= 1) {
-      this.complete = true;
+      this.completed = true;
       this.done();
     }
-  }
-
-  inline function begin():Void {
-    if (this.onStart != null) this.onStart(this);
   }
 
   inline function step( value:Float ):Void {
@@ -66,8 +66,15 @@ class Tween {
     return _duration = val;
   }
 
-  inline function get_percent():Float { return delta <= 0 ? 1 : delta / duration; }
+  inline function get_delay():Float { return _delay; }
+  inline function set_delay(val:Float):Float { 
+    if (val < 0) throw "Tween delay can't be less than zero.";
+    return _delay = val;
+  }
+
+  inline function get_percent():Float { return delta <= 0 ? 0 : (delta - delay) / duration; }
 
   var _duration:Float = 0;
+  var _delay:Float = 0;
 
 }

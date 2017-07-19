@@ -11,11 +11,11 @@ class MotionComponent implements Component implements Updateable {
   static var uid:Int = 0;
 
   public var name(default, null):String;
-  public var entity:Entity;
-  public var type:String;
-  public var updateable:Bool = true;
-  public var renderable:Bool = false;
-  public var collidable:Bool = false;
+  public var entity(default, null):Entity;
+  public var type(default, null):String;
+  public var updateable(default, null):Bool = true;
+  public var renderable(default, null):Bool = false;
+  public var collidable(default, null):Bool = false;
 
   public var motion:EntityMotion;
 

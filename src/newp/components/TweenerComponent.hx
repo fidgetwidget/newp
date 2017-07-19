@@ -6,16 +6,17 @@ import newp.math.Tween;
 import newp.Entity;
 
 
+// TODO: The tween interaction here should be it's own class - move it out into one.
 class TweenerComponent implements Component implements Updateable {
 
   static var uid:Int = 0;
 
   public var name(default, null):String;
-  public var entity:Entity;
-  public var type:String;
-  public var updateable:Bool = true;
-  public var renderable:Bool = false;
-  public var collidable:Bool = false;
+  public var entity(default, null):Entity;
+  public var type(default, null):String;
+  public var updateable(default, null):Bool = true;
+  public var renderable(default, null):Bool = false;
+  public var collidable(default, null):Bool = false;
   public var tweens:Map<String, Tween>;
   public var allTweens:Array<Tween>;
 

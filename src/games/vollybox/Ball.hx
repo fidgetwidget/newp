@@ -20,18 +20,21 @@ class Ball extends Entity {
   static inline var MAX_SCALE:Float = 3.8;
   static inline var RADIUS:Float = 8;
   static inline var HIT_TIME:Float = 1;
-  inline static var MAX_MOVE_SPEED:Float = 200;
-  inline static var DRAG:Float = 300;
-  inline static var AIR_DRAG:Float = 90;
-  inline static var Z_DRAG:Float = 200;
+  static inline var MAX_MOVE_SPEED:Float = 200;
+  static inline var DRAG:Float = 280;
+  static inline var AIR_DRAG:Float = 30;
+  static inline var SCALE_Z_DIVISOR:Float = 3.333;
+  static inline var SLOW_GRAVITY:Float = 100;
+  static inline var GRAVITY:Float = 200;
+  static inline var Z_HIT:Float = 90;
+  static inline var SLOW_Z_HIT:Float = 60;
 
   var game:VollyBox;
   var field(get, never):PlayField;
 
-  var ball:Sprite;
+  var ball:SpriteComponent;
   var ballSpr:Sprite;
-  var ballSprComp:SpriteComponent;
-  var shadow:Sprite;
+  var shadow:SpriteComponent;
   var lastHitBy:Player = null;
   var inServiceTo:Player = null;
 
@@ -64,16 +67,14 @@ class Ball extends Entity {
   }
 
   function makeSprites() {
-    this.shadow = new Sprite();
+    this.shadow = SpriteComponent.make('background');
     this.drawShadow(this.shadow.graphics);
-    this.addComponent(new SpriteComponent(shadow, 'background'));
+    this.addComponent(shadow);
 
-    this.ball = new Sprite();
-    this.ballSpr = new Sprite();
-    this.ball.addChild(ballSpr);
+    this.ball = SpriteComponent.make('background');
+    this.ballSpr = this.ball.addChild();
     this.drawBall(this.ballSpr.graphics);
-    this.ballSprComp = new SpriteComponent(ball);
-    this.addComponent(this.ballSprComp);
+    this.addComponent(this.ball);
   }
 
   inline function drawBall(g) {
@@ -92,16 +93,14 @@ class Ball extends Entity {
   }
 
   function makeColliders() {
-    this.collider = new Circle(this.shadow, RADIUS);
+    this.collider = new Circle(this.shadow.sprite, RADIUS);
     this.addComponent(new ShapeComponent(collider, ['ball']));
   }
 
   function makeMotion() {
     var motion = new EntityMotion(this);
     motion.drag = DRAG;
-    motion.setDrag(AIR_DRAG, 'z');
     motion.max = MAX_MOVE_SPEED;
-    
     this.addComponent(new MotionComponent(motion));
   }
 
@@ -123,19 +122,29 @@ class Ball extends Entity {
     var dx = xx - this.x;
     var dy = yy - this.y;
     var d = MathUtil.vec_length(dx, dy); // distance
+    var speed = 1; // TODO: change this to be based on an argument coming in.
+
     this.dirX = MathUtil.vec_normalize(d, dx);
     this.dirY = MathUtil.vec_normalize(d, dy);
-    // NOTE: HIT_TIME is temp - how long the ball will take to get to it's destination
-    //  this should be determined by a number of factors, and not just be a constant
+    
     this.airTime = 1;
-    var speed = d * 30;
+    this.z = 2;
+    // set up hit vs hit over hit
+    if (d < 5) { 
+      speed = 30;
+      this.vz = SLOW_Z_HIT;
+      this.az = -SLOW_GRAVITY;
+    } else {
+      speed = 300;
+      this.vz = Z_HIT;
+      this.az = -GRAVITY;
+    }
+
     this.vx = this.dirX * speed;
     this.vy = this.dirY * speed;
-    this.vz = 90;
 
-    this.ballSprComp.layer = 'foreground';
-
-    trace('hit ball: ${this.vx}|${this.vy}|${this.vz}');
+    this.ball.layer = 'foreground';
+    trace('hit ball: $d $x|$y : ${this.vx}|${this.vy}');
   }
 
   // Update
@@ -144,10 +153,8 @@ class Ball extends Entity {
   override public function update() {
     if (this.z > 0) {
       motion.drag = AIR_DRAG;
-      motion.setDrag(Z_DRAG, 'z');
     } else {
       motion.drag = DRAG;
-      motion.setDrag(Z_DRAG, 'z');
     }
     
     super.update();
@@ -156,7 +163,6 @@ class Ball extends Entity {
     } else {
       if (this.airTime > 0) {
         update_inAir();
-        trace('${this.z} : ${this.vx}|${this.vy}|${this.vz}');
       }
     }
   }
@@ -169,16 +175,15 @@ class Ball extends Entity {
   }
 
   function update_inAir():Void {
-    this.z -= 19 * Lib.delta;
 
     if (this.z <= 0) {
       this.z = 0;
       this.airTime = 0;
       this.game.ballHitGround();
-      this.ballSprComp.layer = '';
+      this.ball.layer = '';
     }
 
-    scale = (this.z/2) + 1;
+    scale = (this.z/SCALE_Z_DIVISOR) + 1;
     if (scale < 1) scale = 1;
     this.ball.scaleX = scale;
     this.ball.scaleY = scale;

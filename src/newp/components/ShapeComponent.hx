@@ -2,17 +2,18 @@ package newp.components;
 
 import newp.collision.shapes.Shape;
 
+
 class ShapeComponent implements Component implements Collidable {
 
   static var uid:Int = 0;
 
   public var name(default, null):String;
-  public var entity:Entity;
-  public var type:String;
-  public var updateable:Bool = false;
-  public var renderable:Bool = false;
-  public var collidable:Bool = true;
-  public var shape:Shape;
+  public var entity(default, null):Entity;
+  public var type(default, null):String;
+  public var updateable(default, null):Bool = false;
+  public var renderable(default, null):Bool = false;
+  public var collidable(default, null):Bool = true;
+  public var shape(default, null):Shape;
 
   public function new(?shape:Shape, ?tags:Array<String>, ?name:String) { 
     this.type = Type.getClassName(Type.getClass(this));
