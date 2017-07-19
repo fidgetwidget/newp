@@ -30,6 +30,7 @@ class Ball extends Entity {
 
   var ball:Sprite;
   var ballSpr:Sprite;
+  var ballSprComp:SpriteComponent;
   var shadow:Sprite;
   var lastHitBy:Player = null;
   var inServiceTo:Player = null;
@@ -44,8 +45,6 @@ class Ball extends Entity {
   var travel:Float = 0;
   var scale:Float = 1;
   var yOffset:Float = 0;
-  
-
 
   public var collider:Shape;
   public var onGround(get, never):Bool;
@@ -73,7 +72,8 @@ class Ball extends Entity {
     this.ballSpr = new Sprite();
     this.ball.addChild(ballSpr);
     this.drawBall(this.ballSpr.graphics);
-    this.addComponent(new SpriteComponent(ball, 'foreground'));
+    this.ballSprComp = new SpriteComponent(ball);
+    this.addComponent(this.ballSprComp);
   }
 
   inline function drawBall(g) {
@@ -128,9 +128,12 @@ class Ball extends Entity {
     // NOTE: HIT_TIME is temp - how long the ball will take to get to it's destination
     //  this should be determined by a number of factors, and not just be a constant
     this.airTime = 1;
-    this.vx = this.dirX * 500;
-    this.vy = this.dirY * 500;
-    this.vz = 100;
+    var speed = d * 30;
+    this.vx = this.dirX * speed;
+    this.vy = this.dirY * speed;
+    this.vz = 90;
+
+    this.ballSprComp.layer = 'foreground';
 
     trace('hit ball: ${this.vx}|${this.vy}|${this.vz}');
   }
@@ -152,13 +155,10 @@ class Ball extends Entity {
       update_heldPosition();
     } else {
       if (this.airTime > 0) {
-        update_inPlayPosition();
+        update_inAir();
         trace('${this.z} : ${this.vx}|${this.vy}|${this.vz}');
       }
     }
-
-    this.yOffset = this.z;
-    this.ballSpr.y = -this.yOffset;
   }
 
   function update_heldPosition():Void {
@@ -168,18 +168,23 @@ class Ball extends Entity {
     this.z = 2;
   }
 
-  function update_inPlayPosition():Void {
+  function update_inAir():Void {
     this.z -= 19 * Lib.delta;
-    scale = (this.z/2) + 1;
-    if (scale < 1) scale = 1;
-    this.ball.scaleX = scale;
-    this.ball.scaleY = scale;
 
     if (this.z <= 0) {
       this.z = 0;
       this.airTime = 0;
       this.game.ballHitGround();
+      this.ballSprComp.layer = '';
     }
+
+    scale = (this.z/2) + 1;
+    if (scale < 1) scale = 1;
+    this.ball.scaleX = scale;
+    this.ball.scaleY = scale;
+
+    this.yOffset = this.z;
+    this.ballSpr.y = -this.yOffset;
   } 
 
   // Properties

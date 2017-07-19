@@ -75,7 +75,8 @@ class BasicScene implements Scene {
   // Sprite
   // ======
 
-  public inline function addSprite (sprite:Sprite, ?layer:String = 'camera') :Void {
+  public inline function addSprite (sprite:Sprite, ?layer:String) :Void {
+    layer = layer == null ? 'camera' : layer == '' ? 'camera' : layer;
     this.sprites.addSprite(sprite, layer);
   }
 

@@ -1,5 +1,6 @@
 package newp.components;
 
+import newp.scenes.Scene;
 import openfl.display.Sprite;
 
 class SpriteComponent implements Component implements Renderable implements Updateable {
@@ -13,8 +14,10 @@ class SpriteComponent implements Component implements Renderable implements Upda
   public var renderable:Bool = true;
   public var collidable:Bool = false;
   public var sprite:Sprite;
-  public var layer:String;
+  public var layer(get, set):String;
+  public var scene(default, null):Scene;
   var sync:Bool;
+  var _layer:String;
 
   public function new(?sprite:Sprite, ?layer:String, syncPosition:Bool = true, ?name:String) { 
     this.type = Type.getClassName(Type.getClass(this));
@@ -37,10 +40,31 @@ class SpriteComponent implements Component implements Renderable implements Upda
     this.entity = null;
   }
 
+  public function addedToScene(scene:Scene):Void {
+    this.scene = scene;
+    this.scene.addSprite(this.sprite, this.layer);
+  }
+
+  public function removedFromScene():Void {
+    this.scene.removeSprite(this.sprite);
+    this.scene = null;
+  }
+
+  // Internal
+  // ========
+
   inline function syncPosition(entity:Entity):Void {
     if (entity == null) return;
     this.sprite.x = entity.x;
     this.sprite.y = entity.y;
+  }
+
+  inline function get_layer():String { return this._layer; }
+  inline function set_layer(val:String):String {
+    this._layer = val;
+    if (this.scene != null)
+      this.scene.addSprite(this.sprite, val); // changes the sprite layer
+    return _layer;
   }
 
 }

@@ -114,8 +114,8 @@ class Entity {
   }
 
   public function removedFromScene(s:Scene):Void {
-    this.scene = null;
     for (c in this.components) this.removeComponentFromScene(c);
+    this.scene = null;
   }
 
   inline function addComponentToScene(c:Component) {
@@ -128,9 +128,9 @@ class Entity {
     if (c.collidable) this.removeCollidableFromScene(cast(c, Collidable));
   }
 
-  inline function addRenderableToScene(c:Renderable)      { this.scene.addSprite(c.sprite, c.layer); }
+  inline function addRenderableToScene(c:Renderable)      { c.addedToScene(this.scene); }
 
-  inline function removeRenderableFromScene(c:Renderable) { this.scene.removeSprite(c.sprite); }
+  inline function removeRenderableFromScene(c:Renderable) { c.removedFromScene(); }
 
   inline function addCollidableToScene(c:Collidable)      { this.scene.addCollider(c.shape); }
 

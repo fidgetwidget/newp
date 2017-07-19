@@ -108,7 +108,6 @@ class SpriteCollection implements Collection {
     this.spriteLayerMap[sprite].setChildIndex(sprite, index);
   }
 
-
   // 
 
   inline function get_length():Int { return count; }
