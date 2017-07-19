@@ -4,7 +4,7 @@ import openfl.display.Sprite;
 import newp.collision.shapes.Shape;
 import newp.collision.shapes.Polygon;
 import newp.components.*;
-import newp.math.Motion;
+import newp.entity.EntityMotion;
 import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;
@@ -36,9 +36,9 @@ class Player extends Entity {
     sprite = cast(body, Sprite);
     collider = Polygon.rectangle(body, this.thickness, this.width);
     
-    var motion = new Motion();
+    var motion = new EntityMotion(this);
     motion.drag = 200;
-    motion.max_velocity = 200;
+    motion.max = 200;
 
     this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent(collider));

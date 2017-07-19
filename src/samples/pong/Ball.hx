@@ -4,7 +4,7 @@ import openfl.display.Sprite;
 import newp.collision.shapes.Shape;
 import newp.collision.shapes.Circle;
 import newp.components.*;
-import newp.math.Motion;
+import newp.entity.EntityMotion;
 import newp.math.Dice;
 import newp.utils.Draw;
 import newp.Entity;
@@ -32,9 +32,9 @@ class Ball extends Entity {
     sprite = cast(body, Sprite);
     collider = new Circle(body, this.size);
     
-    var motion = new Motion();
+    var motion = new EntityMotion(this);
     motion.drag = 0;
-    motion.max_velocity = 250;
+    motion.max = 250;
 
     this.addComponent(new SpriteComponent(sprite));
     this.addComponent(new ShapeComponent(collider));

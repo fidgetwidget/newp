@@ -7,71 +7,37 @@ class Motion {
 
   static var MIN_VALUE:Float = 0.0001;
   static var MAX_VALUE:Float = 1000;
+  static var DEFAULT_DRAG:Float = 0.2;
 
-  var acceleration:Point;
-  var velocity:Point;
-  var rotationAccel:Float;
-  var rotationSpeed:Float;
-
-  public var ax(get, set):Float;
-  public var ay(get, set):Float;
-  public var vx(get, set):Float;
-  public var vy(get, set):Float;
-
-  public var ra(get, set):Float;
-  public var rs(get, set):Float;
-
+  public var acceleration:Float;
+  public var a(get, set):Float;
+  public var velocity:Float;
+  public var v(get, set):Float;
   public var drag:Float;
-  public var rDrag:Float;
+  public var max:Float;
 
-  public var target:DisplayObject;
-
-  public var hasTarget(get, never):Bool;
-
-  public var max_velocity:Float;
-  public var max_rotation:Float;
-
-  public function new(drag:Float = 0.2, ?rDrag:Float = null) {
-    this.max_velocity = MAX_VALUE;
-    this.max_rotation = MAX_VALUE;
-    this.acceleration = new Point(0,0);
-    this.velocity = new Point(0,0);
-    this.rotationAccel = 0;
-    this.rotationSpeed = 0;
-    this.drag = drag;
-    this.rDrag = rDrag == null ? drag : rDrag;
+  public function new(?drag:Float, ?max:Float) {
+    this.drag = drag == null ? DEFAULT_DRAG : drag;
+    this.max = max == null ? MAX_VALUE : max;
+    this.acceleration = 0;
+    this.velocity = 0;
   }
 
-  public function update():Void {
-    var d = Lib.delta;
-    this.vx = this.update_velocity(this.vx, this.ax, this.drag,  this.max_velocity, d);
-    this.vy = this.update_velocity(this.vy, this.ay, this.drag,  this.max_velocity, d);
-    this.rs = this.update_velocity(this.rs, this.ra, this.rDrag, this.max_rotation, d);
-    if (hasTarget) { this.apply(this.target); }
-  }
-
-  public function apply(thing:DisplayObject):Void {
-    var d = Lib.delta;
-    thing.x += this.vx * d;
-    thing.y += this.vy * d;
-    thing.rotation += this.rs * d;
-  }
-
-  // +-------------------------
-  // | Setters
-  // +-------------------------
-
-  // TODO: add moveTowards, accelerateTowards, etc functions that set the values for you
-  
-  public function moveAtAngle(speed:Float, angle:Float):Motion {
-    this.vx = Math.cos(angle) * speed;
-    this.vy = Math.sin(angle) * speed;
+  public function update():Motion {
+    this.v = this.update_velocity(this.v, this.a, this.drag, this.max, Lib.delta);
     return this;
   }
 
-  // +-------------------------
-  // | Helpers
-  // +-------------------------
+  public function apply(prop:String, thing:Dynamic):Motion {
+    var val = Reflect.getProperty(thing, prop);
+    // if (val == null) return this;
+    val += this.v * Lib.delta;
+    Reflect.setProperty(thing, prop, val);
+    return this;
+  }
+
+  // Helpers
+  // =======
 
   inline function update_velocity(vel:Float, accel:Float, drag:Float, max:Float, delta:Float):Float {
     if (accel != 0) {
@@ -89,24 +55,13 @@ class Motion {
     return Utils.clamp_float(vel, -max, max);
   }
 
-  // +-------------------------
-  // | Properties
-  // +-------------------------
+  // Properties
+  // ==========
 
-  inline function get_ax():Float { return this.acceleration.x; }
-  inline function set_ax(val:Float):Float { return this.acceleration.x = val; }
-  inline function get_ay():Float { return this.acceleration.y; }
-  inline function set_ay(val:Float):Float { return this.acceleration.y = val; }
-  inline function get_vx():Float { return this.velocity.x; }
-  inline function set_vx(val:Float):Float { return this.velocity.x = val; }
-  inline function get_vy():Float { return this.velocity.y; }
-  inline function set_vy(val:Float):Float { return this.velocity.y = val; }
+  inline function get_a():Float { return this.acceleration; }
+  inline function set_a(val:Float):Float { return this.acceleration = val; }
 
-  inline function get_ra():Float { return this.rotationAccel; }
-  inline function set_ra(val:Float):Float { return this.rotationAccel = val; }
-  inline function get_rs():Float { return this.rotationSpeed; }
-  inline function set_rs(val:Float):Float { return this.rotationSpeed = val; }
-
-  inline function get_hasTarget():Bool { return this.target != null; }
+  inline function get_v():Float { return this.velocity; }
+  inline function set_v(val:Float):Float { return this.velocity = val; }
 
 }

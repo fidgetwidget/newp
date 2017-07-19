@@ -5,8 +5,8 @@ import newp.components.collection.Collection as IComponentCollection;
 import newp.components.collection.ComponentCollection;
 import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
+import newp.entity.EntityMotion;
 import newp.scenes.Scene;
-import newp.math.Motion;
 import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
@@ -26,7 +26,7 @@ class Entity {
   public var body(default, null):DisplayObject;
   public var sprites(get, never):Array<Sprite>;
   public var colliders(get, never):Array<Shape>;
-  public var motion(default, null):Motion;
+  public var motion(default, null):EntityMotion;
 
   public var x(get, set):Float;
   public var y(get, set):Float;
@@ -37,9 +37,12 @@ class Entity {
 
   public var vx(get, set):Float;
   public var vy(get, set):Float;
+  public var vz(get, set):Float;
+  public var rs(get, set):Float;
+
   public var ax(get, set):Float;
   public var ay(get, set):Float;
-  public var rs(get, set):Float;
+  public var az(get, set):Float;
   public var ra(get, set):Float;
 
   public var isRenderable(get, never):Bool;
@@ -168,6 +171,18 @@ class Entity {
     return val;
   }
 
+  inline function get_vz():Float { return this.motion == null ? 0 : this.motion.vz; }
+  inline function set_vz(val:Float):Float {
+    if (this.motion != null) this.motion.vz = val;
+    return val;
+  }
+
+  inline function get_rs():Float { return this.motion == null ? 0 : this.motion.rs; }
+  inline function set_rs(val:Float):Float {
+    if (this.motion != null) this.motion.rs = val;
+    return val;
+  }
+
   inline function get_ax():Float { return this.motion == null ? 0 : this.motion.ax; }
   inline function set_ax(val:Float):Float {
     if (this.motion != null) this.motion.ax = val;
@@ -180,9 +195,9 @@ class Entity {
     return val;
   }
 
-  inline function get_rs():Float { return this.motion == null ? 0 : this.motion.rs; }
-  inline function set_rs(val:Float):Float {
-    if (this.motion != null) this.motion.rs = val;
+  inline function get_az():Float { return this.motion == null ? 0 : this.motion.az; }
+  inline function set_az(val:Float):Float {
+    if (this.motion != null) this.motion.az = val;
     return val;
   }
 
