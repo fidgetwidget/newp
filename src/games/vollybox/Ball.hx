@@ -4,6 +4,7 @@ import newp.components.*;
 import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
+import newp.entity.EntityMotion;
 import newp.math.Utils as MathUtil;
 import newp.math.Easing;
 import newp.utils.Draw;
@@ -19,6 +20,10 @@ class Ball extends Entity {
   static inline var MAX_SCALE:Float = 3.8;
   static inline var RADIUS:Float = 8;
   static inline var HIT_TIME:Float = 1;
+  inline static var MAX_MOVE_SPEED:Float = 200;
+  inline static var DRAG:Float = 300;
+  inline static var AIR_DRAG:Float = 90;
+  inline static var Z_DRAG:Float = 200;
 
   var game:VollyBox;
   var field(get, never):PlayField;
@@ -53,6 +58,7 @@ class Ball extends Entity {
 
     this.makeSprites();
     this.makeColliders();
+    this.makeMotion();
 
     this.x = field.centerX - 60;
     this.y = field.centerY;
@@ -90,6 +96,15 @@ class Ball extends Entity {
     this.addComponent(new ShapeComponent(collider, ['ball']));
   }
 
+  function makeMotion() {
+    var motion = new EntityMotion(this);
+    motion.drag = DRAG;
+    motion.setDrag(AIR_DRAG, 'z');
+    motion.max = MAX_MOVE_SPEED;
+    
+    this.addComponent(new MotionComponent(motion));
+  }
+
   // Methods
   // =======
 
@@ -112,25 +127,38 @@ class Ball extends Entity {
     this.dirY = MathUtil.vec_normalize(d, dy);
     // NOTE: HIT_TIME is temp - how long the ball will take to get to it's destination
     //  this should be determined by a number of factors, and not just be a constant
-    this.airTime = HIT_TIME;
-    this.travelSpeed = d / HIT_TIME;
-    trace('dx: $dx dy: $dy dirX: $dirX dirY: $dirY d: $d');
+    this.airTime = 1;
+    this.vx = this.dirX * 500;
+    this.vy = this.dirY * 500;
+    this.vz = 100;
+
+    trace('hit ball: ${this.vx}|${this.vy}|${this.vz}');
   }
 
   // Update
   // ======
 
   override public function update() {
+    if (this.z > 0) {
+      motion.drag = AIR_DRAG;
+      motion.setDrag(Z_DRAG, 'z');
+    } else {
+      motion.drag = DRAG;
+      motion.setDrag(Z_DRAG, 'z');
+    }
+    
+    super.update();
     if (this.inService) {
       update_heldPosition();
     } else {
-      if (this.airTime > 0) update_inPlayPosition();
+      if (this.airTime > 0) {
+        update_inPlayPosition();
+        trace('${this.z} : ${this.vx}|${this.vy}|${this.vz}');
+      }
     }
 
     this.yOffset = this.z;
     this.ballSpr.y = -this.yOffset;
-
-    super.update();
   }
 
   function update_heldPosition():Void {
@@ -141,28 +169,15 @@ class Ball extends Entity {
   }
 
   function update_inPlayPosition():Void {
-    var d = Lib.delta;
-    this.airTime -= d;
-
-    var p = (HIT_TIME - this.airTime) / HIT_TIME;
-    if (p > 0.5) {
-      scale = Easing.lerp(MAX_SCALE, 1, (p-0.5)*2, Easing.sineIn);
-    } else {
-      scale = Easing.lerp(1.25, MAX_SCALE, p*2, Easing.expoOut);
-    }
-    // trace('p: $p scale: $scale');
+    this.z -= 19 * Lib.delta;
+    scale = (this.z/2) + 1;
     if (scale < 1) scale = 1;
     this.ball.scaleX = scale;
     this.ball.scaleY = scale;
 
-    // update it's movement towards it's destination
-    this.travel += travelSpeed * d;
-    this.x += dirX * travelSpeed * d;
-    this.y += dirY * travelSpeed * d;
-    // trace('pos: $x | $y');
-
-    this.z = (scale * 5) - 5;
-    if (this.z == 0) {
+    if (this.z <= 0) {
+      this.z = 0;
+      this.airTime = 0;
       this.game.ballHitGround();
     }
   } 
