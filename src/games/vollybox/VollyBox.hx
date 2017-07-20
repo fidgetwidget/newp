@@ -114,7 +114,15 @@ class VollyBox extends BasicScene {
   }
 
   public function ballHitGround() {
-    trace('ball hit ground');
+    // trace('ball hit ground');
+    var side = this.ball.x < this.playField.centerX ? 1 : 2;
+    switch (side) {
+      case 1:
+        this.scoreBoard.player2Score += 1;
+
+      case 2:
+        this.scoreBoard.player1Score += 1;
+    }
   }
 
   // adding stuff to the scene on begin

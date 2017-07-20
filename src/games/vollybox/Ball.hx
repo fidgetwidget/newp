@@ -112,7 +112,7 @@ class Ball extends Entity {
     this.vz = 0;
     this.az = 0;
     this.ball.layer = 'foreground';
-    trace('now serving player${player.playerNo}');
+    // trace('now serving player${player.playerNo}');
   }
 
   public function hitBall(player:Player, ?x:Float, ?y:Float) {
@@ -146,7 +146,7 @@ class Ball extends Entity {
     this.vy = this.dirY * speed;
 
     this.ball.layer = 'foreground';
-    trace('hit ball: $d $x|$y : ${this.vx}|${this.vy}');
+    // trace('hit ball: $d $x|$y : ${this.vx}|${this.vy}');
   }
 
   // Update

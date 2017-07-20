@@ -18,11 +18,15 @@ class Player extends Entity {
   inline static var SERVICE_MOVE_SPEED:Int = 200;
   inline static var MAX_MOVE_SPEED:Int = 200;
   inline static var DRAG:Int = 300;
-  inline static var ACTION_TIME:Float = 0.2;
-  inline static var HIT_SIZE:Float = 2;
-  inline static var MAX_HIT_SIZE:Float = 19;
+
+  inline static var BUMP_TIME:Float = 0.4;
+  inline static var HIT_TIME:Float = 0.25;
+
   inline static var BUMP_SCALE:Float = 1.33;
   inline static var HIT_SCALE:Float = 1.25;
+
+  inline static var HIT_SIZE:Float = 2;
+  inline static var MAX_HIT_SIZE:Float = 19;
 
   // Hit types
   inline static var BUMPING:String = "bumping";
@@ -120,8 +124,9 @@ class Player extends Entity {
   inline function drawHitEffect(g) {
     var hitSize = (MAX_HIT_SIZE - HIT_SIZE) / 2;
     Draw.start(g)
-      .lineStyle(4, VollyBox.DARK_SAND)
-      .drawEllipse(-width/2-hitSize, -width/4-hitSize/2, width+hitSize*2, width/2+hitSize);
+      .beginFill(0xffffff, 0.9)
+      .drawEllipse(-width/2-hitSize, -width/4-hitSize/2, width+hitSize*2, width/2+hitSize)
+      .endFill();
   }
 
   inline function drawShadow(g) {
@@ -163,8 +168,8 @@ class Player extends Entity {
   function makeTweener() {
     this.tweener = new TweenerComponent();
     this.addComponent(tweener);
-    this.tweener.add('bump', ACTION_TIME, _bumpUpdate, _bumpDone);
-    this.tweener.add('hit', ACTION_TIME, _hitUpdate, _hitDone);
+    this.tweener.add('bump', BUMP_TIME, _bumpUpdate, _bumpDone);
+    this.tweener.add('hit', HIT_TIME, _hitUpdate, _hitDone);
   }
 
   function makeInputs() {
@@ -288,9 +293,6 @@ class Player extends Entity {
       this.motion.accelerateTowards(BASE_MOVE_SPEED/3, this.x, fy);
     }
 
-    // if (Math.abs(this.ax) > BASE_MOVE_SPEED) this.ax = 0;
-    // if (Math.abs(this.ay) > BASE_MOVE_SPEED) this.ay = 0;
-
     if (this.vx != 0 && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) this.vx *= 0.25;
     if (this.vy != 0 && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) this.vy *= 0.25;
   }
@@ -367,7 +369,7 @@ class Player extends Entity {
   }
 
   inline function _hitBall(shape, collisionData):Void {
-    trace('hit ball');
+    // trace('hit ball');
     var dx:Float = this.ball.x;
     var dy:Float = this.ball.y;
     switch (this.hitType) {

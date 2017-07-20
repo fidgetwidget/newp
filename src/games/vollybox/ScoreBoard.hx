@@ -137,7 +137,7 @@ class ScoreBoard extends Entity {
   inline function get_player2Score():Int { return this._player2Score; }
   inline function set_player2Score(val:Int):Int { 
     this._player2Score = val;
-    this.p2ScoreTF.text = '$_player1Score';
+    this.p2ScoreTF.text = '$_player2Score';
     return val;
   }
 
