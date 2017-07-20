@@ -62,18 +62,21 @@ class VollyBox extends BasicScene {
       e.update();
       for (c in e.colliders) this.colliders.update(c);
     }
-
-    var k = Lib.inputs.keyboard;
-    if (k.pressed(32)) { // Spacebar
-      Lib.debug = !Lib.debug;
-    }
+    this.update_input();
 
     this.update_collisionTests();
     this.sprites.sortLayer('camera');
   }
 
-  public function ballHitGround() {
-    trace('ball hit ground');
+  function update_input() {
+    var k = Lib.inputs.keyboard;
+    if (k.pressed(32)) { // Spacebar
+      Lib.debug = !Lib.debug;
+    }
+
+    if (k.pressed(81)) {
+      ball.serving(player1);
+    }
   }
 
   function update_collisionTests() {
@@ -104,6 +107,10 @@ class VollyBox extends BasicScene {
       player.vy = 0;
       player.ay = 0;
     }
+  }
+
+  public function ballHitGround() {
+    trace('ball hit ground');
   }
 
   // adding stuff to the scene on begin
