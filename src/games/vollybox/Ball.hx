@@ -18,16 +18,16 @@ class Ball extends Entity {
 
   static inline var MAX_HEIGHT:Float = 20;
   static inline var MAX_SCALE:Float = 3.8;
-  static inline var RADIUS:Float = 8;
   static inline var HIT_TIME:Float = 1;
   static inline var MAX_MOVE_SPEED:Float = 200;
   static inline var DRAG:Float = 280;
   static inline var AIR_DRAG:Float = 30;
-  static inline var SCALE_Z_DIVISOR:Float = 3.333;
-  static inline var SLOW_GRAVITY:Float = 100;
-  static inline var GRAVITY:Float = 200;
-  static inline var Z_HIT:Float = 90;
-  static inline var SLOW_Z_HIT:Float = 60;
+  static inline var SCALE_Z_DIVISOR:Float = 8;
+  static inline var SLOW_GRAVITY:Float = 80;
+  static inline var GRAVITY:Float = 100;
+  static inline var SLOW_Z_HIT:Float = 45;
+  static inline var Z_HIT:Float = 60;
+  public static inline var RADIUS:Float = 8;
 
   var game:VollyBox;
   var field(get, never):PlayField;
@@ -110,6 +110,10 @@ class Ball extends Entity {
   public function serving(player:Player) {
     this.inServiceTo = player;
     player.hasBall = true;
+    this.z = 0.2;
+    this.vz = 0;
+    this.az = 0;
+    this.ball.layer = 'foreground';
     trace('now serving player${player.playerNo}');
   }
 
@@ -159,38 +163,44 @@ class Ball extends Entity {
     
     super.update();
     if (this.inService) {
-      update_heldPosition();
+      this.update_heldPosition();
     } else {
       if (this.airTime > 0) {
-        update_inAir();
+        this.update_inAir();
       }
     }
+    this.update_ballScale();
+    this.update_ballOffset();
   }
 
-  function update_heldPosition():Void {
+  inline function update_heldPosition():Void {
     var side = this.inServiceTo.x > this.field.centerX ? -1 : 1;
     this.x = this.inServiceTo.x + 10 * side;
     this.y = this.inServiceTo.y + 4;
-    this.z = 2;
   }
 
-  function update_inAir():Void {
-
+  inline function update_inAir():Void {
     if (this.z <= 0) {
       this.z = 0;
+      this.vz = 0;
+      this.az = 0;
       this.airTime = 0;
       this.game.ballHitGround();
       this.ball.layer = '';
     }
+  } 
 
+  inline function update_ballOffset() {
+    this.yOffset = this.z;
+    this.ballSpr.y = -this.yOffset;
+  }
+
+  inline function update_ballScale() {
     scale = (this.z/SCALE_Z_DIVISOR) + 1;
     if (scale < 1) scale = 1;
     this.ball.scaleX = scale;
     this.ball.scaleY = scale;
-
-    this.yOffset = this.z;
-    this.ballSpr.y = -this.yOffset;
-  } 
+  }
 
   // Properties
   // ==========
