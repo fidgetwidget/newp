@@ -64,15 +64,24 @@ class EntityMotion {
     return this;
   }
 
-  public function moveTowardTarget(speed:Float, target:Point):EntityMotion {
-    var dx = this.entity.x - target.x;
-    var dy = this.entity.y - target.y;
+  public function moveTowards(speed:Float, x:Float, y:Float):EntityMotion {
+    var dx = x - this.entity.x;
+    var dy = y - this.entity.y;
     var l = MathUtils.vec_length(dx, dy);
     this.vx = MathUtils.vec_normalize(l, dx) * speed;
     this.vy = MathUtils.vec_normalize(l, dy) * speed;
     return this;
   }
 
+  public function accelerateTowards(accel:Float, x:Float, y:Float):EntityMotion {
+    var dx = x - this.entity.x;
+    var dy = y - this.entity.y;
+    var l = MathUtils.vec_length(dx, dy);
+    this.ax = MathUtils.vec_normalize(l, dx) * accel;
+    this.ay = MathUtils.vec_normalize(l, dy) * accel;
+    return this;
+  }
+ 
   // Internal
   // ========
 
