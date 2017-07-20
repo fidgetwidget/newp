@@ -80,10 +80,10 @@ class ScoreBoard extends Entity {
       .beginFill(0x555555, 0.1)
       .drawEllipse(-WIDTH/2 - 1, -5, WIDTH+2, 10)
       .endFill()
-      .beginFill(0xfff8dc)
+      .beginFill(VollyBox.SAND)
       .drawRect(-WIDTH/2, -HEIGHT, WIDTH, HEIGHT)
       .endFill()
-      .lineStyle(1, 0xf5deb3)
+      .lineStyle(1, VollyBox.DARK_SAND)
       .drawRect(-WIDTH/2, -HEIGHT, WIDTH, HEIGHT);
   }
 

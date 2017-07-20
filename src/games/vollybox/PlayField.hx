@@ -10,7 +10,6 @@ class PlayField extends Sprite {
 
   public inline static var WIDTH:Int = 500;
   public inline static var HEIGHT:Int = 300;
-  inline static var FIELD_COLOR:Int = 0xfff8dc;
 
   var field:Sprite;
   
@@ -34,7 +33,7 @@ class PlayField extends Sprite {
   function drawField(g) {
     Draw.start(g)
       .clear()
-      .beginFill(FIELD_COLOR)
+      .beginFill(VollyBox.SAND)
       .drawRect(0, 0, WIDTH, HEIGHT)
       .endFill();
   }

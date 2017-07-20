@@ -45,8 +45,9 @@ class Player extends Entity {
   var tweener:TweenerComponent;
   var inputs:Map<String, Int>;
   // Sprites
-  var box:Sprite;
-  var shadow:Sprite;
+  var boxSpr:Sprite;
+  var shadowSpr:Sprite;
+  var hitEffectSpr:Sprite;
   var mask:Sprite;
   var collisionData:ShapeCollision;
   var isCUP:Bool = false;
@@ -87,25 +88,40 @@ class Player extends Entity {
   function makeSprites() {
     var parent = cast(this.body, Sprite);
 
-    this.box = new Sprite();
-    this.shadow = new Sprite();
-    this.shadow.y = height/2;
+    this.boxSpr = new Sprite();
 
-    this.drawBox(this.box.graphics);
-    this.drawShadow(this.shadow.graphics);
+    this.hitEffectSpr = new Sprite();
+    this.hitEffectSpr.y = height / 2;
 
-    parent.addChild(shadow);
-    parent.addChild(box);
+    this.shadowSpr = new Sprite();
+    this.shadowSpr.y = height / 2;
+
+    this.drawBox(this.boxSpr.graphics);
+    this.drawHitEffect(this.hitEffectSpr.graphics);
+    this.drawShadow(this.shadowSpr.graphics);
+
+    parent.addChild(this.shadowSpr);
+    parent.addChild(this.hitEffectSpr);
+    parent.addChild(this.boxSpr);
 
     this.addComponent(new SpriteComponent(parent));
+
+    this.hitEffectSpr.width = HIT_SIZE;
   }
 
   inline function drawBox(g) {
     Draw.start(g)
-      .beginFill(0xf5deb3)
-      .lineStyle(1, 0xfff8dc)
+      .beginFill(VollyBox.DIRT)
+      .lineStyle(1, VollyBox.DARK_SAND)
       .drawRect(-width/2, -height/2, width, height)
       .endFill();
+  }
+
+  inline function drawHitEffect(g) {
+    var hitSize = (MAX_HIT_SIZE - HIT_SIZE) / 2;
+    Draw.start(g)
+      .lineStyle(4, VollyBox.DARK_SAND)
+      .drawEllipse(-width/2-hitSize, -width/4-hitSize/2, width+hitSize*2, width/2+hitSize);
   }
 
   inline function drawShadow(g) {
@@ -125,7 +141,7 @@ class Player extends Entity {
   function makeColliders() {
     this.mask = new Sprite();
     this.drawMask(mask.graphics);
-    this.shadow.addChild(this.mask);
+    this.shadowSpr.addChild(this.mask);
 
     this.addComponent(new SpriteComponent(mask));
 
@@ -284,18 +300,22 @@ class Player extends Entity {
       if (_bounceVal > _maxBounce) { _bounceDir = -1; _bounceVal = _maxBounce; }
       if (_bounceVal < 0) {_bounceDir = 1; _bounceVal = 0; }
       _bounceVal += _bounceDir * Lib.delta * _bounceSpeed;
-      this.box.y = -_bounceVal;
+      this.boxSpr.y = -_bounceVal;
     } else {
-      this.box.y = 0;
+      this.boxSpr.y = 0;
       _bounceVal = 0;
       _bounceDir = 1;
     } // moving
-    this.box.scaleX = scale;
-    this.box.scaleY = scale;
+    this.boxSpr.scaleX = scale;
+    this.boxSpr.scaleY = scale;
   }
 
   inline function update_hitAnimation() {
-
+    if (this.hitType == BUMPING) {
+      this.hitEffectSpr.width = this.hitRadius * 2;
+    } else {
+      this.hitEffectSpr.width = 0;
+    }
   }
 
   inline function _bump() {
@@ -365,8 +385,6 @@ class Player extends Entity {
         this.ball.hitBall(this, dx, dy);
     }
     this.hasBall = false;
-    this.actionDelayed = false;
-    this.hitType = NONE;
   }
 
   inline function setHitRadius() { this.hitCollider.radius = this.hitRadius; }

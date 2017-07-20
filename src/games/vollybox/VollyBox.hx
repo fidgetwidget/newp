@@ -12,6 +12,10 @@ import openfl.display.Sprite;
 
 class VollyBox extends BasicScene {
 
+  public static inline var DARK_SAND:Int = 0xd3c7a2;
+  public static inline var SAND:Int = 0xfff8dc;
+  public static inline var DIRT:Int = 0xf5deb3;
+
   public var player1:Player;
   public var player2:Player;
   public var ball:Ball;
