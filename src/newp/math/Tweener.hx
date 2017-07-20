@@ -1,4 +1,4 @@
-package newp.components;
+package newp.math;
 
 
 // TODO: The tween interaction here should be it's own class - move it out into one.

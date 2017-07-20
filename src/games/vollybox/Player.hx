@@ -4,7 +4,6 @@ import newp.components.*;
 import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
-import newp.entity.EntityMotion;
 import newp.math.Utils as MathUtil;
 import newp.math.Easing;
 import newp.utils.Draw;
@@ -139,12 +138,10 @@ class Player extends Entity {
   }
 
   // Motion
-  function makeMotion() {
-    var motion = new EntityMotion(this);
-    motion.drag = DRAG;
-    motion.max = MAX_MOVE_SPEED;
-    
-    this.addComponent(new MotionComponent(motion));
+  function makeMotion() {    
+    this.addComponent(new MotionComponent());
+    this.motion.drag = DRAG;
+    this.motion.max = MAX_MOVE_SPEED;
   }
 
   function makeTweener() {

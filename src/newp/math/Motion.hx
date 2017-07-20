@@ -1,67 +1,81 @@
 package newp.math;
 
-import openfl.geom.Point;
-import openfl.display.DisplayObject;
 
 class Motion {
 
-  static var MIN_VALUE:Float = 0.0001;
-  static var MAX_VALUE:Float = 1000;
-  static var DEFAULT_DRAG:Float = 0.2;
+  var motionPropertiesMap:Map<String, MotionProperty>;
 
-  public var acceleration:Float;
-  public var a(get, set):Float;
-  public var velocity:Float;
-  public var v(get, set):Float;
-  public var drag:Float;
-  public var max:Float;
-
-  public function new(?drag:Float, ?max:Float) {
-    this.drag = drag == null ? DEFAULT_DRAG : drag;
-    this.max = max == null ? MAX_VALUE : max;
-    this.acceleration = 0;
-    this.velocity = 0;
+  public function new() {
+    this.motionPropertiesMap = new Map();
   }
 
-  public function update():Motion {
-    this.v = this.update_velocity(this.v, this.a, this.drag, this.max, Lib.delta);
-    return this;
-  }
-
-  public function apply(prop:String, thing:Dynamic):Motion {
-    var val = Reflect.getProperty(thing, prop);
-    // if (val == null) return this;
-    val += this.v * Lib.delta;
-    Reflect.setProperty(thing, prop, val);
-    return this;
-  }
-
-  // Helpers
+  // Methods
   // =======
 
-  inline function update_velocity(vel:Float, accel:Float, drag:Float, max:Float, delta:Float):Float {
-    if (accel != 0) {
-      vel += accel * delta;
-    } else if (drag != 0) {
-      var d = drag * delta;
-      if (vel - d > 0) {
-        vel -= d;
-      } else if (vel + d < 0) {
-        vel += d;
-      } else {
-        vel = 0;
-      }
-    }
-    return Utils.clamp_float(vel, -max, max);
+  public function update(target:Dynamic):Void {
+    for (p in this.motionPropertiesMap.keys()) this.updateMotionProp(p, target);
   }
 
-  // Properties
-  // ==========
+  public function addProperty(prop:Dynamic):Motion {
+    if (Std.is(prop, Array)) {
+      var array:Array<String> = cast(prop);
+      for (p in array) this.setProp(p, new MotionProperty());
+    } else if (Std.is(prop, String)) {
+      var p:String = cast(prop);
+      this.setProp(p, new MotionProperty());
+    } else {
+      throw "Invalid prop. Must be either a String or an Array";
+    }
+    
+    return this;
+  }
 
-  inline function get_a():Float { return this.acceleration; }
-  inline function set_a(val:Float):Float { return this.acceleration = val; }
+  public function a(prop:String, ?val:Float):Float {
+    var m = this.getProp(prop);
+    if (val != null) m.a = val;
+    return m.a;
+  }
 
-  inline function get_v():Float { return this.velocity; }
-  inline function set_v(val:Float):Float { return this.velocity = val; }
+  public function v(prop:String, ?val:Float):Float {
+    var m = this.getProp(prop);
+    if (val != null) m.v = val;
+    return m.v;
+  }
+
+  public function setDrag(val:Float, ?prop:String) {
+    if (prop != null) {
+      this.motionPropertiesMap[prop].drag = val;
+    } else {
+      for (p in this.motionPropertiesMap.keys()) this.motionPropertiesMap[p].drag = val;
+    }
+    return val;
+  }
+
+  public function setMax(val:Float, ?prop:String) {
+    if (prop != null) {
+      this.motionPropertiesMap[prop].max = val;
+    } else {
+      for (p in this.motionPropertiesMap.keys()) this.motionPropertiesMap[p].max = val;
+    }
+    return val;
+  }
+ 
+  // Internal
+  // ========
+
+  inline function setProp(prop:String, val:MotionProperty) {
+    this.motionPropertiesMap.set(prop, val);
+  }
+
+  inline function getProp(prop:String):MotionProperty {
+    if (!this.motionPropertiesMap.exists(prop)) throw 'Invalid Property $prop';
+    return this.motionPropertiesMap.get(prop);
+  }
+
+  inline function updateMotionProp(prop:String, target:Dynamic) {
+    this.motionPropertiesMap[prop]
+        .update()
+        .apply(prop, target);
+  }
 
 }

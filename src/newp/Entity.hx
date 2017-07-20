@@ -5,7 +5,6 @@ import newp.components.collection.Collection as IComponentCollection;
 import newp.components.collection.ComponentCollection;
 import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
-import newp.entity.EntityMotion;
 import newp.scenes.Scene;
 import openfl.display.DisplayObject;
 import openfl.display.Sprite;
@@ -26,7 +25,7 @@ class Entity {
   public var body(default, null):DisplayObject;
   public var sprites(get, never):Array<Sprite>;
   public var colliders(get, never):Array<Shape>;
-  public var motion(default, null):EntityMotion;
+  public var motion(default, null):MotionComponent;
 
   public var x(get, set):Float;
   public var y(get, set):Float;
@@ -72,11 +71,11 @@ class Entity {
   public function addComponent(c:Component):Entity {
     if (c.type == Type.getClassName(TransformComponent)) {
       if (this.hasComponent(TransformComponent)) throw "An Entity can have only one TransformComponent";
-      this.body = cast (c, TransformComponent).body;
+      this.body = cast (c, TransformComponent).body; // TODO: make the body be the component
     }
     if (c.type == Type.getClassName(MotionComponent)) {
       if (this.hasComponent(MotionComponent)) throw "An Entity can have only one MotionComponent";
-      this.motion = cast (c, MotionComponent).motion;
+      this.motion = cast (c, MotionComponent);
     }
 
     this.components.add(c);

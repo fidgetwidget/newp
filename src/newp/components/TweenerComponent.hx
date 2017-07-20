@@ -1,12 +1,10 @@
 package newp.components;
 
-import openfl.geom.Point;
-import openfl.display.DisplayObject;
 import newp.math.Tween;
+import newp.math.Tweener;
 import newp.Entity;
 
 
-// TODO: The tween interaction here should be it's own class - move it out into one.
 class TweenerComponent implements Component implements Updateable {
 
   static var uid:Int = 0;
@@ -17,51 +15,23 @@ class TweenerComponent implements Component implements Updateable {
   public var updateable(default, null):Bool = true;
   public var renderable(default, null):Bool = false;
   public var collidable(default, null):Bool = false;
-  public var tweens:Map<String, Tween>;
-  public var allTweens:Array<Tween>;
+  public var tweener:Tweener;
 
   public function new(?name:String) {
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++TweenerComponent.uid}' : name;
-    this.tweens = new Map();
-    this.allTweens = [];
+    this.tweener = new Tweener();
   }
 
-  public function add(name:String, duration:Float, ?onStep:Float->Tween->Void, ?onDone:Tween->Void):Tween {
-    var tween:Tween;
-    if (tweens.exists(name)) {
-      tween = tweens.get(name).restart();
-      tween.duration = duration;
-    } else {
-      tween = new Tween(duration);
-      this.allTweens.push(tween);
-    }
-    tween.onStep = onStep;
-    tween.onDone = onDone;
-    tween.pause();
-    this.tweens.set(name, tween);
-    return tween;
-  }
-
-  public function get(name:String):Tween {
-    return this.tweens.get(name);
-  }
-
-  public function start(name:String):Void {
-    this.tweens.get(name).restart().unpause();
-  }
-
-  public function pause(name:String):Void {
-    this.tweens.get(name).pause();
-  }
-
-  public function unpause(name:String):Void {
-    this.tweens.get(name).unpause();
-  }
+  // Updateable
+  // ==========
 
   public function update():Void {
-    for (t in allTweens) t.update();
+    this.tweener.update();
   }
+
+  // Component
+  // =========
 
   public function addedToEntity(e:Entity):Void {
     this.entity = e;
@@ -69,6 +39,32 @@ class TweenerComponent implements Component implements Updateable {
 
   public function removedFromEntity(e:Entity):Void {
     this.entity = null;
+  }
+
+  // Methods
+  // =======
+
+  public function add(name:String, duration:Float, ?onStep:Float->Tween->Void, ?onDone:Tween->Void):Tween {
+    var tween = this.tweener.add(name, duration);
+    if (onStep != null) tween.onStep = onStep;
+    if (onDone != null) tween.onDone = onDone;
+    return tween;
+  }
+
+  public function get(name:String):Tween {
+    return this.tweener.get(name);
+  }
+
+  public function start(name:String):Void {
+    this.tweener.start(name);
+  }
+
+  public function pause(name:String):Void {
+    this.tweener.pause(name);
+  }
+
+  public function unpause(name:String):Void {
+    this.tweener.unpause(name);
   }
 
 }
