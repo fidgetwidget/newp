@@ -7,9 +7,9 @@ class MotionProperty {
   static var MAX_VALUE:Float = 1000;
   static var DEFAULT_DRAG:Float = 0.2;
 
-  public var acceleration:Float;
+  public var acceleration(get, set):Float;
+  public var velocity(get, set):Float;
   public var a(get, set):Float;
-  public var velocity:Float;
   public var v(get, set):Float;
   public var drag:Float;
   public var max:Float;
@@ -17,8 +17,8 @@ class MotionProperty {
   public function new(?drag:Float, ?max:Float) {
     this.drag = drag == null ? DEFAULT_DRAG : drag;
     this.max = max == null ? MAX_VALUE : max;
-    this.acceleration = 0;
-    this.velocity = 0;
+    _a = 0;
+    _v = 0;
   }
 
   public function update():MotionProperty {
@@ -31,6 +31,14 @@ class MotionProperty {
     // if (val == null) return this;
     val += this.v * Lib.delta;
     Reflect.setProperty(target, prop, val);
+    return this;
+  }
+
+  public function copyFrom(mProp:MotionProperty):MotionProperty {
+    this.drag = mProp.drag;
+    this.max = mProp.max;
+    this._a = mProp.a;
+    this._v = mProp.v;
     return this;
   }
 
@@ -56,10 +64,19 @@ class MotionProperty {
   // Properties
   // ==========
 
-  inline function get_a():Float { return this.acceleration; }
-  inline function set_a(val:Float):Float { return this.acceleration = val; }
+  inline function get_acceleration():Float { return this._a; }
+  inline function set_acceleration(val:Float):Float { return this._a = val; }
 
-  inline function get_v():Float { return this.velocity; }
-  inline function set_v(val:Float):Float { return this.velocity = val; }
+  inline function get_velocity():Float { return this._v; }
+  inline function set_velocity(val:Float):Float { return this._v = val; }
+
+  inline function get_a():Float { return this._a; }
+  inline function set_a(val:Float):Float { return this._a = val; }
+
+  inline function get_v():Float { return this._v; }
+  inline function set_v(val:Float):Float { return this._v = val; }
+
+  var _a:Float = 0;
+  var _v:Float = 0;
 
 }
