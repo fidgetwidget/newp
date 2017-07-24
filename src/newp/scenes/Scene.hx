@@ -1,11 +1,12 @@
 package newp.scenes;
 
 import newp.collision.shapes.Shape;
-import newp.display.collection.Collection as SpriteCollection;
+import newp.display.collection.Collection as DisplayCollection;
 import newp.entity.collection.Collection as EntityCollection;
 import newp.Lib;
-import openfl.display.Sprite;
 import openfl.display.DisplayObjectContainer;
+import openfl.display.DisplayObject;
+import openfl.display.Sprite;
 
 interface Scene {
   
@@ -15,7 +16,7 @@ interface Scene {
   public var y (get, set) :Float;
 
   // public var entities:EntityCollection;
-  // public var sprites:SpriteCollection;
+  // public var sprites:DisplayCollection;
 
 
   public function update () :Void;
@@ -35,9 +36,9 @@ interface Scene {
   // Sprite
   // ======
 
-  public function addSprite (sprite:Sprite, ?layer:String) :Void;
-  public function removeSprite (sprite:Sprite) :Void;
-  public function setSpriteIndex (sprite:Sprite, index:Int) :Void;
+  public function addSprite (graphic:DisplayObject, ?layer:String) :Void;
+  public function removeSprite (graphic:DisplayObject) :Void;
+  public function setSpriteIndex (graphic:DisplayObject, index:Int) :Void;
 
   // Collider
   // ========

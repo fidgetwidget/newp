@@ -1,19 +1,20 @@
 package newp.display;
 
+import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 
 class Layer {
 
-  var items:Array<Sprite>;
-  var sortFunc:Sprite->Sprite->Int;
+  var items:Array<DisplayObject>;
+  var sortFunc:DisplayObject->DisplayObject->Int;
 
   public var name(default, null):String;
   public var sortable(default, null):Bool;
   public var container(default, null):DisplayObjectContainer;
-  public var sprtieCount(get, never):Int;
+  public var count(get, never):Int;
 
-  public function new(name:String, ?sortFunc:Sprite->Sprite->Int) {
+  public function new(name:String, ?sortFunc:DisplayObject->DisplayObject->Int) {
     this.name = name;
     this.items = [];
     this.container = new Sprite();
@@ -29,7 +30,7 @@ class Layer {
     }
   }
 
-  public function sortBy(?func:Sprite->Sprite->Int) {
+  public function sortBy(?func:DisplayObject->DisplayObject->Int) {
     this.sortFunc = func;
     this.sortable = this.sortFunc != null;
     if (this.sortable) this.sort();
@@ -38,26 +39,26 @@ class Layer {
   // Sprite Methods
   // ==============
 
-  public function contains(sprite:Sprite):Bool {
-    return this.container.contains(sprite);
+  public function contains(graphic:DisplayObject):Bool {
+    return this.container.contains(graphic);
   }
 
-  public function add(sprite:Sprite):Void {
-    this.items.push(sprite);
-    this.container.addChild(sprite);
+  public function add(graphic:DisplayObject):Void {
+    this.items.push(graphic);
+    this.container.addChild(graphic);
   }
 
-  public function remove(sprite:Sprite):Void {
-    this.items.remove(sprite);
-    this.container.removeChild(sprite);
+  public function remove(graphic:DisplayObject):Void {
+    this.items.remove(graphic);
+    this.container.removeChild(graphic);
   }
 
-  public function setChildIndex(sprite:Sprite, index:Int):Void {
-    if (!this.container.contains(sprite)) return;
-    this.container.setChildIndex(sprite, index);
+  public function setChildIndex(graphic:DisplayObject, index:Int):Void {
+    if (!this.container.contains(graphic)) return;
+    this.container.setChildIndex(graphic, index);
   }
 
 
-  inline function get_sprtieCount():Int { return this.items.length; }
+  inline function get_count():Int { return this.items.length; }
 
 }

@@ -2,14 +2,15 @@ package newp.display.collection;
 
 import newp.display.Layer;
 import openfl.display.DisplayObjectContainer;
+import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 
-class SpriteCollection implements Collection {
+class DisplayCollection implements Collection {
 
   var layerNames:Array<String>;
   var layers:Map<String, Layer>;
-  var spriteLayerMap:Map<Sprite, Layer>;
+  var layerMap:Map<DisplayObject, Layer>;
   var count:Int = 0;
 
   public var length(get, never):Int;
@@ -20,7 +21,7 @@ class SpriteCollection implements Collection {
     this.container = new Sprite();
     this.layers = new Map();
     this.layerNames = [];
-    this.spriteLayerMap = new Map();
+    this.layerMap = new Map();
     // if we have layers to add
     for (name in layerNames) {
       this.addLayer(name);
@@ -58,7 +59,7 @@ class SpriteCollection implements Collection {
     this.layers[name].container.visible = false;
   }
 
-  public function sortLayer(name:String, ?sortFunc:Sprite->Sprite->Int):Void {
+  public function sortLayer(name:String, ?sortFunc:DisplayObject->DisplayObject->Int):Void {
     if (!this.layers.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
     
     var layer = this.layers[name];
@@ -74,8 +75,8 @@ class SpriteCollection implements Collection {
   // Sprite Methods
   // ==============
 
-  // add new, or adjust the layer of a sprite
-  public function addSprite(sprite:Sprite, ?layer:String):Void {
+  // add new, or adjust the layer of a graphic
+  public function addSprite(graphic:DisplayObject, ?layer:String):Void {
     if (layer == null) {
       var i = this.layerNames.length - 1;
       if (i < 0) throw "There must be a layer before we can add a Sprite to it";
@@ -84,28 +85,28 @@ class SpriteCollection implements Collection {
 
     if (!this.layers.exists(layer)) throw 'Layer[${layer}] doesn\'t Exist';
 
-    if (this.spriteLayerMap.exists(sprite)) {
-      this.spriteLayerMap[sprite].remove(sprite);
+    if (this.layerMap.exists(graphic)) {
+      this.layerMap[graphic].remove(graphic);
     } else {
       count++;
     }
 
-    this.spriteLayerMap.set(sprite, this.layers[layer]);
-    this.layers[layer].add(sprite);
+    this.layerMap.set(graphic, this.layers[layer]);
+    this.layers[layer].add(graphic);
   }
 
-  public function removeSprite(sprite:Sprite):Void {
-    if (!this.spriteLayerMap.exists(sprite)) return;
+  public function removeSprite(graphic:DisplayObject):Void {
+    if (!this.layerMap.exists(graphic)) return;
 
-    this.spriteLayerMap[sprite].remove(sprite);
-    this.spriteLayerMap.remove(sprite);
+    this.layerMap[graphic].remove(graphic);
+    this.layerMap.remove(graphic);
     count--;
   }
 
-  public function setSpriteIndex(sprite:Sprite, index:Int):Void {
-    if (!this.spriteLayerMap.exists(sprite)) return;
+  public function setSpriteIndex(graphic:DisplayObject, index:Int):Void {
+    if (!this.layerMap.exists(graphic)) return;
 
-    this.spriteLayerMap[sprite].setChildIndex(sprite, index);
+    this.layerMap[graphic].setChildIndex(graphic, index);
   }
 
   // 

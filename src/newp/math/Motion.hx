@@ -5,8 +5,9 @@ class Motion {
 
   var motionPropertiesMap:Map<String, MotionProperty>;
 
-  public function new() {
+  public function new(?properties:Array<String>) {
     this.motionPropertiesMap = new Map();
+    if (properties != null) this.addProperty(properties);
   }
 
   // Methods
@@ -58,6 +59,20 @@ class Motion {
       for (p in this.motionPropertiesMap.keys()) this.motionPropertiesMap[p].max = val;
     }
     return val;
+  }
+
+  public function copyFrom(motion:Motion):Motion {
+    for (p in motion.motionPropertiesMap.keys()) {
+      var prop:MotionProperty;
+      if (this.motionPropertiesMap.exists(p)) 
+        prop = this.motionPropertiesMap.get(p);
+      else 
+        prop = new MotionProperty();
+      
+      prop.copyFrom(motion.motionPropertiesMap.get(p));
+      this.motionPropertiesMap.set(p, prop);
+    }
+    return this;
   }
  
   // Internal

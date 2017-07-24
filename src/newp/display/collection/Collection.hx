@@ -1,7 +1,7 @@
 package newp.display.collection;
 
 import openfl.display.DisplayObjectContainer;
-import openfl.display.Sprite;
+import openfl.display.DisplayObject;
 
 
 interface Collection {
@@ -20,16 +20,16 @@ interface Collection {
 
   public function hideLayer(name:String):Void;
 
-  public function sortLayer(name:String, ?sortFunc:Sprite->Sprite->Int):Void ;
+  public function sortLayer(name:String, ?sortFunc:DisplayObject->DisplayObject->Int):Void ;
 
   // Sprite Methods
   // ==============
 
-  // add new, or adjust the layer of a sprite
-  public function addSprite(sprite:Sprite, ?layer:String):Void;
+  // add new, or adjust the layer of a graphic
+  public function addSprite(graphic:DisplayObject, ?layer:String):Void;
 
-  public function removeSprite(sprite:Sprite):Void;
+  public function removeSprite(graphic:DisplayObject):Void;
 
-  public function setSpriteIndex(sprite:Sprite, index:Int):Void;
+  public function setSpriteIndex(graphic:DisplayObject, index:Int):Void;
 
 }

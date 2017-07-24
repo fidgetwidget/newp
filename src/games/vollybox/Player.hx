@@ -10,6 +10,7 @@ import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;
 import openfl.display.Sprite;
+import openfl.display.Shape as Graphic;
 
 
 class Player extends Entity {
@@ -34,27 +35,28 @@ class Player extends Entity {
   inline static var NONE:String = "";
 
   var game:VollyBox;
-
   var field(get, never):PlayField;
   var ball(get, never):Ball;
+  var tweener:TweenerComponent;
+  // Logic (& IO)
+  var isCUP:Bool = false;
+  var inputs:Map<String, Int>;
+  var speed:Float;
+  var actionDelayed:Bool = false; // if the player is trying to hit the ball
+  // Visual
   var width:Float;
   var height:Float;
   var scale:Float = 1;
-  var speed:Float;
-  var hitDistance(get, set):Float; // how far away from the player they can still hit the ball
-  var hitRadius(get, never):Float;
-  var actionDelayed:Bool = false; // if the player is trying to hit the ball
-  var hitType:String = NONE; // which type of hitting the ball the player has triggered
-  var hitScale:Float = 0;
-  var tweener:TweenerComponent;
-  var inputs:Map<String, Int>;
-  // Sprites
-  var boxSpr:Sprite;
+  var boxSpr:Graphic;
   var shadowSpr:Sprite;
-  var hitEffectSpr:Sprite;
+  var hitEffectSpr:Graphic;
+  // Collision
   var mask:Sprite;
   var collisionData:ShapeCollision;
-  var isCUP:Bool = false;
+  var hitDistance(get, set):Float; // how far away from the player they can still hit the ball
+  var hitRadius(get, never):Float;
+  var hitType:String = NONE; // which type of hitting the ball the player has triggered
+  var hitScale:Float = 0;
 
   public var playerNo(default, null):Int;
   public var boxCollider:Shape;
@@ -92,9 +94,9 @@ class Player extends Entity {
   function makeSprites() {
     var parent = cast(this.body, Sprite);
 
-    this.boxSpr = new Sprite();
+    this.boxSpr = new Graphic();
 
-    this.hitEffectSpr = new Sprite();
+    this.hitEffectSpr = new Graphic();
     this.hitEffectSpr.y = height / 2;
 
     this.shadowSpr = new Sprite();

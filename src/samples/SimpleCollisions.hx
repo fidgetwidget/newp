@@ -1,17 +1,18 @@
 package samples;
 
-import openfl.text.Font;
-import openfl.text.TextField;
-import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
-import openfl.display.FPS;
-import openfl.display.Sprite;
 import newp.scenes.SimpleScene;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 import newp.math.Dice;
 import newp.utils.Draw;
 import newp.Lib;
+import openfl.text.Font;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
+import openfl.display.FPS;
+import openfl.display.DisplayObject;
+import openfl.display.Sprite;
 
 
 class SimpleCollisions extends SimpleScene {
@@ -32,7 +33,7 @@ class SimpleCollisions extends SimpleScene {
   }
 
   // Adjust it to add them to a different layer
-  public override function addSprite(sprite:Sprite, ?layer:String):Void {
+  public override function addSprite(sprite:DisplayObject, ?layer:String):Void {
     this.spriteLayer.addChild(sprite);
     this.sprites.push(sprite);
   }

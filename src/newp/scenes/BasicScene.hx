@@ -4,8 +4,8 @@ import newp.collision.collections.Collection as IShapeCollection;
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.collision.shapes.Shape;
-import newp.display.collection.Collection as ISpriteCollection;
-import newp.display.collection.SpriteCollection;
+import newp.display.collection.Collection as IDisplayCollection;
+import newp.display.collection.DisplayCollection;
 import newp.entity.collection.Collection as IEntityCollection;
 import newp.entity.collection.EntityCollection;
 import newp.Lib;
@@ -17,7 +17,7 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  public var sprites:ISpriteCollection;
+  public var sprites:IDisplayCollection;
   
   public var entities:IEntityCollection;
 
@@ -51,7 +51,7 @@ class BasicScene implements Scene {
   
   function init_entities():Void   { this.entities = new EntityCollection();  }
 
-  function init_sprites():Void    { this.sprites = new SpriteCollection(['camera', 'hud', 'debug']); }
+  function init_sprites():Void    { this.sprites = new DisplayCollection(['camera', 'hud', 'debug']); }
 
   function init_colliders():Void  { this.colliders = new ShapeBins(); }
 
@@ -75,16 +75,16 @@ class BasicScene implements Scene {
   // Sprite
   // ======
 
-  public inline function addSprite (sprite:Sprite, ?layer:String) :Void {
+  public inline function addSprite (sprite:DisplayObject, ?layer:String) :Void {
     layer = layer == null ? 'camera' : layer == '' ? 'camera' : layer;
     this.sprites.addSprite(sprite, layer);
   }
 
-  public inline function removeSprite (sprite:Sprite) :Void {
+  public inline function removeSprite (sprite:DisplayObject) :Void {
     this.sprites.removeSprite(sprite);
   }
 
-  public inline function setSpriteIndex (sprite:Sprite, index:Int) :Void {
+  public inline function setSpriteIndex (sprite:DisplayObject, index:Int) :Void {
     this.sprites.setSpriteIndex(sprite, index);
   }
 

@@ -2,7 +2,7 @@ package games.vollybox;
 
 import newp.collision.response.ShapeCollision;
 import newp.collision.collections.ShapeBins;
-import newp.display.collection.SpriteCollection;
+import newp.display.collection.DisplayCollection;
 import newp.scenes.BasicScene;
 import newp.math.Utils as MathUtil;
 import newp.utils.Draw;
@@ -50,9 +50,9 @@ class VollyBox extends BasicScene {
   }
 
   override function init_sprites() {
-    this.sprites = new SpriteCollection(['background', 'camera', 'foreground', 'hud', 'debug']);
+    this.sprites = new DisplayCollection(['background', 'camera', 'foreground', 'hud', 'debug']);
     this.sprites.getLayer('camera').sortBy(
-      function (a:Sprite, b:Sprite):Int { 
+      function (a, b):Int { 
         return a.y == b.y ? 0 : a.y < b.y ? -1 : 1; 
       });
   }

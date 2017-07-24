@@ -35,8 +35,7 @@ class MotionComponent implements Component implements Updateable {
   public function new(?name:String) {
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++MotionComponent.uid}' : name;
-    this.motion = new Motion();
-    this.motion.addProperty(['x', 'y', 'z', 'rotation']);
+    this.motion = new Motion(['x', 'y', 'z', 'rotation']);
   }
 
   // Updateable

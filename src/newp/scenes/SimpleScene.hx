@@ -3,15 +3,15 @@ package newp.scenes;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 import newp.Lib;
-import openfl.display.Sprite;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
+import openfl.display.Sprite;
 
 // Simple Scene:
 //  a single layer scene without the colliders or entitites parts
 class SimpleScene implements Scene {
   
-  var sprites:Array<Sprite>;
+  var sprites:Array<DisplayObject>;
   var renderTarget:Sprite;
 
   public var entities(default, null):Map<String,Entity>; // never initialized
@@ -48,18 +48,18 @@ class SimpleScene implements Scene {
   // Sprite
   // ======
 
-  public function addSprite (sprite:Sprite, ?layer:String) :Void {
+  public function addSprite (sprite:DisplayObject, ?layer:String) :Void {
     this.container.addChild(sprite);
     this.sprites.push(sprite);
   }
 
-  public function removeSprite (sprite:Sprite) :Void {
+  public function removeSprite (sprite:DisplayObject) :Void {
     if (!this.container.contains(sprite)) return;
     this.container.removeChild(sprite);
     this.sprites.remove(sprite);
   }
 
-  public function setSpriteIndex (sprite:Sprite, index:Int) :Void {
+  public function setSpriteIndex (sprite:DisplayObject, index:Int) :Void {
     this.container.setChildIndex(sprite, index);
   }
 
