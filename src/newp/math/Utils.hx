@@ -31,7 +31,11 @@ class Utils {
     return val /= length;
   }
 
-  public static inline function clamp_float(val:Float, min:Float, max:Float) {
+  public static inline function clamp_float(val:Float, min:Float, max:Float):Float {
+    return (val > max) ? max : (val < min) ? min : val;
+  }
+
+  public static inline function clamp_int(val:Int, min:Int, max:Int):Int {
     return (val > max) ? max : (val < min) ? min : val;
   }
 
