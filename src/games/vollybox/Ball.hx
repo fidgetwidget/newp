@@ -68,12 +68,10 @@ class Ball extends Entity {
   function makeSprites() {
     this.shadow = SpriteComponent.make(this, 'background');
     this.drawShadow(this.shadow.graphics);
-    this.addComponent(shadow);
 
     this.ball = SpriteComponent.make(this, 'background');
     this.ballSpr = this.ball.addSprite();
     this.drawBall(this.ballSpr.graphics);
-    this.addComponent(this.ball);
   }
 
   inline function drawBall(g) {
