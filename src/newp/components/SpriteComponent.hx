@@ -8,8 +8,10 @@ import openfl.display.Sprite;
 
 class SpriteComponent implements Component implements Renderable implements Updateable {
 
-  public static function make(?layer:String) :SpriteComponent {
-    return new SpriteComponent(new Sprite(), layer);
+  public static function make(e:Entity, ?layer:String) :SpriteComponent {
+    var sc = new SpriteComponent(new Sprite(), layer);
+    e.addComponent(sc);
+    return sc;
   }
 
   static var uid:Int = 0;
@@ -34,6 +36,9 @@ class SpriteComponent implements Component implements Renderable implements Upda
   var sync:Bool;
   var _layer:String;
 
+
+  // TODO: make sycn the last prop, and change it from sync:true to uncoupled:false
+  //  and instead of on update setting the position, share the transform value
   public function new(?sprite:Sprite, ?layer:String, syncPosition:Bool = true, ?name:String) { 
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++SpriteComponent.uid}' : name;
