@@ -1,11 +1,18 @@
 package newp.components;
 
-import newp.math.Tween;
-import newp.math.Tweener;
+import newp.tween.Tween;
+import newp.tween.Tweener;
 import newp.Entity;
 
 
 class TweenerComponent implements Component implements Updateable {
+
+  public static function make(e:Entity, ?name:String):TweenerComponent {
+    var t = new TweenerComponent(name);
+    e.addComponent(t);
+    return t;
+  }
+
 
   static var uid:Int = 0;
 
@@ -44,11 +51,8 @@ class TweenerComponent implements Component implements Updateable {
   // Methods
   // =======
 
-  public function add(name:String, duration:Float, ?onStep:Float->Tween->Void, ?onDone:Tween->Void):Tween {
-    var tween = this.tweener.add(name, duration);
-    if (onStep != null) tween.onStep = onStep;
-    if (onDone != null) tween.onDone = onDone;
-    return tween;
+  public function add(name:String, duration:Float):Tween {
+    return this.tweener.add(name, this.entity, duration);
   }
 
   public function get(name:String):Tween {
@@ -63,8 +67,8 @@ class TweenerComponent implements Component implements Updateable {
     this.tweener.pause(name);
   }
 
-  public function unpause(name:String):Void {
-    this.tweener.unpause(name);
+  public function resume(name:String):Void {
+    this.tweener.resume(name);
   }
 
 }

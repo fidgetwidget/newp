@@ -8,6 +8,7 @@ import newp.math.Utils as MathUtil;
 import newp.utils.Draw;
 import newp.Lib;
 import openfl.display.Sprite;
+import openfl.ui.Keyboard as Key;
 
 
 class VollyBox extends BasicScene {
@@ -15,6 +16,7 @@ class VollyBox extends BasicScene {
   public static inline var DARK_SAND:Int = 0xd3c7a2;
   public static inline var SAND:Int = 0xfff8dc;
   public static inline var DIRT:Int = 0xf5deb3;
+  public static inline var HIT_DELAY:Float = 0.3333333;
 
   public var player1:Player;
   public var player2:Player;
@@ -27,6 +29,8 @@ class VollyBox extends BasicScene {
   var backgroundSprites:Array<Sprite> = [];
   var sortedSprties:Array<Sprite> = [];
   var foregroundSprites:Array<Sprite> = [];
+  var hitTimer:Float = 0;
+  var hitting:Bool = false;
 
   public function new() {
     super();
@@ -67,23 +71,65 @@ class VollyBox extends BasicScene {
       for (c in e.colliders) this.colliders.update(c);
     }
     this.update_input();
-
     this.update_collisionTests();
+
+    // Hit Delay
+    if (this.hitting && this.ball.z != 0) {
+      this.hitReset();
+    }
+
+    if (this.hitting) {
+      this.hitTimer += Lib.delta;
+
+      if (this.hitTimer >= HIT_DELAY) {
+        this.score();
+        this.hitReset();
+      }
+    }
+
     this.sprites.sortLayer('camera');
   }
 
-  function update_input() {
+  public function ballHitGround() {
+    hitting = true;
+  }
+
+  // adding stuff to the scene on begin
+
+  override public function begin() {
+    // background
+    this.addSprite(bg, 'background');
+    this.addSprite(playField, 'background');
+
+    this.addEntity(net);
+    this.addEntity(scoreBoard);
+    this.addEntity(ball);
+    this.addEntity(player1);
+    this.addEntity(player2);
+
+    // this.colliders.drawDebug = true;
+  }
+
+  override public function end() {
+    super.end();
+  }
+
+
+  inline function update_input() {
     var k = Lib.inputs.keyboard;
-    if (k.pressed(32)) { // Spacebar
+
+    // toggle debug
+    if (k.pressed(Key.SPACE)) { 
       Lib.debug = !Lib.debug;
     }
 
-    if (k.pressed(81)) {
+    // give player 1 the ball
+    if (k.pressed(Key.R)) {
       ball.serving(player1);
     }
   }
 
-  function update_collisionTests() {
+  inline function update_collisionTests() {
     var p1c = this.player1.boxCollider;
     var p2c = this.player2.boxCollider;
     this.colliders.collisionTestAllWithTag(
@@ -113,8 +159,13 @@ class VollyBox extends BasicScene {
     }
   }
 
-  public function ballHitGround() {
-    // trace('ball hit ground');
+
+  inline function hitReset() {
+    this.hitTimer = 0;
+    this.hitting = false;
+  }
+
+  inline function score() {
     var side = this.ball.x < this.playField.centerX ? 1 : 2;
     switch (side) {
       case 1:
@@ -123,26 +174,6 @@ class VollyBox extends BasicScene {
       case 2:
         this.scoreBoard.player1Score += 1;
     }
-  }
-
-  // adding stuff to the scene on begin
-
-  override public function begin() {
-    // background
-    this.addSprite(bg, 'background');
-    this.addSprite(playField, 'background');
-
-    this.addEntity(net);
-    this.addEntity(scoreBoard);
-    this.addEntity(ball);
-    this.addEntity(player1);
-    this.addEntity(player2);
-
-    // this.colliders.drawDebug = true;
-  }
-
-  override public function end() {
-    super.end();
   }
 
 }

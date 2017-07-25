@@ -1,7 +1,9 @@
-package newp.math;
+package newp.motion;
+
+import newp.math.Utils as MathUtils;
 
 
-class MotionProperty {
+class MotionProp {
 
   static var MIN_VALUE:Float = 0.0001;
   static var MAX_VALUE:Float = 1000;
@@ -21,12 +23,12 @@ class MotionProperty {
     _v = 0;
   }
 
-  public function update():MotionProperty {
+  public function update():MotionProp {
     this.v = this.update_velocity(this.v, this.a, this.drag, this.max, Lib.delta);
     return this;
   }
 
-  public function apply(prop:String, target:Dynamic):MotionProperty {
+  public function apply(prop:String, target:Dynamic):MotionProp {
     var val = Reflect.getProperty(target, prop);
     // if (val == null) return this;
     val += this.v * Lib.delta;
@@ -34,7 +36,7 @@ class MotionProperty {
     return this;
   }
 
-  public function copyFrom(mProp:MotionProperty):MotionProperty {
+  public function copyFrom(mProp:MotionProp):MotionProp {
     this.drag = mProp.drag;
     this.max = mProp.max;
     this._a = mProp.a;
@@ -58,7 +60,7 @@ class MotionProperty {
         vel = 0;
       }
     }
-    return Utils.clamp_float(vel, -max, max);
+    return MathUtils.clamp_float(vel, -max, max);
   }
 
   // Properties

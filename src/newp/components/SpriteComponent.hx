@@ -1,6 +1,7 @@
 package newp.components;
 
 import newp.scenes.Scene;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
 
@@ -44,7 +45,12 @@ class SpriteComponent implements Component implements Renderable implements Upda
   // Methods
   // =======
 
-  public function addChild(?sprite:Sprite):Sprite {
+  public function addChild(child:DisplayObject):DisplayObject {
+    this.sprite.addChild(child);
+    return child;
+  }
+
+  public function addSprite(?sprite:Sprite):Sprite {
     var s:Sprite = sprite == null ? new Sprite() : sprite;
     this.sprite.addChild(s);
     return s;

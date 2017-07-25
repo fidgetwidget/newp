@@ -57,7 +57,7 @@ class Entity {
 
   function init() {
     this.components = new ComponentCollection();
-    this.addComponent(new TransformComponent(null, this.name));
+    TransformComponent.make(this, this.name);
   }
 
   public function update():Void { 

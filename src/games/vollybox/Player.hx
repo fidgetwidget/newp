@@ -11,6 +11,7 @@ import newp.Entity;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.Shape as Graphic;
+import openfl.ui.Keyboard as Key;
 
 
 class Player extends Entity {
@@ -39,7 +40,6 @@ class Player extends Entity {
   var ball(get, never):Ball;
   var tweener:TweenerComponent;
   // Logic (& IO)
-  var isCUP:Bool = false;
   var inputs:Map<String, Int>;
   var speed:Float;
   var actionDelayed:Bool = false; // if the player is trying to hit the ball
@@ -58,6 +58,7 @@ class Player extends Entity {
   var hitType:String = NONE; // which type of hitting the ball the player has triggered
   var hitScale:Float = 0;
 
+  public var isCpu(default, null):Bool = false;
   public var playerNo(default, null):Int;
   public var boxCollider:Shape;
   public var hitCollider:Circle;
@@ -68,7 +69,7 @@ class Player extends Entity {
     super();
     this.playerNo = player;
     if (player == 2) {
-      this.isCUP = true;
+      this.isCpu = true;
     }
     this.name = 'player'+this.playerNo;
     this.game = game;
@@ -170,20 +171,24 @@ class Player extends Entity {
   function makeTweener() {
     this.tweener = new TweenerComponent();
     this.addComponent(tweener);
-    this.tweener.add('bump', BUMP_TIME, _bumpUpdate, _bumpDone);
-    this.tweener.add('hit', HIT_TIME, _hitUpdate, _hitDone);
+    this.tweener.add('bump', BUMP_TIME)
+      .onStep(_bumpUpdate)
+      .onDone(_bumpDone);
+    this.tweener.add('hit', HIT_TIME)
+      .onStep(_hitUpdate)
+      .onDone(_hitDone);
   }
 
   function makeInputs() {
     switch (this.playerNo) {
       case 1:
         this.inputs = [
-          'left'  => 65, // A
-          'up'    => 87, // W
-          'right' => 68, // D
-          'down'  => 83, // S
-          'bump'  => 69, // E
-          'hit'   => 82, // R
+          'left'  => Key.A, // A
+          'up'    => Key.W, // W
+          'right' => Key.D, // D
+          'down'  => Key.S, // S
+          'bump'  => Key.K, // E
+          'hit'   => Key.L, // R
         ];
       case 2:
         this.inputs = [
@@ -211,7 +216,7 @@ class Player extends Entity {
   // ======
 
   override public function update() {
-    if (!this.isCUP) {
+    if (!this.isCpu) {
       this.update_playerInput();
     } else {
       this.update_cpuPlayer();
@@ -330,12 +335,13 @@ class Player extends Entity {
     // start the bump animation
   }
 
-  function _bumpUpdate(val:Float, tween) {
+  function _bumpUpdate() {
+    var val = this.tweener.get('bump').percent;
     this._updateHitRadius(val);
     this._updateScale(val);
   }
 
-  function _bumpDone(tween) {
+  function _bumpDone() {
     this._hitRadiusReset();
   }
 
@@ -345,11 +351,12 @@ class Player extends Entity {
     this.scale = this.hitScale = HIT_SCALE;
   }
 
-  function _hitUpdate(val:Float, tween) {
+  function _hitUpdate() {
+    var val = this.tweener.get('hit').percent;
     this._updateScale(val);
   }
 
-  function _hitDone(tween) {
+  function _hitDone() {
     this._hitRadiusReset();
   }
 

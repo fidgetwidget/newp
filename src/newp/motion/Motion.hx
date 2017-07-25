@@ -1,9 +1,9 @@
-package newp.math;
+package newp.motion;
 
 
 class Motion {
 
-  var motionPropertiesMap:Map<String, MotionProperty>;
+  var motionPropertiesMap:Map<String, MotionProp>;
 
   public function new(?properties:Array<String>) {
     this.motionPropertiesMap = new Map();
@@ -20,10 +20,10 @@ class Motion {
   public function addProperty(prop:Dynamic):Motion {
     if (Std.is(prop, Array)) {
       var array:Array<String> = cast(prop);
-      for (p in array) this.setProp(p, new MotionProperty());
+      for (p in array) this.setProp(p, new MotionProp());
     } else if (Std.is(prop, String)) {
       var p:String = cast(prop);
-      this.setProp(p, new MotionProperty());
+      this.setProp(p, new MotionProp());
     } else {
       throw "Invalid prop. Must be either a String or an Array";
     }
@@ -41,6 +41,18 @@ class Motion {
     var m = this.getProp(prop);
     if (val != null) m.v = val;
     return m.v;
+  }
+
+  public function drag(prop:String, ?val:Float):Float {
+    var m = this.getProp(prop);
+    if (val != null) m.drag = val;
+    return m.drag;
+  }
+
+  public function max(prop:String, ?val:Float):Float {
+    var m = this.getProp(prop);
+    if (val != null) m.max = val;
+    return m.max;
   }
 
   public function setDrag(val:Float, ?prop:String) {
@@ -63,11 +75,11 @@ class Motion {
 
   public function copyFrom(motion:Motion):Motion {
     for (p in motion.motionPropertiesMap.keys()) {
-      var prop:MotionProperty;
+      var prop:MotionProp;
       if (this.motionPropertiesMap.exists(p)) 
         prop = this.motionPropertiesMap.get(p);
       else 
-        prop = new MotionProperty();
+        prop = new MotionProp();
       
       prop.copyFrom(motion.motionPropertiesMap.get(p));
       this.motionPropertiesMap.set(p, prop);
@@ -78,11 +90,11 @@ class Motion {
   // Internal
   // ========
 
-  inline function setProp(prop:String, val:MotionProperty) {
+  inline function setProp(prop:String, val:MotionProp) {
     this.motionPropertiesMap.set(prop, val);
   }
 
-  inline function getProp(prop:String):MotionProperty {
+  inline function getProp(prop:String):MotionProp {
     if (!this.motionPropertiesMap.exists(prop)) throw 'Invalid Property $prop';
     return this.motionPropertiesMap.get(prop);
   }

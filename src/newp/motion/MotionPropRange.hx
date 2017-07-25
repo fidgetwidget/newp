@@ -1,7 +1,9 @@
-package newp.math;
+package newp.motion;
+
+import newp.math.Range;
 
 
-class MotionPropertyRange {
+class MotionPropRange {
 
   public var a:Range;
   public var v:Range;

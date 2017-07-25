@@ -9,6 +9,13 @@ import openfl.display.Sprite;
 //  was easier
 class TransformComponent implements Component {
 
+  public static function make(e:Entity, ?name:String, ?body:DisplayObject):TransformComponent {
+    var t = new TransformComponent(body, name);
+    e.addComponent(t);
+    return t;
+  }
+
+
   static var uid:Int = 0;
 
   public var name(default, null):String;

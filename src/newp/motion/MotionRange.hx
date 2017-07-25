@@ -1,9 +1,9 @@
-package newp.math;
+package newp.motion;
 
 
 class MotionRange {
 
-  var motionPropertiesMap:Map<String, MotionPropertyRange>;
+  var motionPropertiesMap:Map<String, MotionPropRange>;
 
   public function new(?properties:Array<String>) {
     this.motionPropertiesMap = new Map();
@@ -16,10 +16,10 @@ class MotionRange {
   public function addProperty(prop:Dynamic):MotionRange {
     if (Std.is(prop, Array)) {
       var array:Array<String> = cast(prop);
-      for (p in array) this.setProp(p, new MotionPropertyRange());
+      for (p in array) this.setProp(p, new MotionPropRange());
     } else if (Std.is(prop, String)) {
       var p:String = cast(prop);
-      this.setProp(p, new MotionPropertyRange());
+      this.setProp(p, new MotionPropRange());
     } else {
       throw "Invalid prop. Must be either a String or an Array";
     }
@@ -79,11 +79,11 @@ class MotionRange {
 
   public function copyFrom(motion:MotionRange):MotionRange {
     for (p in motion.motionPropertiesMap.keys()) {
-      var mp:MotionPropertyRange;
+      var mp:MotionPropRange;
       if (this.motionPropertiesMap.exists(p)) 
         mp = this.motionPropertiesMap.get(p);
       else 
-        mp = new MotionPropertyRange();
+        mp = new MotionPropRange();
       mp.copyFrom(motion.motionPropertiesMap.get(p));
       this.motionPropertiesMap.set(p, mp);
     }
@@ -104,11 +104,11 @@ class MotionRange {
   // Internal
   // ========
 
-  inline function setProp(prop:String, val:MotionPropertyRange) {
+  inline function setProp(prop:String, val:MotionPropRange) {
     this.motionPropertiesMap.set(prop, val);
   }
 
-  inline function getProp(prop:String):MotionPropertyRange {
+  inline function getProp(prop:String):MotionPropRange {
     if (!this.motionPropertiesMap.exists(prop)) throw 'Invalid Property $prop';
     return this.motionPropertiesMap.get(prop);
   }

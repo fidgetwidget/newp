@@ -7,13 +7,13 @@ class Range {
   public var max(get, set):Float;
 
   public function new(?min:Float, ?max:Float) {
-    _min = min == null ? 0 : min;
-    _max = max == null ? this.min : max;
+    this.setup(min, max);
   }
 
-  public function setup(min:Float, max:Float) {
-    _min = min;
-    _max = max;
+  public function setup(?min:Float, ?max:Float):Range {
+    _min = min == null ? 0 : min;
+    _max = max == null ? this.min : max;
+    return this;
   }
 
   public function random():Float {
@@ -24,6 +24,9 @@ class Range {
     return Utils.clamp_float(val, min, max);
   }
 
+  public function copyFrom(range:Range):Range {
+    return this.setup(range.min, range.max);
+  }
 
   inline function get_min():Float { return _min; }
   inline function set_min(val:Float):Float { 

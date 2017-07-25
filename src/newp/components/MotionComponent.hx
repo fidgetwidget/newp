@@ -2,7 +2,7 @@ package newp.components;
 
 import openfl.geom.Point;
 import openfl.display.DisplayObject;
-import newp.math.Motion;
+import newp.motion.Motion;
 import newp.math.Utils as MathUtils;
 import newp.Entity;
 
@@ -28,6 +28,16 @@ class MotionComponent implements Component implements Updateable {
   public var vy(get, set):Float;
   public var vz(get, set):Float;
   public var rs(get, set):Float;
+
+  public var xDrag(get, set):Float;
+  public var yDrag(get, set):Float;
+  public var zDrag(get, set):Float;
+  public var rDrag(get, set):Float;
+
+  public var xMax(get, set):Float;
+  public var yMax(get, set):Float;
+  public var zMax(get, set):Float;
+  public var rMax(get, set):Float;
 
   public var drag(never, set):Float;
   public var max(never, set):Float;
@@ -101,6 +111,7 @@ class MotionComponent implements Component implements Updateable {
   inline function get_ra():Float { return this.motion.a('rotation'); }
   inline function set_ra(val:Float):Float { return this.motion.a('rotation', val); }
 
+
   inline function get_vx():Float { return this.motion.v('x'); }
   inline function set_vx(val:Float):Float { return this.motion.v('x', val); }
 
@@ -112,6 +123,33 @@ class MotionComponent implements Component implements Updateable {
 
   inline function get_rs():Float { return this.motion.v('rotation'); }
   inline function set_rs(val:Float):Float { return this.motion.v('rotation', val); }
+
+
+  inline function get_xDrag():Float { return this.motion.drag('x'); }
+  inline function set_xDrag(val:Float):Float { return this.motion.drag('x', val); }
+
+  inline function get_yDrag():Float { return this.motion.drag('y'); }
+  inline function set_yDrag(val:Float):Float { return this.motion.drag('y', val); }
+
+  inline function get_zDrag():Float { return this.motion.drag('z'); }
+  inline function set_zDrag(val:Float):Float { return this.motion.drag('z', val); }
+
+  inline function get_rDrag():Float { return this.motion.drag('rotation'); }
+  inline function set_rDrag(val:Float):Float { return this.motion.drag('rotation', val); }
+
+
+  inline function get_xMax():Float { return this.motion.max('x'); }
+  inline function set_xMax(val:Float):Float { return this.motion.max('x', val); }
+
+  inline function get_yMax():Float { return this.motion.max('y'); }
+  inline function set_yMax(val:Float):Float { return this.motion.max('y', val); }
+
+  inline function get_zMax():Float { return this.motion.max('z'); }
+  inline function set_zMax(val:Float):Float { return this.motion.max('z', val); }
+
+  inline function get_rMax():Float { return this.motion.max('rotation'); }
+  inline function set_rMax(val:Float):Float { return this.motion.max('rotation', val); }
+
 
   inline function set_drag(val:Float) { return this.motion.setDrag(val); }
 

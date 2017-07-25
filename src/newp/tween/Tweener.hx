@@ -1,30 +1,30 @@
-package newp.math;
+package newp.tween;
 
 
 // TODO: The tween interaction here should be it's own class - move it out into one.
 class Tweener {
 
   public var tweens:Map<String, Tween>;
-  public var allTweens:Array<Tween>;
+  public var activeTweens:Array<Tween>;
 
   public function new(?name:String) {
     this.tweens = new Map();
-    this.allTweens = [];
+    this.activeTweens = [];
   }
 
   // supports changing duration of existing tween
-  public function add(name:String, duration:Float, playImmediately:Bool = false):Tween {
+  public function add(name:String, target:Dynamic, duration:Float, playImmediately:Bool = false):Tween {
     var tween:Tween;
 
     if (tweens.exists(name)) {
-      tween = tweens.get(name).restart();
-      tween.duration = duration;
+      tween = tweens.get(name).setup(target, duration);
     } else {
-      tween = new Tween(duration);
-      this.allTweens.push(tween);
+      tween = new Tween(target, duration);
     }
 
-    if (playImmediately) tween.unpause();
+    if (playImmediately) {
+      this.activeTweens.push(tween);
+    }
     
     this.tweens.set(name, tween);
     return tween;
@@ -35,7 +35,9 @@ class Tweener {
   }
 
   public function start(name:String):Tweener {
-    this.tweens.get(name).restart().unpause();
+    var tween = this.tweens.get(name);
+    tween.restart().resume();
+    this.activeTweens.push(tween);
     return this;
   }
 
@@ -44,13 +46,18 @@ class Tweener {
     return this;
   }
 
-  public function unpause(name:String):Tweener {
-    this.tweens.get(name).unpause();
+  public function resume(name:String):Tweener {
+    this.tweens.get(name).resume();
     return this;
   }
 
   public function update():Void {
-    for (t in allTweens) t.update();
+    var i = activeTweens.length;
+    while (i > 0) {
+      var t = this.activeTweens[--i];
+      t.update();
+      if (t.complete) this.activeTweens.remove(t);
+    }
   }
 
 }
