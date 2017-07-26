@@ -11,6 +11,7 @@ import openfl.events.Event;
 class Engine {
 
   public var debug (get, set) :Bool;
+  public var gamespeed :Float = 1;
   public var clock (default, null) :Clock;
   public var main (default, null) :Sprite;
   public var stage (get, never) :Stage;
@@ -57,6 +58,10 @@ class Engine {
     if (!val) this.debugLayer.graphics.clear();
     return this._debug = val;
   }
+  
+
   var _debug:Bool = false;
+
+
 
 }

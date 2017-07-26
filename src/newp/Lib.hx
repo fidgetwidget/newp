@@ -9,6 +9,7 @@ import openfl.display.Stage;
 class Lib {
   
   public static var debug(get, set):Bool;
+  public static var gamespeed(get, set):Float;
 
   @:allow(newp.Engine)
   public static var engine (default, null) :Engine;
@@ -20,10 +21,14 @@ class Lib {
   public static var scenes (get, never) :SceneManager;
   public static var inputs (get, never) :InputManager;
   public static var delta (get, never) :Float;
+  public static var rawDelta (get, never) :Float;
 
   // Properties
   static inline function get_debug() :Bool { return Lib.engine != null ? Lib.engine.debug : false; }
   static inline function set_debug(val:Bool) :Bool { return Lib.engine != null ? Lib.engine.debug = val : false; }
+
+  static inline function get_gamespeed() :Float { return Lib.engine != null ? Lib.engine.gamespeed : 1; }
+  static inline function set_gamespeed(val:Float) :Float { return Lib.engine != null ? Lib.engine.gamespeed = val : 1; }
 
   static inline function get_main () :Sprite { return Lib.engine != null ? Lib.engine.main : null; }
   static inline function get_stage () :Stage { return Lib.engine != null ? Lib.engine.stage : null; }
@@ -31,5 +36,7 @@ class Lib {
   static inline function get_debugLayer () :Sprite { return Lib.engine != null ? Lib.engine.debugLayer : null; }
   static inline function get_scenes () :SceneManager { return Lib.engine != null ? Lib.engine.scenes : null; }
   static inline function get_inputs () :InputManager { return Lib.engine != null ? Lib.engine.inputs : null; }
-  static inline function get_delta() :Float { return Lib.engine != null ? Lib.engine.clock.delta : 0; }
+  static inline function get_delta() :Float { return Lib.engine != null ? Lib.engine.clock.delta * Lib.gamespeed : 0; }
+  static inline function get_rawDelta() :Float { return Lib.engine != null ? Lib.engine.clock.delta : 0; }
+
 }
