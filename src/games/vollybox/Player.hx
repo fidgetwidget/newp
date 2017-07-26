@@ -30,11 +30,6 @@ class Player extends Entity {
   inline static var HIT_SIZE:Float = 2;
   inline static var MAX_HIT_SIZE:Float = 19;
 
-  // Hit types
-  inline static var BUMPING:String = "bumping";
-  inline static var HITTING:String = "hitting";
-  inline static var NONE:String = "";
-
   var game:VollyBox;
   var field(get, never):PlayField;
   var ball(get, never):Ball;
@@ -51,19 +46,17 @@ class Player extends Entity {
   var shadowSpr:Sprite;
   var hitEffectSpr:Graphic;
   // Collision
-  var mask:Sprite;
-  var collisionData:ShapeCollision;
   var hitDistance(get, set):Float; // how far away from the player they can still hit the ball
   var hitRadius(get, never):Float;
-  var hitType:String = NONE; // which type of hitting the ball the player has triggered
   var hitScale:Float = 0;
 
   public var isCpu(default, null):Bool = false;
   public var playerNo(default, null):Int;
+  public var hasBall:Bool = false;
+  public var hitType(default, null):String = HitTypes.NONE; // which type of hitting the ball the player has triggered
+  public var moving(get, never):Bool;
   public var boxCollider:Shape;
   public var hitCollider:Circle;
-  public var hasBall:Bool = false;
-  public var moving(get, never):Bool;
 
   public function new(player:Int, game:VollyBox) {
     super();
@@ -75,7 +68,6 @@ class Player extends Entity {
     this.game = game;
     this.width = 20;
     this.height = 20;
-    this.collisionData = new ShapeCollision();
 
     this.makeSprites();
     this.makeColliders();
@@ -147,18 +139,17 @@ class Player extends Entity {
 
   // Colliders
   function makeColliders() {
-    this.mask = new Sprite();
+    var mask = SpriteComponent.make(this);
     this.drawMask(mask.graphics);
-    this.shadowSpr.addChild(this.mask);
+    this.shadowSpr.addChild(mask.sprite);
 
-    this.addComponent(new SpriteComponent(mask));
+    this.boxCollider = new Shape(mask.sprite);
+    ShapeComponent.make(this, boxCollider, ['player']);
 
-    this.boxCollider = new Shape(this.mask);
     this.hitCollider = new Circle(this.body, this.hitRadius);
     this.hitCollider.offsetY = height/4;
-
-    this.addComponent(new ShapeComponent(hitCollider, ['ball']));
-    this.addComponent(new ShapeComponent(boxCollider, ['net', 'player', 'score']));
+    ShapeComponent.make(this, hitCollider, ['hit']);
+    
   }
 
   // Motion
@@ -222,11 +213,6 @@ class Player extends Entity {
       this.update_cpuPlayer();
     }
 
-    var canHitBall = this.ball.onGround || this.hasBall;
-    // if we are attempting to hit the ball, check if we did
-    if (this.hitType != NONE && canHitBall)
-      this.game.colliders.collisionTestWithTag(this.hitCollider, ['ball'], _hitBall);
-
     super.update();
 
     this.update_playerAnimations();
@@ -272,6 +258,7 @@ class Player extends Entity {
   }
 
   inline function update_cpuPlayer() {
+
     var dx = this.x - this.ball.x;
     var dy = this.y - this.ball.y;
     var l = MathUtil.vec_length(dx, dy);
@@ -279,14 +266,16 @@ class Player extends Entity {
     var ballApproachingPlayerSide = this.playerNo == 1 ? this.ball.vx < 0 : this.ball.vx > 0;
     var fx = this.ball.x;
     var fy = this.ball.y;
+
     if (this.ball.z + this.ball.vz > 5) {
       fx += this.ball.vx;
       fy += this.ball.vy;
     }
+
     if ((ballOnPlayerSide || ballApproachingPlayerSide) && l < 140) {
       this.motion.accelerateTowards(BASE_MOVE_SPEED, fx, fy);
       // if the ball is in hit range, and moving twards the ground, and we haven't already tried to hit it
-      if (ballOnPlayerSide && this.hitType == NONE && this.ball.z < 1.75 && this.ball.vz < 0) {
+      if (ballOnPlayerSide && this.hitType == HitTypes.NONE && this.ball.z < 1.75 && this.ball.vz < 0) {
         this.actionDelayed = true;
         //  if it seems 
         if (l > MAX_HIT_SIZE && l < MAX_HIT_SIZE + MAX_MOVE_SPEED) {
@@ -301,6 +290,7 @@ class Player extends Entity {
     }
 
     if (this.vx != 0 && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) this.vx *= 0.25;
+
     if (this.vy != 0 && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) this.vy *= 0.25;
   }
 
@@ -320,7 +310,7 @@ class Player extends Entity {
   }
 
   inline function update_hitAnimation() {
-    if (this.hitType == BUMPING) {
+    if (this.hitType == HitTypes.BUMPING) {
       this.hitEffectSpr.width = this.hitRadius * 2;
     } else {
       this.hitEffectSpr.width = 0;
@@ -330,7 +320,7 @@ class Player extends Entity {
   inline function _bump() {
     this.hitDistance = MAX_HIT_SIZE; // bump expands your hit range briefly
     this.tweener.start('bump'); 
-    this.hitType = BUMPING;
+    this.hitType = HitTypes.BUMPING;
     this.scale = this.hitScale = BUMP_SCALE;
     // start the bump animation
   }
@@ -347,7 +337,7 @@ class Player extends Entity {
 
   inline function _hit() {
     this.tweener.start('hit'); 
-    this.hitType = HITTING;
+    this.hitType = HitTypes.HITTING;
     this.scale = this.hitScale = HIT_SCALE;
   }
 
@@ -372,31 +362,11 @@ class Player extends Entity {
 
   inline function _hitRadiusReset():Void {
     this.actionDelayed = false;
-    this.hitType = NONE;
+    this.hitType = HitTypes.NONE;
     this.hitDistance = HIT_SIZE;
     this.setHitRadius();
   }
 
-  inline function _hitBall(shape, collisionData):Void {
-    // trace('hit ball');
-    var dx:Float = this.ball.x;
-    var dy:Float = this.ball.y;
-    switch (this.hitType) {
-      case (HITTING): 
-        if (this.x < this.field.centerX) {
-          dx = this.field.centerX + 60;
-        } else {
-          dx = this.field.centerX - 60;
-        }
-        dy = this.field.centerY;
-        this.ball.hitBall(this, dx, dy);
-      case (BUMPING):
-        dx += Math.random() * 6 - 3;
-        dy += Math.random() * 6 - 3;
-        this.ball.hitBall(this, dx, dy);
-    }
-    this.hasBall = false;
-  }
 
   inline function setHitRadius() { this.hitCollider.radius = this.hitRadius; }
 

@@ -18,10 +18,12 @@ class Ball extends Entity {
   static inline var MAX_HEIGHT:Float = 20;
   static inline var MAX_SCALE:Float = 3.8;
   static inline var HIT_TIME:Float = 1;
+  static inline var HIT_RANGE:Float = 1.3333333;
   static inline var MAX_MOVE_SPEED:Float = 200;
   static inline var DRAG:Float = 280;
   static inline var AIR_DRAG:Float = 30;
   static inline var SCALE_Z_DIVISOR:Float = 8;
+  static inline var HELD_Z_VAL:Float = 0.2;
   static inline var SLOW_GRAVITY:Float = 80;
   static inline var GRAVITY:Float = 100;
   static inline var SLOW_Z_HIT:Float = 45;
@@ -49,7 +51,9 @@ class Ball extends Entity {
   var yOffset:Float = 0;
 
   public var collider:Shape;
-  public var onGround(get, never):Bool;
+  public var slowdownCollider:Shape;
+  public var inSlowdownRange(get, never):Bool;
+  public var inHitRange(get, never):Bool;
   public var inService(get, never):Bool;
 
   public function new(game:VollyBox) {
@@ -91,7 +95,10 @@ class Ball extends Entity {
 
   function makeColliders() {
     this.collider = new Circle(this.shadow.sprite, RADIUS);
-    this.addComponent(new ShapeComponent(collider, ['ball']));
+    ShapeComponent.make(this, this.collider, ['ball']);
+
+    this.slowdownCollider = new Circle(this.shadow.sprite, RADIUS * 3);
+    ShapeComponent.make(this, this.slowdownCollider, ['slowdown']);
   }
 
   function makeMotion() {
@@ -104,13 +111,22 @@ class Ball extends Entity {
   // =======
 
   public function serving(player:Player) {
+    if (player == null && this.inServiceTo != null) this.inServiceTo.hasBall = false;
+
     this.inServiceTo = player;
-    player.hasBall = true;
-    this.z = 0.2;
     this.vz = 0;
     this.az = 0;
-    this.ball.layer = 'foreground';
-    // trace('now serving player${player.playerNo}');
+
+    if (player != null) {
+      this.ball.layer = 'foreground';
+      this.z = HELD_Z_VAL;
+      player.hasBall = true;  
+      // trace('now serving player${player.playerNo}');
+    } else {
+      // ball hits some obstacle 
+      this.airTime = 1;
+      this.vz = -GRAVITY;
+    }
   }
 
   public function hitBall(player:Player, ?x:Float, ?y:Float) {
@@ -202,7 +218,11 @@ class Ball extends Entity {
   // ==========
 
   inline function get_field():PlayField { return this.game.playField; }
+  
   inline function get_inService():Bool { return this.inServiceTo != null; }
-  inline function get_onGround():Bool { return this.z <= 1.333; }
+  
+  inline function get_inHitRange():Bool { return this.z <= HIT_RANGE; }
+
+  inline function get_inSlowdownRange():Bool { return this.z <= HIT_RANGE * 2 && this.z > HELD_Z_VAL && this.vz < 0; }
 
 }

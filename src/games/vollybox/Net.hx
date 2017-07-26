@@ -15,9 +15,9 @@ class Net extends Entity {
   var game:VollyBox;
   var field(get, never):PlayField;
 
-  var shadow:Sprite;
-  var net:Sprite;
-  var netBottom:Sprite;
+  var shadow:SpriteComponent;
+  var net:SpriteComponent;
+  var netBottom:SpriteComponent;
 
   var netMask:Sprite;
   var collider:Shape;
@@ -37,18 +37,14 @@ class Net extends Entity {
   }
 
   function makeSprites() {
-    shadow = new Sprite();
+    shadow = SpriteComponent.make(this, 'background');
     this.drawShadow(shadow.graphics);
-    this.addComponent(new SpriteComponent(shadow, 'background'));
 
-    net = new Sprite();
-    netBottom = new Sprite();
-    
+    net = SpriteComponent.make(this, 'foreground');
     this.drawNet(net.graphics);
-    this.drawNetBottom(netBottom.graphics);
 
-    this.addComponent(new SpriteComponent(net, 'foreground'));
-    this.addComponent(new SpriteComponent(netBottom));
+    netBottom = SpriteComponent.make(this);
+    this.drawNetBottom(netBottom.graphics);
   }
 
   inline function drawShadow(g) {
@@ -84,7 +80,7 @@ class Net extends Entity {
     drawNetMask(netMask.graphics);
     net.addChild(netMask);
     collider = new Shape(netMask);
-    this.addComponent(new ShapeComponent(collider, ['net']));
+    ShapeComponent.make(this, collider, ['net']);
   }
 
   inline function drawNetMask(g) {
