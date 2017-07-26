@@ -18,13 +18,9 @@ interface Collection {
 
   public function updateAll():Void;
 
-  public function collisionTest(shape:Shape, callback:Shape->ShapeCollision->Void):Void;
+  public function collisionTest(shape:Shape, callback:Shape->ShapeCollision->Void, ?tags:Dynamic):Void;
 
-  public function collisionTestWithTag(shape:Shape, tags:Dynamic, callback:Shape->ShapeCollision->Void):Void;
-
-  public function collisionTestAll(callback:Shape->ShapeCollision->Void):Void;
-
-  public function collisionTestAllWithTag(tags:Dynamic, callback:Shape->ShapeCollision->Void):Void;
+  public function collisionTestAll(callback:Shape->ShapeCollision->Void, ?tags:Dynamic):Void;
 
   public function add(shape:Shape):Void;
 

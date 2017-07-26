@@ -69,4 +69,8 @@ class ShapeCollision {
 
   } //clone
 
+  public function toString():String {
+    return 'o: $overlap sx: $separationX sy: $separationY ux: $unitVectorX uy: $unitVectorY';
+  }
+
 }

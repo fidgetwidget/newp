@@ -63,11 +63,8 @@ class ShapeBins implements Collection {
   // | Collision Tests 
   // +-------------------------
 
-  public function collisionTest(shape:Shape, callback:Shape->ShapeCollision->Void):Void {
-    this.collisionTestWithTag(shape, no_tags, callback);
-  }
-
-  public function collisionTestWithTag(shape:Shape, tags:Dynamic, callback:Shape->ShapeCollision->Void):Void {
+  public function collisionTest(shape:Shape, callback:Shape->ShapeCollision->Void, ?tags:Dynamic):Void {
+    tags = tags != null ? tags : no_tags;
     var tagArray:Array<String> = this.getTagArray(tags);
     var keys = this.shapeBinMap.get(shape);
     for (containerKey in keys) {
@@ -78,11 +75,8 @@ class ShapeBins implements Collection {
     }
   }
 
-  public function collisionTestAll(callback:Shape->ShapeCollision->Void):Void {
-    this.collisionTestAllWithTag(no_tags, callback);
-  }
-
-  public function collisionTestAllWithTag(tags:Dynamic, callback:Shape->ShapeCollision->Void):Void {
+  public function collisionTestAll(callback:Shape->ShapeCollision->Void, ?tags:Dynamic):Void {
+    tags = tags != null ? tags : no_tags;
     var tagArray:Array<String> = this.getTagArray(tags);
     // Look through each container of shapes
     for (containerKey in bins.keys()) {
@@ -143,7 +137,9 @@ class ShapeBins implements Collection {
       var other:Shape = container[i];
       if (shape == other) continue;
       if (tags.length > 0 && (!hasTag(other, tags) || !hasTag(shape, tags))) continue;
-      if (shape.test(other, shapeCollision) != null) callback(shape, shapeCollision);
+      if (shape.test(other, shapeCollision) != null) {
+        callback(shape, shapeCollision);
+      }
     }
   }
 
