@@ -208,6 +208,9 @@ class VollyBox extends BasicScene {
           dx = this.playField.centerX - 60;
         }
         dy = this.playField.centerY;
+        var l = MathUtil.vec_length(player.vx, player.vy);
+        dx += player.vx; // * l;
+        dy += player.vy; // * l;
         this.ball.hitBall(player, dx, dy);
 
       case (HitTypes.BUMPING):
