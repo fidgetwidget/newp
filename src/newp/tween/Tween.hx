@@ -1,12 +1,13 @@
 package newp.tween;
 
+import newp.math.NullableRange;
 import haxe.Timer;
 
 
 class Tween {
 
   public var target(default, null):Dynamic;
-  public var properties(default, null):Map<String, TweenRange>;
+  public var properties(default, null):Map<String, NullableRange>;
   public var duration(default, null):Float;
   public var paused(default, null):Bool = false;
   public var delta(default, null):Float = 0;

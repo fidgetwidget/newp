@@ -1,7 +1,6 @@
-package newp.tween;
+package newp.math;
 
-
-typedef TweenRange = {
+typedef NullableRange = {
   var from:Null<Float>;
   var to:Null<Float>;
 }

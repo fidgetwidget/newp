@@ -31,6 +31,10 @@ class Motion {
     return this;
   }
 
+  public function hasProperty(prop:String):Bool {
+    return this.motionPropertiesMap.exists(prop);
+  }
+
   public function a(prop:String, ?val:Float):Float {
     var m = this.getProp(prop);
     if (val != null) m.a = val;
