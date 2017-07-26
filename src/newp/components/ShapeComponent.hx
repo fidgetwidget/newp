@@ -5,6 +5,13 @@ import newp.collision.shapes.Shape;
 
 class ShapeComponent implements Component implements Collidable {
 
+  public static function make(e:Entity, ?shape:Shape, ?tags:Array<String>) :ShapeComponent {
+    var sc = new ShapeComponent(shape, tags);
+    e.addComponent(sc);
+    return sc;
+  }
+
+
   static var uid:Int = 0;
 
   public var name(default, null):String;

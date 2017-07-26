@@ -9,6 +9,13 @@ import newp.Entity;
 
 class MotionComponent implements Component implements Updateable {
 
+  public static function make(e:Entity) :MotionComponent {
+    var mc = new MotionComponent();
+    e.addComponent(mc);
+    return mc;
+  }
+
+
   static var uid:Int = 0;
 
   public var name(default, null):String;
