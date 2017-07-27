@@ -69,7 +69,7 @@ class ShapeBins implements Collection {
     var keys = this.shapeBinMap.get(shape);
     for (containerKey in keys) {
       var container = bins.get(containerKey);
-      if (container.length == 1) continue; // it's just our shape in there
+      if (container == null || container.length == 1) continue; // it's just our shape in there
       // test our shape against the container's other shapes
       this.collisionTest_shape(shape, tagArray, container, callback);
     }
