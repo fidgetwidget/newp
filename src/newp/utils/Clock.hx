@@ -4,10 +4,9 @@ import haxe.Timer;
 
 class Clock {
 
-  var start:Float;
   var prev:Float;
-  var now:Float;
-
+  public var start(default, null):Float;
+  public var now(default, null):Float;
   public var delta(default, null):Float;
   public var elapsed(get, never):Float;
 
