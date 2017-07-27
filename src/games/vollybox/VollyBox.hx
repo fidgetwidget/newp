@@ -193,6 +193,17 @@ class VollyBox extends BasicScene {
     if (this.player2.hitType != HitTypes.NONE && (this.ball.inHitRange || this.player2.hasBall)) {
       this.colliders.collisionTest(this.player2.hitCollider, resolve_playerHitBall, ['ball', 'hit']);
     }
+
+    this.collision_playerBounds(this.player1);
+    this.collision_playerBounds(this.player2);
+  }
+
+  inline function collision_playerBounds(player:Player) {
+    var bounds = player.boxCollider.bounds;
+    if (bounds.top < 0 && player.vy < 0) player.vy *= -1;
+    if (bounds.bottom > Lib.stageHeight && player.vy > 0) player.vy *= -1;
+    if (bounds.left < 0 && player.vx < 0) player.vx *= -1;
+    if (bounds.right > Lib.stageWidth && player.vx > 0) player.vx *= -1;
   }
 
   inline function update_slowdownRangeCollisionTest() {
