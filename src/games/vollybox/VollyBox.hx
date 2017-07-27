@@ -20,6 +20,7 @@ class VollyBox extends BasicScene {
 
   public static inline var DARK_SAND:Int = 0xd3c7a2;
   public static inline var SAND:Int = 0xfff8dc;
+  public static inline var PRINTS:Int = 0xf3e9c3;
   public static inline var DIRT:Int = 0xf5deb3;
   public static inline var HIT_DELAY:Float = 0.13333333;
   public static inline var SLOWDOWN_DELAY:Float = 0.1333333;

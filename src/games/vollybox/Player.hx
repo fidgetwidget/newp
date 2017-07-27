@@ -316,7 +316,7 @@ class Player extends Entity {
       if (_bounceVal <= 0) {
         _bounceVal = 0; 
         _bounceDir = 1; 
-        this.animation_hitGround();
+        this.effect_hitGround();
       }
       _bounceVal += _bounceDir * Lib.delta * _bounceSpeed;
       this.boxSpr.y = -_bounceVal;
@@ -326,11 +326,6 @@ class Player extends Entity {
       _bounceVal = 0; 
       _bounceDir = 1; 
     } // moving
-  }
-
-  // play the movement sound when the players body hits ground
-  inline function animation_hitGround() {
-    this.game.array_random(this.game.sounds['move']).play(0, 0, this.game.halfVolume);
   }
 
   inline function update_hitAnimation() {
@@ -350,8 +345,8 @@ class Player extends Entity {
     this.tweener.start('bump'); 
     this.hitType = HitTypes.BUMPING;
     this.scale = this.hitScale = BUMP_SCALE;
-    // play the bump sound effect
-    this.game.array_random(this.game.sounds['smash']).play(0, 0, this.game.halfVolume);
+    this.setHitRadius();
+    this.effect_bump();
   }
 
   function _bumpUpdate() {
@@ -394,6 +389,20 @@ class Player extends Entity {
     this.hitType = HitTypes.NONE;
     this.hitDistance = HIT_SIZE;
     this.setHitRadius();
+  }
+
+
+
+  // play the movement sound when the players body hits ground
+  inline function effect_hitGround() {
+    this.game.array_random(this.game.sounds['move']).play(0, 0, this.game.halfVolume);
+    this.field.drawOnSand(this.boxCollider);
+  }
+
+  inline function effect_bump() {
+    // play the bump sound effect
+    this.game.array_random(this.game.sounds['smash']).play(0, 0, this.game.halfVolume);
+    this.field.drawOnSand({x: this.hitCollider.x, y: this.hitCollider.y, radius: this.hitRadius });
   }
 
 
