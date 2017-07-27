@@ -1,9 +1,10 @@
 package newp.collision.shapes;
 
-import openfl.display.DisplayObject;
 import newp.collision.sat.*;
 import newp.collision.response.ShapeCollision;
 import newp.utils.Draw;
+import openfl.display.DisplayObject;
+import openfl.display.Graphics;
 
 
 class Circle extends Shape {
@@ -40,16 +41,21 @@ class Circle extends Shape {
   
 
   inline function get_transformedRadius():Float { 
-    var tr = this.radius * this.scaleX;
-    if (Lib.debug) {
-      var g = Lib.debugLayer.graphics;
-      g.drawCircle(x, y, tr);
+    if (_lastFetched != Lib.time) {
+      _lastFetched = Lib.time;
+      _transformedRadius = this.radius * this.scaleX;
+      if (Lib.debug) this.debug_draw(Lib.debugLayer.graphics);  
     }
-    return tr; 
+    return _transformedRadius; 
   }
+  var _transformedRadius:Float;
 
   override function get_bounds():Bounds {
     return this._bounds.setCenterHalfs(this.x, this.y, this.transformedRadius, this.transformedRadius);
+  }
+
+  override public function debug_draw(g:Graphics) {
+    g.drawCircle(x, y, _transformedRadius); 
   }
 
 }

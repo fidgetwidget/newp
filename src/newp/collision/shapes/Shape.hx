@@ -5,6 +5,7 @@ import newp.collision.response.ShapeCollision;
 import newp.collision.Bounds;
 import newp.utils.Draw;
 import openfl.display.DisplayObject;
+import openfl.display.Graphics;
 import openfl.geom.Point;
 
 
@@ -115,13 +116,20 @@ class Shape {
   // NOTE: we don't inline it because we want to be able to override it
   function get_bounds():Bounds {
     if (!this.valid) return null;
-    var _rect = this.transformBody.getBounds(Lib.stage);
-    if (Lib.debug) {
-      var g = Lib.debugLayer.graphics;
-      g.drawRect(_rect.left, _rect.top, _rect.width, _rect.height);  
+    if (_lastFetched != Lib.time) {
+      _lastFetched = Lib.time;
+      var _rect = this.transformBody.getBounds(Lib.stage);
+      _bounds.copyFromRectangle( _rect );
+      if (Lib.debug) this.debug_draw(Lib.debugLayer.graphics);  
     }
-    return this._bounds.copyFromRectangle( _rect );
+    return _bounds;
   }
   var _bounds:Bounds;
+  var _lastFetched:Float = 0;
+
+
+  public function debug_draw(g:Graphics) {
+    g.drawRect(_bounds.left, _bounds.top, _bounds.width, _bounds.height);  
+  }
 
 }

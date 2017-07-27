@@ -1,11 +1,12 @@
 package newp.collision.shapes;
 
-import openfl.display.DisplayObject;
-import openfl.geom.Point;
 import newp.collision.sat.*;
 import newp.collision.response.ShapeCollision;
 import newp.math.Utils as MathUtils;
 import newp.utils.Draw;
+import openfl.display.DisplayObject;
+import openfl.display.Graphics;
+import openfl.geom.Point;
 
 
 class Polygon extends Shape {
@@ -83,22 +84,32 @@ class Polygon extends Shape {
   // +-------------------------
 
   inline function get_transformedVerts():Array<Point> {
-    var matrix = this.transformBody.transform.matrix;
-    var g = null; var p; var vert;
-    if (Lib.debug) g = Lib.debugLayer.graphics;
+    if (_lastFetched != Lib.time) {
+      _lastFetched = Lib.time;
+      var matrix = this.transformBody.transform.matrix;
+      var p; 
+      var vert;
+      for (i in 0...this.verts.length) {
+        vert = this.verts[i];
+        p = this._transformedVerts[i];
+        MathUtils.transformPoint(vert, matrix, p);
+      }
+      if (Lib.debug) this.debug_draw(Lib.debugLayer.graphics);
+    }
+    return this._transformedVerts;
+  }
 
-    for (i in 0...this.verts.length) {
-      vert = this.verts[i];
-      p = this._transformedVerts[i];
-      MathUtils.transformPoint(vert, matrix, p);
-      if (Lib.debug) {
-        if (i == 0) g.moveTo(p.x, p.y);
-        else g.lineTo(p.x, p.y);  
+  override public function debug_draw(g:Graphics) {
+    var verts = _transformedVerts;
+    for (i in 0...verts.length) {
+      var p = this.verts[i];
+      if (i == 0) {
+        g.moveTo(p.x, p.y);
+      } else {
+        g.lineTo(p.x, p.y);
       }
     }
-
-    if (Lib.debug) g.lineTo(_transformedVerts[0].x, _transformedVerts[0].y);
-
-    return this._transformedVerts;
+    var p = this.verts[0];
+    g.lineTo(p.x, p.y);
   }
 }
