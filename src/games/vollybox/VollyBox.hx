@@ -125,6 +125,10 @@ class VollyBox extends BasicScene {
       }
     }
 
+    if (this.ball.moving && this.ball.z == 0) {
+      this.playField.drawOnSand(this.ball.collider);
+    }
+
     if (this.ball.inSlowdownRange || this.hitting) {
       if (!this.slowdown) // only try if we aren't already in slowdown mode
         this.update_slowdownRangeCollisionTest(); 

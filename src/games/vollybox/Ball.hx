@@ -52,6 +52,7 @@ class Ball extends Entity {
 
   public var collider:Shape;
   public var slowdownCollider:Shape;
+  public var moving(get, never):Bool;
   public var inSlowdownRange(get, never):Bool;
   public var inHitRange(get, never):Bool;
   public var inService(get, never):Bool;
@@ -216,6 +217,8 @@ class Ball extends Entity {
 
   // Properties
   // ==========
+
+  inline function get_moving():Bool { return Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1; }
 
   inline function get_field():PlayField { return this.game.playField; }
   

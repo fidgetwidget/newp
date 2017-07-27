@@ -119,7 +119,7 @@ class Player extends Entity {
   inline function drawHitEffect(g) {
     var hitSize = (MAX_HIT_SIZE - HIT_SIZE) / 2;
     Draw.start(g)
-      .beginFill(0xffffff, 0.9)
+      .beginFill(VollyBox.DARK_SAND, 1)
       .drawEllipse(-width/2-hitSize, -width/4-hitSize/2, width+hitSize*2, width/2+hitSize)
       .endFill();
   }
