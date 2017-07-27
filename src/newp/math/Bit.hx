@@ -1,4 +1,4 @@
-package newp.utils;
+package newp.math;
 
 // Helper for dealing with bit values
 class Bit {

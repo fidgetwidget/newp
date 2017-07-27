@@ -226,22 +226,28 @@ class Player extends Entity {
     var k = Lib.inputs.keyboard;
     if (k.down(this.inputs['up'])) {
       this.ay = -speed;
-      if (this.vy != 0 && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) this.vy *= 0.25;
     } else if (k.down(this.inputs['down'])) {
       this.ay = speed;
-      if (this.vy != 0 && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) this.vy *= 0.25;
     } else {
       this.ay = 0;
     }
 
     if (k.down(this.inputs['left'])) {
       this.motion.ax = -speed;
-      if (this.vx != 0 && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) this.vx *= 0.25;
     } else if (k.down(this.inputs['right'])) {
       this.motion.ax = speed;
-      if (this.vx != 0 && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) this.vx *= 0.25;
     } else {
       this.motion.ax = 0;
+    }
+
+    // Slow down faster on change of direction
+    if ((k.down(this.inputs['up']) || k.down(this.inputs['down'])) 
+        && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) {
+      this.vy *= 0.25;
+    }
+    if ((k.down(this.inputs['left']) || k.down(this.inputs['right'])) 
+        && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) {
+      this.vx *= 0.25;
     }
 
     if (!this.actionDelayed) {
@@ -273,7 +279,13 @@ class Player extends Entity {
     }
 
     if ((ballOnPlayerSide || ballApproachingPlayerSide) && l < 140) {
+      var prevX = this.motion.ax;
+      var prevY = this.motion.ay;
       this.motion.accelerateTowards(BASE_MOVE_SPEED, fx, fy);
+      if (   (prevX == 0 && this.motion.ax != 0)
+          || (prevY == 0 && this.motion.ay != 0)) {
+        this.game.array_random(this.game.sounds['move']).play();
+      }
       // if the ball is in hit range, and moving twards the ground, and we haven't already tried to hit it
       if (ballOnPlayerSide && this.hitType == HitTypes.NONE && this.ball.z < 1.75 && this.ball.vz < 0) {
         this.actionDelayed = true;
@@ -285,8 +297,12 @@ class Player extends Entity {
         }
       }
     } else {
+      var prevY = this.motion.ay;
       this.ax = 0;
       this.motion.accelerateTowards(BASE_MOVE_SPEED/3, this.x, fy);
+      if (prevY == 0) {
+        this.game.array_random(this.game.sounds['move']).play();
+      }
     }
 
     if (this.vx != 0 && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) this.vx *= 0.25;
@@ -297,16 +313,24 @@ class Player extends Entity {
   inline function update_playerAnimations() {
     if (this.moving) {
       if (_bounceVal > _maxBounce) { _bounceDir = -1; _bounceVal = _maxBounce; }
-      if (_bounceVal < 0) {_bounceDir = 1; _bounceVal = 0; }
+      if (_bounceVal <= 0) {
+        _bounceVal = 0; 
+        _bounceDir = 1; 
+        this.animation_hitGround();
+      }
       _bounceVal += _bounceDir * Lib.delta * _bounceSpeed;
       this.boxSpr.y = -_bounceVal;
     } else {
+      // not moving, not bouncing
       this.boxSpr.y = 0;
-      _bounceVal = 0;
-      _bounceDir = 1;
+      _bounceVal = 0; 
+      _bounceDir = 1; 
     } // moving
-    this.boxSpr.scaleX = scale;
-    this.boxSpr.scaleY = scale;
+  }
+
+  // play the movement sound when the players body hits ground
+  inline function animation_hitGround() {
+    this.game.array_random(this.game.sounds['move']).play(0, 0, this.game.halfVolume);
   }
 
   inline function update_hitAnimation() {
@@ -315,14 +339,19 @@ class Player extends Entity {
     } else {
       this.hitEffectSpr.width = 0;
     }
+    // player scale from hitting the ball
+    this.boxSpr.scaleX = scale;
+    this.boxSpr.scaleY = scale;
   }
 
   inline function _bump() {
+    // start the bump animation
     this.hitDistance = MAX_HIT_SIZE; // bump expands your hit range briefly
     this.tweener.start('bump'); 
     this.hitType = HitTypes.BUMPING;
     this.scale = this.hitScale = BUMP_SCALE;
-    // start the bump animation
+    // play the bump sound effect
+    this.game.array_random(this.game.sounds['smash']).play(0, 0, this.game.halfVolume);
   }
 
   function _bumpUpdate() {

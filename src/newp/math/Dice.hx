@@ -1,5 +1,6 @@
 package newp.math;
 
+
 class Dice {
 
   public static function roll(n:Null<Int> = null, d:Null<Int> = null, arr:Dynamic = false):Dynamic {

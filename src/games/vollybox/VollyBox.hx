@@ -11,6 +11,9 @@ import newp.utils.Draw;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.ui.Keyboard as Key;
+import openfl.media.Sound;
+import openfl.media.SoundTransform;
+import openfl.Assets;
 
 
 class VollyBox extends BasicScene {
@@ -28,6 +31,8 @@ class VollyBox extends BasicScene {
   public var scoreBoard:ScoreBoard;
   public var playField:PlayField;
   public var net:Net;
+  public var sounds:Map<String, Array<Sound>>;
+  public var halfVolume:SoundTransform;
 
   var bg:Sprite;
   var backgroundSprites:Array<Sprite> = [];
@@ -49,6 +54,8 @@ class VollyBox extends BasicScene {
     player2 = new Player(2, this);
     ball = new Ball(this);
     ball.serving(player1);
+
+    this.init_soundsMap();
   }
 
   function drawBackground() {
@@ -69,6 +76,30 @@ class VollyBox extends BasicScene {
 
   override function init_colliders() {
     this.colliders = new ShapeBins(Lib.stage.stageWidth, Lib.stage.stageHeight); 
+  }
+
+  function init_soundsMap() {
+    this.sounds = [
+      'ball' => [],
+      'event' => [],
+      'hit' => [],
+      'move' => [],
+      'smash' => [],
+    ];
+    for (i in 1...6) {
+      this.pushSound('ball', i);
+      this.pushSound('event', i);
+      this.pushSound('hit', i);
+    }
+    this.pushSound('smash', 1);
+    this.pushSound('smash', 2);
+    // picked the most subtle ones only
+    // this.pushSound('move', 3);
+    this.pushSound('move', 10);
+    this.halfVolume = new SoundTransform(0.5);
+  }
+  inline function pushSound(name:String, i:Int):Void {
+    this.sounds['$name'].push(Assets.getSound('sounds/VolleyBox/$name-$i.ogg'));
   }
 
   override public function update() {
@@ -110,6 +141,7 @@ class VollyBox extends BasicScene {
 
   public function ballHitGround() {
     hitting = true;
+    this.array_random(this.sounds['ball']).play();
   }
 
   // adding stuff to the scene on begin
@@ -212,12 +244,13 @@ class VollyBox extends BasicScene {
         dx += player.vx; // * l;
         dy += player.vy; // * l;
         this.ball.hitBall(player, dx, dy);
+        this.array_random(this.sounds['hit']).play();
 
       case (HitTypes.BUMPING):
         dx += Math.random() * 6 - 3;
         dy += Math.random() * 6 - 3;
         this.ball.hitBall(player, dx, dy);
-
+        this.array_random(this.sounds['hit']).play();
     }
     player.hasBall = false;
   }
@@ -231,6 +264,8 @@ class VollyBox extends BasicScene {
     this.ball.vz /= 5; // reduce fall speed
     if (this.ball.inService) {
       this.ball.serving(null);
+    } else {
+      this.array_random(this.sounds['ball']).play();
     }
   }
 
@@ -240,6 +275,7 @@ class VollyBox extends BasicScene {
   }
 
   inline function score() {
+    this.sounds['event'][1].play();
     var side = this.ball.x < this.playField.centerX ? 1 : 2;
     switch (side) {
       case 1:
@@ -260,6 +296,10 @@ class VollyBox extends BasicScene {
     this.slowdown = false;
     this.slowTimer = 0;
     Lib.gamespeed = 1;
+  }
+
+  public inline function array_random<T>(array:Array<T>):T {
+    return array[Std.random(array.length)];
   }
 
 }

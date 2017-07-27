@@ -11,5 +11,6 @@
 	<haxelib name="openfl" />
 	
 	<assets path="static" rename="assets" />
+	<assets path="static/sounds" rename="sounds" type="audio" />
 	
 </project>
