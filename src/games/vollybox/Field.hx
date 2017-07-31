@@ -7,7 +7,7 @@ import newp.utils.Draw;
 import newp.Lib;
 
 
-class PlayField extends Sprite {
+class Field extends Sprite {
 
   public inline static var WIDTH:Int = 500;
   public inline static var HEIGHT:Int = 300;

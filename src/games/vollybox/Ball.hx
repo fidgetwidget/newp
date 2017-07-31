@@ -31,7 +31,7 @@ class Ball extends Entity {
   public static inline var RADIUS:Float = 8;
 
   var game:VollyBox;
-  var field(get, never):PlayField;
+  var field(get, never):Field;
 
   var ball:SpriteComponent;
   var ballSpr:Sprite;
@@ -220,7 +220,7 @@ class Ball extends Entity {
 
   inline function get_moving():Bool { return Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1; }
 
-  inline function get_field():PlayField { return this.game.playField; }
+  inline function get_field():Field { return this.game.field; }
   
   inline function get_inService():Bool { return this.inServiceTo != null; }
   

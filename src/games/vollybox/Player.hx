@@ -31,7 +31,7 @@ class Player extends Entity {
   inline static var MAX_HIT_SIZE:Float = 19;
 
   var game:VollyBox;
-  var field(get, never):PlayField;
+  var field(get, never):Field;
   var ball(get, never):Ball;
   var tweener:TweenerComponent;
   // Logic (& IO)
@@ -413,7 +413,7 @@ class Player extends Entity {
 
   inline function get_moving():Bool { return Math.abs(this.vx) > _min_speed || Math.abs(this.vy) > _min_speed; }
 
-  inline function get_field():PlayField { return this.game.playField; }
+  inline function get_field():Field { return this.game.field; }
   inline function get_ball():Ball { return this.game.ball; }
 
   inline function get_hitRadius():Float { return this.width/2 + this.hitDistance; }

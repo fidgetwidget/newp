@@ -29,7 +29,7 @@ class ScoreBoard extends Entity {
   var p2ScoreShape:Shape;
   
   var game:VollyBox;
-  var field(get, never):PlayField;
+  var field(get, never):Field;
 
   
   public function new(game:VollyBox) {
@@ -144,6 +144,6 @@ class ScoreBoard extends Entity {
   var _player1Score:Int = 0;
   var _player2Score:Int = 0;
 
-  inline function get_field():PlayField { return this.game.playField; }
+  inline function get_field():Field { return this.game.field; }
 
 }

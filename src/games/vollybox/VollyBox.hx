@@ -30,7 +30,7 @@ class VollyBox extends BasicScene {
   public var player2:Player;
   public var ball:Ball;
   public var scoreBoard:ScoreBoard;
-  public var playField:PlayField;
+  public var field:Field;
   public var net:Net;
   public var sounds:Map<String, Array<Sound>>;
   public var halfVolume:SoundTransform;
@@ -48,7 +48,7 @@ class VollyBox extends BasicScene {
     super();
     this.drawBackground();
 
-    playField = new PlayField();
+    field = new Field();
     net = new Net(this);
     scoreBoard = new ScoreBoard(this);
     player1 = new Player(1, this);
@@ -126,7 +126,7 @@ class VollyBox extends BasicScene {
     }
 
     if (this.ball.moving && this.ball.z == 0) {
-      this.playField.drawOnSand(this.ball.collider);
+      this.field.drawOnSand(this.ball.collider);
     }
 
     if (this.ball.inSlowdownRange || this.hitting) {
@@ -154,7 +154,7 @@ class VollyBox extends BasicScene {
   override public function begin() {
     // background
     this.addSprite(bg, 'background');
-    this.addSprite(playField, 'background');
+    this.addSprite(field, 'background');
 
     this.addEntity(net);
     this.addEntity(scoreBoard);
@@ -250,12 +250,12 @@ class VollyBox extends BasicScene {
     switch (player.hitType) {
 
       case (HitTypes.HITTING): 
-        if (player.x < this.playField.centerX) {
-          dx = this.playField.centerX + 60;
+        if (player.x < this.field.centerX) {
+          dx = this.field.centerX + 60;
         } else {
-          dx = this.playField.centerX - 60;
+          dx = this.field.centerX - 60;
         }
-        dy = this.playField.centerY;
+        dy = this.field.centerY;
         var l = MathUtil.vec_length(player.vx, player.vy);
         dx += player.vx; // * l;
         dy += player.vy; // * l;
@@ -292,7 +292,7 @@ class VollyBox extends BasicScene {
 
   inline function score() {
     this.sounds['event'][1].play();
-    var side = this.ball.x < this.playField.centerX ? 1 : 2;
+    var side = this.ball.x < this.field.centerX ? 1 : 2;
     switch (side) {
       case 1:
         this.scoreBoard.player2Score += 1;

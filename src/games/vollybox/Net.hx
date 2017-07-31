@@ -10,10 +10,10 @@ import openfl.display.Sprite;
 class Net extends Entity {
 
   inline static var SHADOW_DEPTH:Float = 4;
-  inline static var HEIGHT:Float = 290; //PlayField.HEIGHT-10;
+  inline static var HEIGHT:Float = 290; //Field.HEIGHT-10;
 
   var game:VollyBox;
-  var field(get, never):PlayField;
+  var field(get, never):Field;
 
   var shadow:SpriteComponent;
   var net:SpriteComponent;
@@ -52,7 +52,7 @@ class Net extends Entity {
       .clear()
       .beginFill(0x555555, 0.1)
       .drawRect(-SHADOW_DEPTH/2, -HEIGHT/2, SHADOW_DEPTH, HEIGHT)
-      // .drawLine([-SHADOW_DEPTH, SHADOW_DEPTH, 0, PlayField.HEIGHT-10, SHADOW_DEPTH, -SHADOW_DEPTH], 0, this.field.top+5)
+      // .drawLine([-SHADOW_DEPTH, SHADOW_DEPTH, 0, Field.HEIGHT-10, SHADOW_DEPTH, -SHADOW_DEPTH], 0, this.field.top+5)
       .endFill();
   }
 
@@ -89,6 +89,6 @@ class Net extends Entity {
       .drawRect(0, -HEIGHT/2, 1, HEIGHT);
   }
 
-  inline function get_field():PlayField { return this.game.playField; }
+  inline function get_field():Field { return this.game.field; }
 
 }
