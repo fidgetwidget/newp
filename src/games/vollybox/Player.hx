@@ -20,6 +20,7 @@ class Player extends Entity {
   inline static var SERVICE_MOVE_SPEED:Int = 200;
   inline static var MAX_MOVE_SPEED:Int = 200;
   inline static var DRAG:Int = 300;
+  inline static var BOX_SIZE:Int = 20;
 
   inline static var BUMP_TIME:Float = 0.4;
   inline static var HIT_TIME:Float = 0.25;
@@ -55,6 +56,7 @@ class Player extends Entity {
   public var hasBall:Bool = false;
   public var hitType(default, null):String = HitTypes.NONE; // which type of hitting the ball the player has triggered
   public var moving(get, never):Bool;
+  public var charging(default, null):Bool = false;
   public var boxCollider:Shape;
   public var hitCollider:Circle;
 
@@ -66,8 +68,8 @@ class Player extends Entity {
     }
     this.name = 'player'+this.playerNo;
     this.game = game;
-    this.width = 20;
-    this.height = 20;
+    this.width = BOX_SIZE;
+    this.height = BOX_SIZE;
 
     this.makeSprites();
     this.makeColliders();
@@ -224,43 +226,54 @@ class Player extends Entity {
     speed = this.hasBall ? SERVICE_MOVE_SPEED : BASE_MOVE_SPEED;
 
     var k = Lib.inputs.keyboard;
-    if (k.down(this.inputs['up'])) {
-      this.ay = -speed;
-    } else if (k.down(this.inputs['down'])) {
-      this.ay = speed;
-    } else {
-      this.ay = 0;
-    }
+    if (!charging) {
 
-    if (k.down(this.inputs['left'])) {
-      this.motion.ax = -speed;
-    } else if (k.down(this.inputs['right'])) {
-      this.motion.ax = speed;
-    } else {
-      this.motion.ax = 0;
-    }
+      if (k.down(this.inputs['up'])) {
+        this.ay = -speed;
+      } else if (k.down(this.inputs['down'])) {
+        this.ay = speed;
+      } else {
+        this.ay = 0;
+      }
 
-    // Slow down faster on change of direction
-    if ((k.down(this.inputs['up']) || k.down(this.inputs['down'])) 
-        && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) {
-      this.vy *= 0.25;
-    }
-    if ((k.down(this.inputs['left']) || k.down(this.inputs['right'])) 
-        && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) {
-      this.vx *= 0.25;
+      if (k.down(this.inputs['left'])) {
+        this.motion.ax = -speed;
+      } else if (k.down(this.inputs['right'])) {
+        this.motion.ax = speed;
+      } else {
+        this.motion.ax = 0;
+      }
+
+      // Slow down faster on change of direction
+      if ((k.down(this.inputs['up']) || k.down(this.inputs['down'])) 
+          && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) {
+        this.vy *= 0.25;
+      }
+      if ((k.down(this.inputs['left']) || k.down(this.inputs['right'])) 
+          && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) {
+        this.vx *= 0.25;
+      }
+    } else {
+      if (!k.down(this.inputs['hit'])) {
+        this.charging = false;
+      }
     }
 
     if (!this.actionDelayed) {
-      if (k.pressed(this.inputs['bump']) || k.pressed(this.inputs['hit'])) {
+      if (k.down(this.inputs['bump'])) {
         this.actionDelayed = true;
       }
-
-      if (k.pressed(this.inputs['bump'])) 
-        this._bump();
-
-      if (k.pressed(this.inputs['hit'])) 
-        this._hit();
     }
+    if (k.released(this.inputs['bump']))  {
+      this._bump();
+    }
+
+    if (k.pressed(this.inputs['hit'])) {
+      this._chargeHit();
+    } else if (k.released(this.inputs['hit'])) {
+      this._hit();
+    }
+
   }
 
   inline function update_cpuPlayer() {
@@ -326,6 +339,11 @@ class Player extends Entity {
       _bounceVal = 0; 
       _bounceDir = 1; 
     } // moving
+
+    if (this.charging) {
+      var w = this.hitEffectSpr.width;
+      this.hitEffectSpr.width = w == 20 ? 25 : 20;
+    }
   }
 
   inline function update_hitAnimation() {
@@ -357,6 +375,12 @@ class Player extends Entity {
 
   function _bumpDone() {
     this._hitRadiusReset();
+  }
+
+  inline function _chargeHit() {
+    this.charging = true;
+    this.ax = 0;
+    this.ay = 0;
   }
 
   inline function _hit() {
