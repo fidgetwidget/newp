@@ -1,4 +1,4 @@
-package newp.motion;
+package newp.transform;
 
 
 class Motion {

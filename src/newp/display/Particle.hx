@@ -1,7 +1,7 @@
 package newp.display;
 
-import newp.motion.Motion;
-import newp.motion.MotionRange;
+import newp.transform.Motion;
+import newp.transform.MotionRange;
 import newp.math.NullableRange;
 import newp.Lib;
 import openfl.display.DisplayObject;

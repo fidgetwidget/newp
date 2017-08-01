@@ -5,7 +5,7 @@ import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 import newp.math.Utils as MathUtil;
-import newp.math.Easing;
+import newp.transform.Easing;
 import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;

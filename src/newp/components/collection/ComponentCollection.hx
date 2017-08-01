@@ -9,6 +9,7 @@ class ComponentCollection implements Collection {
 
   var allComponents:Array<Component> = [];
   var componentTypeMap:Map<String, Array<Component>>;
+  var componentsByName:Map<String, Component>;
   var renderable_type:String;
   var updateable_type:String;
   var collidable_type:String;
@@ -26,6 +27,7 @@ class ComponentCollection implements Collection {
 
   public function new() {
     this.componentTypeMap = new Map();
+    this.componentsByName = new Map();
     this.renderable_type = Type.getClassName(Renderable);
     this.updateable_type = Type.getClassName(Updateable);
     this.collidable_type = Type.getClassName(Collidable);
@@ -37,6 +39,7 @@ class ComponentCollection implements Collection {
     if (c.renderable) this.addRenderable(c);
     if (c.collidable) this.addCollidable(c);
     this.addToTypeMap(c);
+    this.componentsByName.set(c.name, c);
   }
 
   public function remove(c:Component):Void {
@@ -45,12 +48,18 @@ class ComponentCollection implements Collection {
     if (c.renderable) this.removeRenderable(c);
     if (c.collidable) this.removeCollidable(c);
     this.removeFromTypeMap(c);
+    this.componentsByName.remove(c.name);
   }
 
   public function has(type:Dynamic):Bool {
     var key:String = Std.is(type, String) ? type : Type.getClassName(type);
     if (!componentTypeMap.exists(key)) return false;
     return componentTypeMap[key].length > 0;
+  }
+
+  public function get(name:String):Component {
+    if (!componentsByName.exists(name)) return null;
+    return componentsByName[name];
   }
 
   public function iterator():Iterator<Component> { return this.allComponents.iterator(); }

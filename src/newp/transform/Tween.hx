@@ -1,13 +1,12 @@
-package newp.tween;
+package newp.transform;
 
-import newp.math.NullableRange;
 import haxe.Timer;
 
 
 class Tween {
 
   public var target(default, null):Dynamic;
-  public var properties(default, null):Map<String, NullableRange>;
+  public var properties(default, null):Map<String, FloatTransform>;
   public var duration(default, null):Float;
   public var paused(default, null):Bool = false;
   public var delta(default, null):Float = 0;
@@ -140,7 +139,7 @@ class Tween {
   // Internal
   // ========
 
-  @:allow(newp.tween.Tweener)
+  @:allow(newp.transform.Tweener)
   function update():Void {
     if (this.complete || this.paused) return;
 
@@ -198,7 +197,7 @@ class Tween {
 
   inline function get_shouldReflect():Bool { return this._reflect && this._direction == 1; }
 
-  @:allow(newp.tween.Tweener)
+  @:allow(newp.transform.Tweener)
   var complete:Bool = false;
 
   var _delay:Float = 0;

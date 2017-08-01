@@ -2,7 +2,7 @@ package newp.components;
 
 import openfl.geom.Point;
 import openfl.display.DisplayObject;
-import newp.motion.Motion;
+import newp.transform.Motion;
 import newp.math.Utils as MathUtils;
 import newp.Entity;
 
@@ -15,8 +15,10 @@ class MotionComponent implements Component implements Updateable {
     return mc;
   }
 
-
   static var uid:Int = 0;
+
+  // Instance
+  // ========
 
   public var name(default, null):String;
   public var entity(default, null):Entity;

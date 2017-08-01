@@ -1,7 +1,7 @@
 package newp.components;
 
-import newp.tween.Tween;
-import newp.tween.Tweener;
+import newp.transform.Tween;
+import newp.transform.Tweener;
 import newp.Entity;
 
 

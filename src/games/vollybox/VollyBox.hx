@@ -6,7 +6,7 @@ import newp.collision.shapes.Shape;
 import newp.display.collection.DisplayCollection;
 import newp.math.Utils as MathUtil;
 import newp.scenes.BasicScene;
-import newp.tween.Easing;
+import newp.transform.Easing;
 import newp.utils.Draw;
 import newp.Lib;
 import openfl.display.Sprite;

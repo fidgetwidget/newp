@@ -30,6 +30,8 @@ interface Collection {
 
   public function has(type:Dynamic):Bool;
 
+  public function get(name:String):Component;
+
   public function iterator():Iterator<Component>;
 
 }

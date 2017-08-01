@@ -5,7 +5,7 @@ import newp.collision.shapes.Circle;
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 import newp.math.Utils as MathUtil;
-import newp.math.Easing;
+import newp.transform.Easing;
 import newp.utils.Draw;
 import newp.Entity;
 import newp.Lib;
@@ -16,29 +16,26 @@ import openfl.ui.Keyboard as Key;
 
 class Player extends Entity {
 
-  inline static var BASE_MOVE_SPEED:Int = 300;
-  inline static var SERVICE_MOVE_SPEED:Int = 200;
-  inline static var MAX_MOVE_SPEED:Int = 200;
-  inline static var DRAG:Int = 300;
-  inline static var BOX_SIZE:Int = 20;
+  public inline static var BASE_MOVE_SPEED:Int = 300;
+  public inline static var SERVICE_MOVE_SPEED:Int = 200;
+  public inline static var MAX_MOVE_SPEED:Int = 200;
+  public inline static var DRAG:Int = 300;
+  public inline static var BOX_SIZE:Int = 20;
 
-  inline static var BUMP_TIME:Float = 0.4;
-  inline static var HIT_TIME:Float = 0.25;
+  public inline static var BUMP_TIME:Float = 0.4;
+  public inline static var HIT_TIME:Float = 0.25;
 
-  inline static var BUMP_SCALE:Float = 1.33;
-  inline static var HIT_SCALE:Float = 1.25;
+  public inline static var BUMP_SCALE:Float = 1.33;
+  public inline static var HIT_SCALE:Float = 1.25;
 
-  inline static var HIT_SIZE:Float = 2;
-  inline static var MAX_HIT_SIZE:Float = 19;
+  public inline static var HIT_SIZE:Float = 2;
+  public inline static var MAX_HIT_SIZE:Float = 19;
 
   var game:VollyBox;
   var field(get, never):Field;
   var ball(get, never):Ball;
   var tweener:TweenerComponent;
-  // Logic (& IO)
-  var inputs:Map<String, Int>;
-  var speed:Float;
-  var actionDelayed:Bool = false; // if the player is trying to hit the ball
+
   // Visual
   var width:Float;
   var height:Float;
@@ -53,20 +50,22 @@ class Player extends Entity {
 
   public var isCpu(default, null):Bool = false;
   public var playerNo(default, null):Int;
-  public var hasBall:Bool = false;
-  public var hitType(default, null):String = HitTypes.NONE; // which type of hitting the ball the player has triggered
   public var moving(get, never):Bool;
-  public var charging(default, null):Bool = false;
+
+  public var hitType(default, null):String = HitTypes.NONE; // which type of hitting the ball the player has triggered 
+  public var hasBall(default, default):Bool = false;
+  public var charging(default, default):Bool = false;
+  public var actionDelayed(default, default):Bool = false; // if the player is trying to hit the ball
+
   public var boxCollider:Shape;
   public var hitCollider:Circle;
 
   public function new(player:Int, game:VollyBox) {
     super();
     this.playerNo = player;
-    if (player == 2) {
-      this.isCpu = true;
-    }
-    this.name = 'player'+this.playerNo;
+    // TODO: make this a game option
+    if (player == 2) { this.isCpu = true; }
+    this.name = 'player_'+this.playerNo;
     this.game = game;
     this.width = BOX_SIZE;
     this.height = BOX_SIZE;
@@ -75,7 +74,6 @@ class Player extends Entity {
     this.makeColliders();
     this.makeMotion();
     this.makeTweener();
-    this.makeInputs();
 
     this.hitDistance = HIT_SIZE;
     
@@ -106,6 +104,12 @@ class Player extends Entity {
     parent.addChild(this.boxSpr);
 
     this.addComponent(new SpriteComponent(parent));
+
+    if (!this.isCpu) {
+      this.addComponent(new PlayerInput());
+    } else {
+      this.addComponent(new CPUInput(this.game));
+    }
 
     this.hitEffectSpr.width = HIT_SIZE;
   }
@@ -172,29 +176,6 @@ class Player extends Entity {
       .onDone(_hitDone);
   }
 
-  function makeInputs() {
-    switch (this.playerNo) {
-      case 1:
-        this.inputs = [
-          'left'  => Key.A, // A
-          'up'    => Key.W, // W
-          'right' => Key.D, // D
-          'down'  => Key.S, // S
-          'bump'  => Key.K, // E
-          'hit'   => Key.L, // R
-        ];
-      case 2:
-        this.inputs = [
-          'left'  => 37, // ARROW_LEFT
-          'up'    => 38, // ARROW_UP
-          'right' => 39, // ARROW_RIGHT
-          'down'  => 40, // ARROW_DOWN
-          'bump'  => 191, // /
-          'hit'   => 190, // .
-        ];
-    }
-  }
-
   inline function initPosition() {
     this.y = field.centerY;
     switch(this.playerNo) {
@@ -209,118 +190,10 @@ class Player extends Entity {
   // ======
 
   override public function update() {
-    if (!this.isCpu) {
-      this.update_playerInput();
-    } else {
-      this.update_cpuPlayer();
-    }
-
     super.update();
 
     this.update_playerAnimations();
     this.update_hitAnimation();
-  }
-
-
-  inline function update_playerInput() {
-    speed = this.hasBall ? SERVICE_MOVE_SPEED : BASE_MOVE_SPEED;
-
-    var k = Lib.inputs.keyboard;
-    if (!charging) {
-
-      if (k.down(this.inputs['up'])) {
-        this.ay = -speed;
-      } else if (k.down(this.inputs['down'])) {
-        this.ay = speed;
-      } else {
-        this.ay = 0;
-      }
-
-      if (k.down(this.inputs['left'])) {
-        this.motion.ax = -speed;
-      } else if (k.down(this.inputs['right'])) {
-        this.motion.ax = speed;
-      } else {
-        this.motion.ax = 0;
-      }
-
-      // Slow down faster on change of direction
-      if ((k.down(this.inputs['up']) || k.down(this.inputs['down'])) 
-          && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) {
-        this.vy *= 0.25;
-      }
-      if ((k.down(this.inputs['left']) || k.down(this.inputs['right'])) 
-          && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) {
-        this.vx *= 0.25;
-      }
-    } else {
-      if (!k.down(this.inputs['hit'])) {
-        this.charging = false;
-      }
-    }
-
-    if (!this.actionDelayed) {
-      if (k.down(this.inputs['bump'])) {
-        this.actionDelayed = true;
-      }
-    }
-    if (k.released(this.inputs['bump']))  {
-      this._bump();
-    }
-
-    if (k.pressed(this.inputs['hit'])) {
-      this._chargeHit();
-    } else if (k.released(this.inputs['hit'])) {
-      this._hit();
-    }
-
-  }
-
-  inline function update_cpuPlayer() {
-
-    var dx = this.x - this.ball.x;
-    var dy = this.y - this.ball.y;
-    var l = MathUtil.vec_length(dx, dy);
-    var ballOnPlayerSide = this.playerNo == 1 ? this.ball.x < this.field.centerX : this.ball.x > this.field.centerX;
-    var ballApproachingPlayerSide = this.playerNo == 1 ? this.ball.vx < 0 : this.ball.vx > 0;
-    var fx = this.ball.x;
-    var fy = this.ball.y;
-
-    if (this.ball.z + this.ball.vz > 5) {
-      fx += this.ball.vx;
-      fy += this.ball.vy;
-    }
-
-    if ((ballOnPlayerSide || ballApproachingPlayerSide) && l < 140) {
-      var prevX = this.motion.ax;
-      var prevY = this.motion.ay;
-      this.motion.accelerateTowards(BASE_MOVE_SPEED, fx, fy);
-      if (   (prevX == 0 && this.motion.ax != 0)
-          || (prevY == 0 && this.motion.ay != 0)) {
-        this.game.array_random(this.game.sounds['move']).play();
-      }
-      // if the ball is in hit range, and moving twards the ground, and we haven't already tried to hit it
-      if (ballOnPlayerSide && this.hitType == HitTypes.NONE && this.ball.z < 1.75 && this.ball.vz < 0) {
-        this.actionDelayed = true;
-        //  if it seems 
-        if (l > MAX_HIT_SIZE && l < MAX_HIT_SIZE + MAX_MOVE_SPEED) {
-          this._bump();
-        } else if (l < MAX_HIT_SIZE) {
-          this._hit();
-        }
-      }
-    } else {
-      var prevY = this.motion.ay;
-      this.ax = 0;
-      this.motion.accelerateTowards(BASE_MOVE_SPEED/3, this.x, fy);
-      if (prevY == 0) {
-        this.game.array_random(this.game.sounds['move']).play();
-      }
-    }
-
-    if (this.vx != 0 && MathUtil.sign(this.ax) != MathUtil.sign(this.vx)) this.vx *= 0.25;
-
-    if (this.vy != 0 && MathUtil.sign(this.ay) != MathUtil.sign(this.vy)) this.vy *= 0.25;
   }
 
   inline function update_playerAnimations() {
@@ -357,7 +230,7 @@ class Player extends Entity {
     this.boxSpr.scaleY = scale;
   }
 
-  inline function _bump() {
+  public function _bump() {
     // start the bump animation
     this.hitDistance = MAX_HIT_SIZE; // bump expands your hit range briefly
     this.tweener.start('bump'); 
@@ -377,13 +250,13 @@ class Player extends Entity {
     this._hitRadiusReset();
   }
 
-  inline function _chargeHit() {
+  public function _chargeHit() {
     this.charging = true;
     this.ax = 0;
     this.ay = 0;
   }
 
-  inline function _hit() {
+  public function _hit() {
     this.tweener.start('hit'); 
     this.hitType = HitTypes.HITTING;
     this.scale = this.hitScale = HIT_SCALE;

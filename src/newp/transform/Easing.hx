@@ -1,4 +1,4 @@
-package newp.tween;
+package newp.transform;
 
 
 class Easing {
