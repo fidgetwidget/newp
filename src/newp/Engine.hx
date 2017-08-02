@@ -42,6 +42,10 @@ class Engine {
 
   function update(e:Event):Void {
     this.clock.tick();
+    if (Lib.pauseFrames > 0) {
+      Lib.pauseFrames--;
+      return;
+    }
     if (Lib.debug) {
       this.debugLayer.graphics.clear();
       this.debugLayer.graphics.lineStyle(1, 0xff0000, 0.5);  

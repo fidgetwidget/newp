@@ -244,13 +244,15 @@ class VollyBox extends BasicScene {
   }
 
   function resolve_playerHitBall(shape:Shape, data:ShapeCollision) {
-    // trace('player hit ball');
     var dx:Float = this.ball.x;
     var dy:Float = this.ball.y;
     var player = shape == this.player1.hitCollider ? this.player1 : this.player2;
 
-    switch (player.hitType) {
+    this.playerHitBall(player, dx, dy);
+  }
 
+  function playerHitBall(player:Player, dx:Float, dy:Float) {
+    switch (player.hitType) {
       case (HitTypes.HITTING): 
         if (player.x < this.field.centerX) {
           dx = this.field.centerX + 60;
@@ -271,6 +273,7 @@ class VollyBox extends BasicScene {
         this.array_random(this.sounds['hit']).play();
     }
     player.hasBall = false;
+    Lib.pauseFrames = 9;
   }
 
   // Ball hits net

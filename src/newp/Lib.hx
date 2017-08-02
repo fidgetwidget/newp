@@ -25,6 +25,7 @@ class Lib {
   public static var delta (get, never) :Float;
   public static var rawDelta (get, never) :Float;
   public static var time (get, never) :Float;
+  public static var pauseFrames :Int = 0;
 
   // Properties
   static inline function get_debug() :Bool { return Lib.engine != null ? Lib.engine.debug : false; }
