@@ -34,7 +34,13 @@ class VollyBox extends BasicScene {
   public var scoreBoard:ScoreBoard;
   public var field:Field;
   public var net:Net;
-  public var sounds:Map<String, Array<Sound>>;
+  public var sounds:Map<String, Array<Sound>> = [
+      'ball'  => [],
+      'event' => [],
+      'hit'   => [],
+      'move'  => [],
+      'smash' => [],
+    ];
   public var halfVolume:SoundTransform;
 
   var bg:Sprite;
@@ -58,15 +64,11 @@ class VollyBox extends BasicScene {
     ball = new Ball(this);
 
     this.givePlayerBall(this.player1);
-    this.init_soundsMap();
   }
 
-  function drawBackground() {
-    bg = new Sprite();
-    Draw.start(bg.graphics)
-      .beginFill(0xf5deb3)
-      .drawRect(0, 0, Lib.stage.stageWidth, Lib.stage.stageHeight)
-      .endFill();
+  override function init() {
+    super.init();
+    this.init_soundsMap();
   }
 
   override function init_sprites() {
@@ -79,30 +81,6 @@ class VollyBox extends BasicScene {
 
   override function init_colliders() {
     this.colliders = new ShapeBins(Lib.stage.stageWidth, Lib.stage.stageHeight); 
-  }
-
-  function init_soundsMap() {
-    this.sounds = [
-      'ball' => [],
-      'event' => [],
-      'hit' => [],
-      'move' => [],
-      'smash' => [],
-    ];
-    for (i in 1...6) {
-      this.pushSound('ball', i);
-      this.pushSound('event', i);
-      this.pushSound('hit', i);
-    }
-    this.pushSound('smash', 1);
-    this.pushSound('smash', 2);
-    // picked the most subtle ones only
-    // this.pushSound('move', 3);
-    this.pushSound('move', 10);
-    this.halfVolume = new SoundTransform(0.5);
-  }
-  inline function pushSound(name:String, i:Int):Void {
-    this.sounds['$name'].push(Assets.getSound('sounds/VolleyBox/$name-$i.ogg'));
   }
 
   override public function update() {
@@ -174,6 +152,38 @@ class VollyBox extends BasicScene {
   }
 
 
+  // Internal
+  // ========
+
+  // Rendering
+  function drawBackground() {
+    bg = new Sprite();
+    Draw.start(bg.graphics)
+      .beginFill(0xf5deb3)
+      .drawRect(0, 0, Lib.stage.stageWidth, Lib.stage.stageHeight)
+      .endFill();
+  }
+
+  // Init
+  function init_soundsMap() {
+    for (i in 1...6) {
+      this.pushSound('ball', i);
+      this.pushSound('event', i);
+      this.pushSound('hit', i);
+    }
+    this.pushSound('smash', 1);
+    this.pushSound('smash', 2);
+    // picked the most subtle ones only
+    // this.pushSound('move', 3);
+    this.pushSound('move', 10);
+    this.halfVolume = new SoundTransform(0.5);
+  }
+  
+  inline function pushSound(name:String, i:Int):Void {
+    this.sounds['$name'].push(Assets.getSound('sounds/VolleyBox/$name-$i.ogg'));
+  }
+
+  // Update
   inline function update_input() {
     var k = Lib.inputs.keyboard;
 
@@ -189,24 +199,29 @@ class VollyBox extends BasicScene {
   }
 
   inline function update_collisionTests() {
-    this.colliders.collisionTestAll(resolve_playerCollision, ['player', 'net', 'score']);
+    this.colliders.collisionTestAll(playerCollisionHandler, ['player', 'net', 'score']);
 
     if (this.ball.z < NET_HEIGHT) {
-      this.colliders.collisionTest(this.ball.collider, resolve_ballHitsNet, ['ball', 'net']);
+      this.colliders.collisionTest(this.ball.collider, ballHitsNetHandler, ['ball', 'net']);
     }
 
     if (this.player1.hitType != HitTypes.NONE && (this.ball.inHitRange || this.player1.hasBall)) {
-      this.colliders.collisionTest(this.player1.hitCollider, resolve_playerHitBall, ['ball', 'hit']);
+      this.colliders.collisionTest(this.player1.hitCollider, playerHitBallHandler, ['ball', 'hit']);
     } 
 
     if (this.player2.hitType != HitTypes.NONE && (this.ball.inHitRange || this.player2.hasBall)) {
-      this.colliders.collisionTest(this.player2.hitCollider, resolve_playerHitBall, ['ball', 'hit']);
+      this.colliders.collisionTest(this.player2.hitCollider, playerHitBallHandler, ['ball', 'hit']);
     }
 
     this.collision_playerBounds(this.player1);
     this.collision_playerBounds(this.player2);
   }
 
+  inline function update_slowdownRangeCollisionTest() {
+    this.colliders.collisionTestAll(triggerSlowdown, ['player', 'slowdown']);
+  }
+
+  // Collisions
   inline function collision_playerBounds(player:Player) {
     var bounds = player.boxCollider.bounds;
     if (bounds.top < 0 && player.vy < 0) player.vy *= -1;
@@ -215,11 +230,7 @@ class VollyBox extends BasicScene {
     if (bounds.right > Lib.stageWidth && player.vx > 0) player.vx *= -1;
   }
 
-  inline function update_slowdownRangeCollisionTest() {
-    this.colliders.collisionTestAll(triggerSlowdown, ['player', 'slowdown']);
-  }
-
-  function resolve_playerCollision(shape:Shape, data:ShapeCollision) {
+  function playerCollisionHandler(shape:Shape, data:ShapeCollision) {
     var player;
     if (shape == player1.boxCollider) 
       player = this.player1;
@@ -245,45 +256,14 @@ class VollyBox extends BasicScene {
     }
   }
 
-  function resolve_playerHitBall(shape:Shape, data:ShapeCollision) {
+  function playerHitBallHandler(shape:Shape, data:ShapeCollision) {
     var player = shape == this.player1.hitCollider ? this.player1 : this.player2;
     var otherPlayer = shape == this.player1.hitCollider ? this.player2 : this.player1;
     this.playerHitBall(player, otherPlayer);
   }
 
-  function givePlayerBall(player:Player) {
-    ball.serving(player1);
-  }
-
-  function playerHitBall(player:Player, otherPlayer:Player) {
-    var xx:Float = 0, yy:Float = 0, side:Int = 0, l:Float = 0;
-    switch (player.hitType) {
-      case (HitTypes.HITTING): 
-        side = player.x < this.field.centerX ? 1 : -1;
-        l = MathUtil.vec_length(player.vx, player.vy);
-        if (Math.abs(l) < MIN_MOVEMENT || player.isCpu) { 
-          xx = otherPlayer.x;
-          yy = otherPlayer.y;
-        } else {
-          var ox = this.field.centerX + ((Field.WIDTH * 0.25) * side);
-          var oy = player.y;
-          var dist = HIT_DISTANCE/2;
-          xx = ox + MathUtil.vec_normalize(l, player.vx) * dist;
-          yy = oy + MathUtil.vec_normalize(l, player.vy) * dist;
-        }
-
-      case (HitTypes.BUMPING):
-        xx = this.ball.x + Math.random() * 6 - 3;
-        yy = this.ball.y + Math.random() * 6 - 3;
-    }
-    this.ball.hitBall(player, xx, yy);
-    this.array_random(this.sounds['hit']).play();
-    player.hasBall = false;
-    Lib.pauseFrames = 9;
-  }
-
   // Ball hits net
-  function resolve_ballHitsNet(shape:Shape, data:ShapeCollision) {
+  function ballHitsNetHandler(shape:Shape, data:ShapeCollision) {
     // trace('ball hits net');
     this.ball.x -= data.separationX * data.unitVectorX;
     this.ball.vx *= -1; // reflect off of the net
@@ -291,9 +271,47 @@ class VollyBox extends BasicScene {
     this.ball.vz /= 5; // reduce fall speed
     if (this.ball.inService) {
       this.ball.serving(null);
-    } else {
-      this.array_random(this.sounds['ball']).play();
+    } 
+
+    this.array_random(this.sounds['ball']).play();
+  }
+
+  // Methods
+
+  inline function playerHitBall(player:Player, otherPlayer:Player) {
+    var targetX:Float = 0, targetY:Float = 0, side:Int = 0;
+
+    switch (player.hitType) {
+
+      case (HitTypes.HITTING): 
+        side = player.x < this.field.centerX ? 1 : -1;
+        var l = MathUtil.vec_length(player.vx, player.vy);
+        if (Math.abs(l) < MIN_MOVEMENT || player.isCpu) { 
+          targetX = otherPlayer.x;
+          targetY = otherPlayer.y;
+        } else {
+          var ox = this.field.centerX + ((Field.WIDTH * 0.25) * side);
+          var oy = player.y;
+          var dist = HIT_DISTANCE/2;
+          targetX = ox + MathUtil.vec_normalize(l, player.vx) * dist;
+          targetY = oy + MathUtil.vec_normalize(l, player.vy) * dist;
+        }
+
+      case (HitTypes.BUMPING):
+        targetX = this.ball.x + Math.random() * 6 - 3;
+        targetY = this.ball.y + Math.random() * 6 - 3;
     }
+
+    player.hasBall = false;
+    this.ball.hitBall(player, targetX, targetY);
+    
+    Lib.pauseFrames = 9;
+    this.array_random(this.sounds['hit']).play();
+    this.array_random(this.sounds['ball']).play();
+  }
+
+  inline function givePlayerBall(player:Player) {
+    this.ball.serving(this.player1);
   }
 
   inline function hitReset() {
