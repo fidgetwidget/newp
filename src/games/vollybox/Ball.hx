@@ -121,7 +121,7 @@ class Ball extends Entity {
     if (player != null) {
       this.ball.layer = 'foreground';
       this.z = HELD_Z_VAL;
-      player.hasBall = true;  
+      player.hasBall = true;
       // trace('now serving player${player.playerNo}');
     } else {
       // ball hits some obstacle 

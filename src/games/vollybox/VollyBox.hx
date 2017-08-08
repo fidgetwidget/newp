@@ -25,6 +25,8 @@ class VollyBox extends BasicScene {
   public static inline var HIT_DELAY:Float = 0.13333333;
   public static inline var SLOWDOWN_DELAY:Float = 0.1333333;
   public static inline var NET_HEIGHT:Float = 5;
+  public static inline var MIN_MOVEMENT:Float = 3.3333333;
+  public static inline var HIT_DISTANCE:Float = 200;
 
   public var player1:Player;
   public var player2:Player;
@@ -54,8 +56,8 @@ class VollyBox extends BasicScene {
     player1 = new Player(1, this);
     player2 = new Player(2, this);
     ball = new Ball(this);
-    ball.serving(player1);
 
+    this.givePlayerBall(this.player1);
     this.init_soundsMap();
   }
 
@@ -182,7 +184,7 @@ class VollyBox extends BasicScene {
 
     // give player 1 the ball
     if (k.pressed(Key.R) && this.player2.isCpu) {
-      ball.serving(player1);
+      this.givePlayerBall(this.player1);
     }
   }
 
@@ -244,34 +246,38 @@ class VollyBox extends BasicScene {
   }
 
   function resolve_playerHitBall(shape:Shape, data:ShapeCollision) {
-    var dx:Float = this.ball.x;
-    var dy:Float = this.ball.y;
     var player = shape == this.player1.hitCollider ? this.player1 : this.player2;
-
-    this.playerHitBall(player, dx, dy);
+    var otherPlayer = shape == this.player1.hitCollider ? this.player2 : this.player1;
+    this.playerHitBall(player, otherPlayer);
   }
 
-  function playerHitBall(player:Player, dx:Float, dy:Float) {
+  function givePlayerBall(player:Player) {
+    ball.serving(player1);
+  }
+
+  function playerHitBall(player:Player, otherPlayer:Player) {
+    var xx:Float = 0, yy:Float = 0, side:Int = 0, l:Float = 0;
     switch (player.hitType) {
       case (HitTypes.HITTING): 
-        if (player.x < this.field.centerX) {
-          dx = this.field.centerX + 60;
+        side = player.x < this.field.centerX ? 1 : -1;
+        l = MathUtil.vec_length(player.vx, player.vy);
+        if (Math.abs(l) < MIN_MOVEMENT || player.isCpu) { 
+          xx = otherPlayer.x;
+          yy = otherPlayer.y;
         } else {
-          dx = this.field.centerX - 60;
+          var ox = this.field.centerX + ((Field.WIDTH * 0.25) * side);
+          var oy = player.y;
+          var dist = HIT_DISTANCE/2;
+          xx = ox + MathUtil.vec_normalize(l, player.vx) * dist;
+          yy = oy + MathUtil.vec_normalize(l, player.vy) * dist;
         }
-        dy = this.field.centerY;
-        var l = MathUtil.vec_length(player.vx, player.vy);
-        dx += player.vx; // * l;
-        dy += player.vy; // * l;
-        this.ball.hitBall(player, dx, dy);
-        this.array_random(this.sounds['hit']).play();
 
       case (HitTypes.BUMPING):
-        dx += Math.random() * 6 - 3;
-        dy += Math.random() * 6 - 3;
-        this.ball.hitBall(player, dx, dy);
-        this.array_random(this.sounds['hit']).play();
+        xx = this.ball.x + Math.random() * 6 - 3;
+        yy = this.ball.y + Math.random() * 6 - 3;
     }
+    this.ball.hitBall(player, xx, yy);
+    this.array_random(this.sounds['hit']).play();
     player.hasBall = false;
     Lib.pauseFrames = 9;
   }
