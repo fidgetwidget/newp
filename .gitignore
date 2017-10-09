@@ -1,1 +1,3 @@
 bin/*
+static/private/*
+!static/private/info.md
