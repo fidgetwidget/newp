@@ -4,7 +4,6 @@ import newp.collision.collections.Collection as ShapeCollection;
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.collision.shapes.Shape;
-// import newp.display.collection.LayerCollection;
 import newp.display.collection.DisplayCollection;
 import newp.entity.collection.Collection as EntityCollection;
 import newp.entity.collection.EntityCollection;

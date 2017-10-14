@@ -5,7 +5,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 // A collection of sprites in groups
-class SpriteList implements Collection {
+class SpriteList implements GroupCollection implements Collection {
 
   var groups:Map<String, Group>;
   var count:Int = 0;

@@ -42,11 +42,13 @@ class DisplayCollection implements LayerCollection implements Collection {
   }
 
   public function merge(collection:Collection):Void {
-    if (Std.is(collection, SpriteList)) {
-      var spriteList = cast(collection, SpriteList);
-      for (name in spriteList.layerNames) {
+    if (Std.is(collection, GroupCollection)) {
+      var spriteList = cast(collection, GroupCollection);
+      for (name in spriteList.groupNames) {
         var sprites = spriteList.getGroup(name);
-        this.layerByName[name].add(sprites)
+        for (sprite in sprites) {
+          this.layerByName[name].add(sprite);
+        }
       }
     }
     else if (Std.is(collection, LayerCollection)) {
