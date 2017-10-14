@@ -1,4 +1,6 @@
-package games.vollybox;
+package games.vollybox.entities;
+
+import games.vollybox.*;
 
 import newp.components.*;
 import newp.collision.shapes.Shape;

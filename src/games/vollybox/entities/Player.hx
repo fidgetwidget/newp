@@ -1,4 +1,8 @@
-package games.vollybox;
+package games.vollybox.entities;
+
+import games.vollybox.*;
+import games.vollybox.components.PlayerInput;
+import games.vollybox.components.CPUInput;
 
 import newp.components.*;
 import newp.collision.shapes.Circle;
@@ -11,6 +15,7 @@ import newp.Entity;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.Shape as Graphic;
+import openfl.geom.Point;
 import openfl.ui.Keyboard as Key;
 
 
@@ -30,6 +35,7 @@ class Player extends Entity {
 
   public inline static var HIT_SIZE:Float = 2;
   public inline static var MAX_HIT_SIZE:Float = 19;
+  public inline static var MAX_CHARGE:Float = 48;
 
   var game:VollyBox;
   var field(get, never):Field;
@@ -51,10 +57,12 @@ class Player extends Entity {
   public var isCpu(default, null):Bool = false;
   public var playerNo(default, null):Int;
   public var moving(get, never):Bool;
+  public var hasBall(default, default):Bool = false;
 
   public var hitType(default, null):String = HitTypes.NONE; // which type of hitting the ball the player has triggered 
-  public var hasBall(default, default):Bool = false;
   public var charging(default, default):Bool = false;
+  var chargeDir:Point = new Point();
+
   public var actionDelayed(default, default):Bool = false; // if the player is trying to hit the ball
 
   public var boxCollider:Shape;
@@ -250,10 +258,21 @@ class Player extends Entity {
     this._hitRadiusReset();
   }
 
-  public function _chargeHit() {
+  public function _chargeHit(dx:Float, dy:Float) {
+    var l:Float = 0;
     this.charging = true;
-    this.ax = 0;
-    this.ay = 0;
+
+    dx += this.chargeDir.x;
+    dy += this.chargeDir.y;
+
+    l = MathUtil.vec_length(dx, dy);
+    if (l > MAX_CHARGE) {
+      dx = MathUtil.vec_normalize(l, dx) * MAX_CHARGE;
+      dy = MathUtil.vec_normalize(l, dy) * MAX_CHARGE;
+    }
+
+    this.chargeDir.x = dx;
+    this.chargeDir.y = dy;
   }
 
   public function _hit() {
@@ -268,6 +287,9 @@ class Player extends Entity {
   }
 
   function _hitDone() {
+    this.chargeDir.x = 0;
+    this.chargeDir.y = 0;
+    this.charging = false;
     this._hitRadiusReset();
   }
 

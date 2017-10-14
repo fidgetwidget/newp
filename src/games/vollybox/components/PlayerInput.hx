@@ -1,4 +1,6 @@
-package games.vollybox;
+package games.vollybox.components;
+
+import games.vollybox.entities.Player;
 
 import newp.components.Routine;
 import newp.math.Utils as MathUtil;
@@ -26,31 +28,34 @@ class PlayerInput extends Routine {
     speed = player.hasBall ? Player.SERVICE_MOVE_SPEED : Player.BASE_MOVE_SPEED;
 
     var k = Lib.inputs.keyboard;
+    var dx = 0;
+    var dy = 0;
     if (!player.charging) {
 
       if (k.down(this.inputs['up'])) {
-        player.ay = -speed;
+        dy = -1;
       } else if (k.down(this.inputs['down'])) {
-        player.ay = speed;
+        dy = 1;
       } else {
-        player.ay = 0;
+        dy = 0;
       }
 
       if (k.down(this.inputs['left'])) {
-        player.motion.ax = -speed;
+        dx = -1;
       } else if (k.down(this.inputs['right'])) {
-        player.motion.ax = speed;
+        dx = 1;
       } else {
-        player.motion.ax = 0;
+        dx = 0;
       }
 
+      player.motion.ax = speed * dx;
+      player.motion.ay = speed * dy;
+
       // Slow down faster on change of direction
-      if ((k.down(this.inputs['up']) || k.down(this.inputs['down'])) 
-          && MathUtil.sign(player.ay) != MathUtil.sign(player.vy)) {
+      if (dy != 0 && MathUtil.sign(player.ay) != MathUtil.sign(player.vy)) {
         player.vy *= 0.25;
       }
-      if ((k.down(this.inputs['left']) || k.down(this.inputs['right'])) 
-          && MathUtil.sign(player.ax) != MathUtil.sign(player.vx)) {
+      if (dx != 0 && MathUtil.sign(player.ax) != MathUtil.sign(player.vx)) {
         player.vx *= 0.25;
       }
     } else {
@@ -69,7 +74,7 @@ class PlayerInput extends Routine {
     }
 
     if (k.pressed(this.inputs['hit'])) {
-      player._chargeHit();
+      player._chargeHit(dx, dy);
     } else if (k.released(this.inputs['hit'])) {
       player._hit();
     }

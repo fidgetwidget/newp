@@ -1,9 +1,13 @@
 package games.vollybox;
 
+import games.vollybox.components.*;
+import games.vollybox.entities.*;
+
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.collision.shapes.Shape;
 import newp.display.collection.DisplayCollection;
+import newp.display.collection.Layer;
 import newp.math.Utils as MathUtil;
 import newp.scenes.BasicScene;
 import newp.transform.Easing;
@@ -72,8 +76,9 @@ class VollyBox extends BasicScene {
   }
 
   override function init_sprites() {
-    this.sprites = new DisplayCollection(['background', 'camera', 'foreground', 'hud', 'debug']);
-    this.sprites.getLayer('camera').sortBy(
+    this.sprites = new DisplayCollection('scene-layers', ['background', 'camera', 'foreground', 'hud', 'debug']);
+    var cameraLayer:Layer = cast(this.sprites.getLayer('camera'), Layer);
+    cameraLayer.sortBy(
       function (a, b):Int { 
         return a.y == b.y ? 0 : a.y < b.y ? -1 : 1; 
       });

@@ -1,4 +1,7 @@
-package games.vollybox;
+package games.vollybox.components;
+
+import games.vollybox.entities.Player;
+import games.vollybox.*;
 
 import newp.components.Routine;
 import newp.math.Utils as MathUtil;
