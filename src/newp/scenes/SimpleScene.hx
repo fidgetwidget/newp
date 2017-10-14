@@ -59,7 +59,7 @@ class SimpleScene implements Scene {
     this.sprites.remove(sprite);
   }
 
-  public function setSpriteIndex (sprite:DisplayObject, index:Int) :Void {
+  public function setChildIndex (sprite:DisplayObject, index:Int) :Void {
     this.container.setChildIndex(sprite, index);
   }
 

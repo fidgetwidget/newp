@@ -6,30 +6,21 @@ import openfl.display.DisplayObject;
 
 interface Collection {
 
+  public var name(default, null):String;
+
+  // public var container(default, null):DisplayObjectContainer;
+
   public var length(get, never):Int;
 
-  public var container(default, null):DisplayObjectContainer;
+  public function iterator():Iterator<DisplayObject>;
 
-  // Layer Methods
-  // =============
+  // Add another Collection into this one.
+  public function merge(collection:Collection):Void;
 
-  // Add a layer to the top
-  public function addLayer(name:String):Layer;
+  public function add(graphic:DisplayObject, ?group:String):Void;
 
-  public function getLayer(name:String):Layer;
+  public function remove(graphic:DisplayObject):Void;
 
-  public function hideLayer(name:String):Void;
-
-  public function sortLayer(name:String, ?sortFunc:DisplayObject->DisplayObject->Int):Void ;
-
-  // Sprite Methods
-  // ==============
-
-  // add new, or adjust the layer of a graphic
-  public function addSprite(graphic:DisplayObject, ?layer:String):Void;
-
-  public function removeSprite(graphic:DisplayObject):Void;
-
-  public function setSpriteIndex(graphic:DisplayObject, index:Int):Void;
+  // public function setChildIndex(graphic:DisplayObject, index:Int):Void;
 
 }

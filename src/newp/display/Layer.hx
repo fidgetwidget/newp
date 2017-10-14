@@ -22,6 +22,14 @@ class Layer {
     this.sortable = sortFunc != null;
   }
 
+  // remove the display objects from the other layer and add them to this layer
+  public function merge(layer:Layer) {
+    for (item in layer.items) {
+      layer.remove(item);
+      this.add(item);
+    }
+  }
+
   public function sort() {
     if (!this.sortable) return;
     this.items.sort(this.sortFunc);

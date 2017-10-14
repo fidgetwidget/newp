@@ -1,30 +1,66 @@
 package newp.display.collection;
 
-import newp.display.Layer;
+// import newp.display.Layer;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 
-class DisplayCollection implements Collection {
+class DisplayCollection implements LayerCollection implements Collection {
 
-  var layerNames:Array<String>;
-  var layers:Map<String, Layer>;
-  var layerMap:Map<DisplayObject, Layer>;
+  var layerByName:Map<String, Layer>;
+  var layerByGraphic:Map<DisplayObject, Layer>;
   var count:Int = 0;
+
+  public var name(default, null):String;
 
   public var length(get, never):Int;
 
+  // This also indicates the layer order
+  public var layerNames(default, null):Array<String>;
+
   public var container(default, null):DisplayObjectContainer;
 
-  public function new(?layerNames:Array<String>) {
+  public function new(name:String, ?layerNames:Array<String>) {
+    this.name = name;
     this.container = new Sprite();
-    this.layers = new Map();
     this.layerNames = [];
-    this.layerMap = new Map();
+    this.layerByName = new Map();
+    this.layerByGraphic = new Map();
     // if we have layers to add
     for (name in layerNames) {
-      this.addLayer(name);
+      this.makeLayer(name);
+    }
+  }
+
+  public function iterator():Iterator<DisplayObject> {
+    return this.layerByGraphic.keys();
+  }
+
+  public function layers():Iterator<Layer> {
+    return this.layerByName.iterator();
+  }
+
+  public function merge(collection:Collection):Void {
+    if (Std.is(collection, SpriteList)) {
+      var spriteList = cast(collection, SpriteList);
+      for (name in spriteList.layerNames) {
+        var sprites = spriteList.getGroup(name);
+        this.layerByName[name].add(sprites)
+      }
+    }
+    else if (Std.is(collection, LayerCollection)) {
+      var layerCollection = cast(collection, LayerCollection);
+      for (name in layerCollection.layerNames) {
+        var layer = layerCollection.getLayer(name);
+        this.layerByName[name].merge(layer);
+      }
+    } 
+    else {
+      for (sprite in collection) {
+        collection.remove(sprite);
+        this.add(sprite);
+      }
     }
   }
 
@@ -32,10 +68,10 @@ class DisplayCollection implements Collection {
   // =============
 
   // Add a layer to the top
-  public function addLayer(name:String):Layer {
+  public function makeLayer(name:String):Layer {
     var layer:Layer;
-    if (this.layers.exists(name)) {
-      layer = this.layers.get(name);
+    if (this.layerByName.exists(name)) {
+      layer = this.layerByName.get(name);
       // TODO: reorder things to have this layer be the last one instead
       return layer;
     }
@@ -43,26 +79,26 @@ class DisplayCollection implements Collection {
     layer = new Layer(name);
     this.layerNames.push(name);
     this.container.addChild(layer.container);
-    this.layers.set(name, layer);
+    this.layerByName.set(name, layer);
     return layer;
   }
 
   public function getLayer(name:String):Layer {
-    if (!this.layers.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
+    if (!this.layerByName.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
 
-    return this.layers[name];
+    return this.layerByName[name];
   }
 
   public function hideLayer(name:String):Void {
-    if (!this.layers.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
-
-    this.layers[name].container.visible = false;
+    if (!this.layerByName.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
+    var layer:Layer = this.layerByName[name];
+    layer.container.visible = false;
   }
 
   public function sortLayer(name:String, ?sortFunc:DisplayObject->DisplayObject->Int):Void {
-    if (!this.layers.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
+    if (!this.layerByName.exists(name)) throw 'Layer[${name}] doesn\'t Exist';
     
-    var layer = this.layers[name];
+    var layer:Layer = this.layerByName[name];
     if (!layer.sortable && sortFunc == null) return;
 
     if (sortFunc != null) {
@@ -72,41 +108,41 @@ class DisplayCollection implements Collection {
     }
   }
 
-  // Sprite Methods
-  // ==============
+  // Collection Methods
+  // ==================
 
   // add new, or adjust the layer of a graphic
-  public function addSprite(graphic:DisplayObject, ?layer:String):Void {
-    if (layer == null) {
+  public function add(graphic:DisplayObject, ?group:String):Void {
+    if (group == null) {
       var i = this.layerNames.length - 1;
       if (i < 0) throw "There must be a layer before we can add a Sprite to it";
-      layer = this.layerNames[i]; // default to the top layer
+      group = this.layerNames[i]; // default to the top layer
     }
 
-    if (!this.layers.exists(layer)) throw 'Layer[${layer}] doesn\'t Exist';
+    if (!this.layerByName.exists(group)) throw 'Layer[${group}] doesn\'t Exist';
 
-    if (this.layerMap.exists(graphic)) {
-      this.layerMap[graphic].remove(graphic);
+    if (this.layerByGraphic.exists(graphic)) {
+      this.layerByGraphic[graphic].remove(graphic);
     } else {
       count++;
     }
 
-    this.layerMap.set(graphic, this.layers[layer]);
-    this.layers[layer].add(graphic);
+    this.layerByGraphic.set(graphic, this.layerByName[group]);
+    this.layerByName[group].add(graphic);
   }
 
-  public function removeSprite(graphic:DisplayObject):Void {
-    if (!this.layerMap.exists(graphic)) return;
+  public function remove(graphic:DisplayObject):Void {
+    if (!this.layerByGraphic.exists(graphic)) return;
 
-    this.layerMap[graphic].remove(graphic);
-    this.layerMap.remove(graphic);
+    this.layerByGraphic[graphic].remove(graphic);
+    this.layerByGraphic.remove(graphic);
     count--;
   }
 
-  public function setSpriteIndex(graphic:DisplayObject, index:Int):Void {
-    if (!this.layerMap.exists(graphic)) return;
+  public function setChildIndex(graphic:DisplayObject, index:Int):Void {
+    if (!this.layerByGraphic.exists(graphic)) return;
 
-    this.layerMap[graphic].setChildIndex(graphic, index);
+    this.layerByGraphic[graphic].setChildIndex(graphic, index);
   }
 
   // 

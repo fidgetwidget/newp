@@ -38,7 +38,7 @@ interface Scene {
 
   public function addSprite (graphic:DisplayObject, ?layer:String) :Void;
   public function removeSprite (graphic:DisplayObject) :Void;
-  public function setSpriteIndex (graphic:DisplayObject, index:Int) :Void;
+  public function setChildIndex (graphic:DisplayObject, index:Int) :Void;
 
   // Collider
   // ========

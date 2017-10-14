@@ -1,12 +1,12 @@
 package newp.scenes;
 
-import newp.collision.collections.Collection as IShapeCollection;
+import newp.collision.collections.Collection as ShapeCollection;
 import newp.collision.collections.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.collision.shapes.Shape;
-import newp.display.collection.Collection as IDisplayCollection;
+// import newp.display.collection.LayerCollection;
 import newp.display.collection.DisplayCollection;
-import newp.entity.collection.Collection as IEntityCollection;
+import newp.entity.collection.Collection as EntityCollection;
 import newp.entity.collection.EntityCollection;
 import newp.Lib;
 import openfl.display.Sprite;
@@ -17,11 +17,11 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  public var sprites:IDisplayCollection;
+  public var sprites:DisplayCollection;
   
-  public var entities:IEntityCollection;
+  public var entities:EntityCollection;
 
-  public var colliders:IShapeCollection;
+  public var colliders:ShapeCollection;
   
   public var name (default, null) :String;
   public var container (get, never) :DisplayObjectContainer;
@@ -51,7 +51,7 @@ class BasicScene implements Scene {
   
   function init_entities():Void   { this.entities = new EntityCollection();  }
 
-  function init_sprites():Void    { this.sprites = new DisplayCollection(['camera', 'hud', 'debug']); }
+  function init_sprites():Void    { this.sprites = new DisplayCollection('scene-layers', ['camera', 'hud', 'debug']); }
 
   function init_colliders():Void  { this.colliders = new ShapeBins(); }
 
@@ -77,15 +77,15 @@ class BasicScene implements Scene {
 
   public inline function addSprite (sprite:DisplayObject, ?layer:String) :Void {
     layer = layer == null ? 'camera' : layer == '' ? 'camera' : layer;
-    this.sprites.addSprite(sprite, layer);
+    this.sprites.add(sprite, layer);
   }
 
   public inline function removeSprite (sprite:DisplayObject) :Void {
-    this.sprites.removeSprite(sprite);
+    this.sprites.remove(sprite);
   }
 
-  public inline function setSpriteIndex (sprite:DisplayObject, index:Int) :Void {
-    this.sprites.setSpriteIndex(sprite, index);
+  public inline function setChildIndex (sprite:DisplayObject, index:Int) :Void {
+    this.sprites.setChildIndex(sprite, index);
   }
 
   // Collider
