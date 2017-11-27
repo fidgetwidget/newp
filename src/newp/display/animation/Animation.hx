@@ -54,11 +54,12 @@ class Animation {
 
     // Are we at some kind of frame limit
     if ((this.percentComplete > 1 && !this.inReverse) ||
-        (this.percentComplete < 0 && this.inReverse))
+        (this.percentComplete <= 0 && this.inReverse))
     {
+      // trace(this.percentComplete);
 
       // Are we going to flip direction
-      if (this.loops && this.reverse && this.inReverse) {
+      if (this.loops && this.reverse && !this.inReverse) {
         this.flip();
         return;
       } 

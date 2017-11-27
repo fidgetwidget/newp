@@ -28,7 +28,7 @@ class AnimationTest extends SimpleScene {
 
   function initAnimations():Void {
     var behaviours = new BehaviourMap<FrameAnimation>();
-    behaviours.add(new FrameAnimation("stand",     [0, 1, 2],    true,   false, 6));
+    behaviours.add(new FrameAnimation("stand",     [0, 1, 2],    true,   true,  3));
     behaviours.add(new FrameAnimation("down",      [3, 4, 5],    false,  false, 10));
     behaviours.add(new FrameAnimation("jump",      [6, 7, 8],    false,  false, 10));
     behaviours.add(new FrameAnimation("hit",       [9, 10, 11],  false,  false, 10));
@@ -54,6 +54,7 @@ class AnimationTest extends SimpleScene {
     if (this.animationQueue.current.frameId != this.frameId) {
       this.setFrame();
     }
+    // trace(this.animationQueue.current.current);
   } 
 
   inline function setFrame() :Void {

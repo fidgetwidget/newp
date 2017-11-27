@@ -9,9 +9,9 @@ class FrameAnimation extends Animation {
 
   public var frameId(get, never):Int;
   public var frameCount(default, null):Int;
-
+  public var current(default, null):Int;
+  
   var frames:Array<Int>;
-  var current:Int;
 
   public function new(name:String, frames:Array<Int>, loops:Bool = false, reverse:Bool = false, frameRate:Int = 30) {
     super(name, loops, reverse, frameRate);
@@ -33,7 +33,7 @@ class FrameAnimation extends Animation {
   override function loop() :Void {
     // trace('FrameAnimation.loop');
     // trace(this.current);
-    this.current = this.reverse && !this.inReverse ? 1 : 0;
+    this.current = this.reverse && this.inReverse ? 1 : 0;
     super.loop();
   }
 
