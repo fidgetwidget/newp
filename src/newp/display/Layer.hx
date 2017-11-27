@@ -1,54 +1,45 @@
-package newp.display.collection;
+package newp.display;
 
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 
-class Layer implements Collection {
+class Layer extends Group implements ICollection {
 
-  var items:Array<DisplayObject>;
+  // Group:
+  // var items:Array<DisplayObject>;
+  // public var name(default, null):String;
+  // public var length(get, never):Int;
+  
   var sortFunc:DisplayObject->DisplayObject->Int = null;
 
   // Properties
 
-  public var name(default, null):String;
-
   public var container(default, null):DisplayObjectContainer;
-
-  public var length(get, never):Int;
 
   public var sortable(get, never):Bool;
 
   public function new(name:String) {
-    this.name = name;
-    this.items = [];
+    super(name);
     this.container = new Sprite();
   }
 
-  // Collection Interface
-  // ====================
+  // Methods
+  // =======
 
-  public function iterator():Iterator<DisplayObject> {
-    return this.items.iterator();
-  }
-
-  public function merge(collection:Collection) {
+  override public function merge(collection:ICollection) {
     for (item in collection) {
       collection.remove(item);
       this.add(item);
     }
   }
 
-  public function contains(graphic:DisplayObject):Bool {
-    return this.container.contains(graphic);
-  }
-
-  public function add(graphic:DisplayObject, ?group:String):Void {
+  override public function add(graphic:DisplayObject, ?group:String):Void {
     this.items.push(graphic);
     this.container.addChild(graphic);
   }
 
-  public function remove(graphic:DisplayObject):Void {
+  override public function remove(graphic:DisplayObject):Void {
     this.items.remove(graphic);
     this.container.removeChild(graphic);
   }
@@ -75,8 +66,6 @@ class Layer implements Collection {
   }
 
   // Property Getters/Setters
-
-  inline function get_length():Int { return this.items.length; }
 
   inline function get_sortable():Bool { return this.sortFunc != null; }
 
