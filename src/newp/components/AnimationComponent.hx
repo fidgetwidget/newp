@@ -6,7 +6,7 @@ import newp.display.animation.FrameAnimation;
 
 class AnimationComponent implements IComponent implements IUpdateable {
 
-  public static function make(e:Entity, frameSet:FrameSet, queue:AnimationQueue) :AnimationComponent {
+  public static function make(e:Entity, frameSet:FrameSet, queue:AnimationQueue<FrameAnimation>) :AnimationComponent {
     var fac = new AnimationComponent(frameSet, queue);
     e.addComponent(fac);
     return fac;
@@ -24,7 +24,7 @@ class AnimationComponent implements IComponent implements IUpdateable {
   public var renderable(default, null):Bool = false;
   public var collidable(default, null):Bool = false;
 
-  public var queue:AnimationQueue;
+  public var queue:AnimationQueue<FrameAnimation>;
   public var frameSet:FrameSet;
   public var bitmapData(get, never):BitmapData;
   var behaviour:String;
@@ -33,7 +33,7 @@ class AnimationComponent implements IComponent implements IUpdateable {
   var frame:Frame;
   var frameId:Int;
 
-  public function new(frameSet:FrameSet, queue:AnimationQueue, ?name:String) {
+  public function new(frameSet:FrameSet, queue:AnimationQueue<FrameAnimation>, ?name:String) {
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++AnimationComponent.uid}' : name;
     this.frameSet = frameSet;

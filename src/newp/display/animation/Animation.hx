@@ -9,9 +9,9 @@ class Animation {
   public var reverse :Bool;
   public var frameRate :Int;
 
-  public var onLoop():Animation->Int->Void;
-  public var onReverse():Animation->Void;
-  public var onComplete():Animation->Void;
+  public var onLoop:Animation->Int->Void;
+  public var onReverse:Animation->Void;
+  public var onComplete:Animation->Void;
 
   var playing:Bool;
   var inReverse:Bool;

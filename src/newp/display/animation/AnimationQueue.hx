@@ -1,16 +1,18 @@
 package newp.display.animation;
 
-class AnimationQueue {
+@:generic
+class AnimationQueue<T:Animation> {
 
-  public var behaviourAnimationsMap:Map<String, Animation>;
-  public var current(get, never):Animation;
+  public var behaviourAnimationsMap:Map<String, T>;
+  public var current(get, never):T;
   public var behaviour(get, never):String;
+  public var defaultBehaviour:String;
 
   var queue:Array<String>;
   var _currentBehaviour:String;
-  var _currentAnimation:Animation;
+  var _currentAnimation:T;
 
-  public function new(behaviourAnimationsMap:Map<String, Animation> = null, defaultBehaviour:String = null) {
+  public function new(behaviourAnimationsMap:Map<String, T> = null, defaultBehaviour:String = null) {
     this.behaviourAnimationsMap = behaviourAnimationsMap;
     this.defaultBehaviour = defaultBehaviour;
     
@@ -38,14 +40,14 @@ class AnimationQueue {
   }
 
   inline function setCurrent():Void {
-    this._currentBehaviour = this.behaviour();
-    this._currentAnimation = this.animations(this._currentBehaviour);
+    this._currentBehaviour = this.behaviour;
+    this._currentAnimation = this.behaviourAnimationsMap[this._currentBehaviour];
     this._currentAnimation.onComplete = this.currentAnimationComplete;
   }
 
   // Properties
 
-  inline function get_current():Animation {
+  inline function get_current():T {
     if (this._currentBehaviour != this.behaviour) { this.setCurrent(); }
     return this._currentAnimation;
   }

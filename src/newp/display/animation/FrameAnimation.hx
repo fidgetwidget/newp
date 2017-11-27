@@ -20,16 +20,9 @@ class FrameAnimation extends Animation {
     this.current = 0;
   }
 
-  public function update() :Void {
-    if (!this.playing) return;
-    this.delta += Lib.delta;
-    if (this.delta > this.duration) {
-      this.update_frame();
-    }
-  }
-
   override function next() :Void {
     this.current += this.inReverse ? -1 : 1;
+    super.next();
   }
 
   override function flip() :Void {

@@ -15,6 +15,7 @@ class Main extends Sprite {
     var pong = new Pong();
     var simple = new Simple();
     var simpleCollisions = new SimpleCollisions();
+    var animation = new AnimationTest();
 
     var vollybox = new VollyBox();
     
