@@ -3,7 +3,7 @@ package newp.components;
 import newp.Entity;
 
 
-class Routine implements Component implements Updateable {
+class Routine implements IComponent implements IUpdateable {
 
   static var uid:Int = 0;
 

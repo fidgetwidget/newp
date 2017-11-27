@@ -3,7 +3,7 @@ package newp.components;
 import newp.collision.shapes.Shape;
 
 
-class ShapeComponent implements Component implements Collidable {
+class ShapeComponent implements IComponent implements ICollidable {
 
   public static function make(e:Entity, ?shape:Shape, ?tags:Array<String>) :ShapeComponent {
     var sc = new ShapeComponent(shape, tags);

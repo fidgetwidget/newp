@@ -1,24 +1,22 @@
-package newp.display.collection;
+package newp.display;
 
-// import newp.display.Layer;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 
-class DisplayCollection implements LayerCollection implements Collection {
+class LayerCollection implements ICollection {
 
+  // Internal Properties
   var layerByName:Map<String, Layer>;
   var layerByGraphic:Map<DisplayObject, Layer>;
   var count:Int = 0;
 
+  // Properties
   public var name(default, null):String;
-
   public var length(get, never):Int;
-
   // This also indicates the layer order
   public var layerNames(default, null):Array<String>;
-
   public var container(default, null):DisplayObjectContainer;
 
   public function new(name:String, ?layerNames:Array<String>) {
@@ -33,20 +31,25 @@ class DisplayCollection implements LayerCollection implements Collection {
     }
   }
 
+  // Lets you iterate over the display objects
+  // eg. for (obj:DisplayObject in myDisplayCol) {}
   public function iterator():Iterator<DisplayObject> {
     return this.layerByGraphic.keys();
   }
 
+  // Lets you iterate over the layers
+  // eg. for (lay:Layer in myDisplayCol.layers()) {}
   public function layers():Iterator<Layer> {
     return this.layerByName.iterator();
   }
 
-  public function merge(collection:Collection):Void {
+  // Supports a collection of displayObjects or layers
+  public function merge(collection:ICollection):Void {
     if (Std.is(collection, GroupCollection)) {
-      var spriteList = cast(collection, GroupCollection);
-      for (name in spriteList.groupNames) {
-        var sprites = spriteList.getGroup(name);
-        for (sprite in sprites) {
+      var groupCollection:GroupCollection = cast(collection, GroupCollection);
+      for (name in groupCollection.groupNames) {
+        var group:Group = groupCollection.getGroup(name);
+        for (sprite in group) {
           this.layerByName[name].add(sprite);
         }
       }
@@ -54,7 +57,7 @@ class DisplayCollection implements LayerCollection implements Collection {
     else if (Std.is(collection, LayerCollection)) {
       var layerCollection = cast(collection, LayerCollection);
       for (name in layerCollection.layerNames) {
-        var layer = layerCollection.getLayer(name);
+        var layer:Layer = layerCollection.getLayer(name);
         this.layerByName[name].merge(layer);
       }
     } 

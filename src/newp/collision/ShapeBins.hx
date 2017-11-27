@@ -1,4 +1,4 @@
-package newp.collision.collections;
+package newp.collision;
 
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
@@ -6,7 +6,7 @@ import openfl.display.Sprite;
 
 // A Simple Bin collection of colliders
 // - only compare colliders in the same bins to reduce the number of computations
-class ShapeBins implements Collection {
+class ShapeBins implements ICollection {
 
   var container_w:Int;
   var container_h:Int;

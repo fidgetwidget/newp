@@ -1,8 +1,8 @@
-package newp.display.collection;
+package newp.display;
 
 import openfl.display.DisplayObject;
 
-class Group implements Collection {
+class Group implements ICollection {
 
   var items:Array<DisplayObject>;
 
@@ -17,14 +17,16 @@ class Group implements Collection {
     this.items = [];
   }
 
-  // Collection Interface
-  // ====================
-
+  // Iterator
+  // eg. for (obj:DisplayObject in myGroup)
   public function iterator():Iterator<DisplayObject> {
     return this.items.iterator();
   }
 
-  public function merge(collection:Collection) {
+  // Methods
+  // =======
+
+  public function merge(collection:ICollection) {
     for (item in collection) {
       collection.remove(item);
       this.add(item);

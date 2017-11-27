@@ -25,6 +25,9 @@ class Directions {
   public static inline var DOWN:Int  = S;
   public static inline var LEFT:Int  = W;
 
+  public static inline var HORIZONTAL:Int = LEFT | RIGHT;
+  public static inline var VERTICAL:Int = UP | DOWN;
+
   public static function isValid(direction:Int):Bool {
     return direction >= UP && direction <= UP | RIGHT | DOWN | LEFT;
   }

@@ -1,8 +1,7 @@
 package newp.scenes;
 
 import newp.collision.shapes.Shape;
-import newp.display.collection.Collection as DisplayCollection;
-import newp.entity.collection.Collection as EntityCollection;
+import newp.entity.ICollection as EntityCollection;
 import newp.Lib;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObject;
@@ -14,10 +13,6 @@ interface Scene {
   public var container (get, never) :DisplayObjectContainer;
   public var x (get, set) :Float;
   public var y (get, set) :Float;
-
-  // public var entities:EntityCollection;
-  // public var sprites:DisplayCollection;
-
 
   public function update () :Void;
 

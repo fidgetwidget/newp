@@ -1,12 +1,12 @@
 package newp.scenes;
 
-import newp.collision.collections.Collection as ShapeCollection;
-import newp.collision.collections.ShapeBins;
+import newp.collision.ICollection as ShapeCollection;
+import newp.collision.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.collision.shapes.Shape;
-import newp.display.collection.DisplayCollection;
-import newp.entity.collection.Collection as EntityCollection;
-import newp.entity.collection.EntityCollection;
+import newp.display.LayerCollection;
+import newp.entity.ICollection as EntityCollection;
+import newp.entity.EntityCollection;
 import newp.Lib;
 import openfl.display.Sprite;
 import openfl.display.DisplayObject;
@@ -16,7 +16,7 @@ import openfl.display.DisplayObjectContainer;
 //  a single layer scene
 class BasicScene implements Scene {
   
-  public var sprites:DisplayCollection;
+  public var sprites:LayerCollection;
   
   public var entities:EntityCollection;
 
@@ -50,7 +50,7 @@ class BasicScene implements Scene {
   
   function init_entities():Void   { this.entities = new EntityCollection();  }
 
-  function init_sprites():Void    { this.sprites = new DisplayCollection('scene-layers', ['camera', 'hud', 'debug']); }
+  function init_sprites():Void    { this.sprites = new LayerCollection('scene-layers', ['camera', 'hud', 'debug']); }
 
   function init_colliders():Void  { this.colliders = new ShapeBins(); }
 

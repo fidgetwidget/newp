@@ -7,7 +7,7 @@ import openfl.display.Sprite;
 // NOTE: I want to rely on the transform rather than displayObject 
 //  so that it can be applied to a displayObject, but for now this
 //  was easier
-class TransformComponent implements Component {
+class TransformComponent implements IComponent {
 
   public static function make(e:Entity, ?name:String, ?body:DisplayObject):TransformComponent {
     var t = new TransformComponent(body, name);

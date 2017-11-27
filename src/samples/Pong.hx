@@ -6,7 +6,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import newp.collision.shapes.*;
-import newp.collision.collections.ShapeBins;
+import newp.collision.ShapeBins;
 import newp.collision.response.ShapeCollision;
 import newp.scenes.BasicScene;
 import newp.math.Dice;

@@ -7,7 +7,7 @@ import newp.math.Utils as MathUtils;
 import newp.Entity;
 
 
-class MotionComponent implements Component implements Updateable {
+class MotionComponent implements IComponent implements IUpdateable {
 
   public static function make(e:Entity) :MotionComponent {
     var mc = new MotionComponent();

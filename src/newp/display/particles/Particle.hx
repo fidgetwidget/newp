@@ -1,4 +1,4 @@
-package newp.display;
+package newp.display.particles;
 
 import newp.transform.Motion;
 import newp.transform.MotionRange;

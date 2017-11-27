@@ -6,7 +6,7 @@ import openfl.display.Graphics;
 import openfl.display.Sprite;
 
 
-class SpriteComponent implements Component implements Renderable implements Updateable {
+class SpriteComponent implements IComponent implements IRenderable implements IUpdateable {
 
   public static function make(e:Entity, ?layer:String) :SpriteComponent {
     var sc = new SpriteComponent(new Sprite(), layer);

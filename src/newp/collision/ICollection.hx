@@ -1,10 +1,10 @@
-package newp.collision.collections;
+package newp.collision;
 
 import newp.collision.shapes.Shape;
 import newp.collision.response.ShapeCollision;
 
 
-interface Collection {
+interface ICollection {
 
   // Properties
 

@@ -1,4 +1,4 @@
-package newp.display;
+package newp.display.particles;
 
 interface Emitter {
 

@@ -1,8 +1,6 @@
 package newp;
 
 import newp.components.*;
-import newp.components.collection.Collection as IComponentCollection;
-import newp.components.collection.ComponentCollection;
 import newp.collision.shapes.Shape;
 import newp.collision.Bounds;
 import newp.scenes.Scene;
@@ -12,7 +10,7 @@ import openfl.display.Sprite;
 
 class Entity {
 
-  var components:IComponentCollection;
+  var components:ComponentCollection;
 
   var parent:Entity = null;
 
@@ -68,7 +66,7 @@ class Entity {
   // | Components 
   // +-------------------------
 
-  public function addComponent(c:Component):Entity {
+  public function addComponent(c:IComponent):Entity {
     if (c.type == Type.getClassName(TransformComponent)) {
       if (this.hasComponent(TransformComponent)) throw "An Entity can have only one TransformComponent";
       this.body = cast (c, TransformComponent).body; // TODO: make the body be the component
@@ -91,7 +89,7 @@ class Entity {
     return this.components.has(type);
   }
 
-  public function removeComponent(c:Component):Entity {
+  public function removeComponent(c:IComponent):Entity {
     if (c.type == Type.getClassName(TransformComponent)) throw "An Entity must have a TransformComponent";
     if (c.type == Type.getClassName(MotionComponent)) { this.motion = null; }
 
@@ -117,23 +115,23 @@ class Entity {
     this.scene = null;
   }
 
-  inline function addComponentToScene(c:Component) {
-    if (c.renderable) this.addRenderableToScene(cast(c, Renderable));
-    if (c.collidable) this.addCollidableToScene(cast(c, Collidable));
+  inline function addComponentToScene(c:IComponent) {
+    if (c.renderable) this.addRenderableToScene(cast(c, IRenderable));
+    if (c.collidable) this.addCollidableToScene(cast(c, ICollidable));
   }
 
-  inline function removeComponentFromScene(c:Component) {
-    if (c.renderable) this.removeRenderableFromScene(cast(c, Renderable));
-    if (c.collidable) this.removeCollidableFromScene(cast(c, Collidable));
+  inline function removeComponentFromScene(c:IComponent) {
+    if (c.renderable) this.removeRenderableFromScene(cast(c, IRenderable));
+    if (c.collidable) this.removeCollidableFromScene(cast(c, ICollidable));
   }
 
-  inline function addRenderableToScene(c:Renderable)      { c.addedToScene(this.scene); }
+  inline function addRenderableToScene(c:IRenderable)      { c.addedToScene(this.scene); }
 
-  inline function removeRenderableFromScene(c:Renderable) { c.removedFromScene(); }
+  inline function removeRenderableFromScene(c:IRenderable) { c.removedFromScene(); }
 
-  inline function addCollidableToScene(c:Collidable)      { this.scene.addCollider(c.shape); }
+  inline function addCollidableToScene(c:ICollidable)      { this.scene.addCollider(c.shape); }
 
-  inline function removeCollidableFromScene(c:Collidable) { this.scene.removeCollider(c.shape); }
+  inline function removeCollidableFromScene(c:ICollidable) { this.scene.removeCollider(c.shape); }
 
   // +-------------------------
   // | Properties
@@ -206,9 +204,9 @@ class Entity {
     return val;
   }
 
-  inline function get_isRenderable():Bool { return this.components.has(Renderable); }
+  inline function get_isRenderable():Bool { return this.components.has(IRenderable); }
   
-  inline function get_isCollidable():Bool { return this.components.has(Collidable); }
+  inline function get_isCollidable():Bool { return this.components.has(ICollidable); }
 
   inline function get_hasMotion():Bool { return this.motion != null; }
 

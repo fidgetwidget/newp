@@ -3,7 +3,7 @@ package newp.components;
 import newp.Entity;
 
 
-interface Component {
+interface IComponent {
 
   public var name(default, null):String;
 

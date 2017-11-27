@@ -5,7 +5,7 @@ import newp.transform.Tweener;
 import newp.Entity;
 
 
-class TweenerComponent implements Component implements Updateable {
+class TweenerComponent implements IComponent implements IUpdateable {
 
   public static function make(e:Entity, ?name:String):TweenerComponent {
     var t = new TweenerComponent(name);

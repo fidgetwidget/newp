@@ -1,4 +1,4 @@
-package newp.display;
+package newp.display.particles;
 
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;

@@ -5,7 +5,7 @@ import openfl.display.Sprite;
 
 
 // NOTE: perhaps it should be aware of it's container, rather than the scene?
-interface Renderable {
+interface IRenderable {
 
   public var sprite(default, null):Sprite;
   public var layer(get, set):String;

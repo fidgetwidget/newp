@@ -5,7 +5,7 @@ import openfl.display.Graphics;
 import openfl.display.Sprite;
 
 // TODO: expose emitter functions/features
-class EmitterComponent implements Component implements Renderable implements Updateable {
+class EmitterComponent implements IComponent implements IRenderable implements IUpdateable {
 
   static var uid:Int = 0;
 
