@@ -59,7 +59,6 @@ class AnimationTest extends SimpleScene {
   inline function setFrame() :Void {
     this.frameId = this.animationQueue.current.frameId;
     this.frame = this.frameSet.getFrame(this.frameId);
-    trace('setFrame');
     this.bitmap.bitmapData = this.frame.bmp;
   }
 
