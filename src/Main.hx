@@ -19,7 +19,7 @@ class Main extends Sprite {
 
     var vollybox = new VollyBox();
     
-    engine.start(vollybox);
+    engine.start(animation);
   }
   
 }

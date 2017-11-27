@@ -31,7 +31,9 @@ class FrameAnimation extends Animation {
   }
 
   override function loop() :Void {
-    this.current = 1; // because we were just at 0
+    // trace('FrameAnimation.loop');
+    // trace(this.current);
+    this.current = this.reverse && !this.inReverse ? 1 : 0;
     super.loop();
   }
 
@@ -46,6 +48,6 @@ class FrameAnimation extends Animation {
     return this.frames[this.current]; 
   }
 
-  override function get_percentComplete():Float { return this.current + 1 / (this.frameCount == 0 ? 1 : this.frameCount); }
+  override function get_percentComplete():Float { return (this.current + 1) / (this.frameCount == 0 ? 1 : this.frameCount); }
 
 }

@@ -49,10 +49,11 @@ class Animation {
   }
 
   function next():Void {
+    // trace('Animation.next');
     this.delta -= this.duration;
 
     // Are we at some kind of frame limit
-    if ((this.percentComplete >= 1 && !this.inReverse) ||
+    if ((this.percentComplete > 1 && !this.inReverse) ||
         (this.percentComplete < 0 && this.inReverse))
     {
 
@@ -79,6 +80,7 @@ class Animation {
   }
 
   function loop() :Void {
+    // trace('Animation.loop');
     // If we were reversed
     if (this.reverse && this.inReverse) this.inReverse = false;
     this.loopCount++;
@@ -86,6 +88,7 @@ class Animation {
   }
 
   function complete() :Void {
+    // trace('Animation.complete');
     this.stop();
     if (this.onComplete != null) this.onComplete(this);
   }

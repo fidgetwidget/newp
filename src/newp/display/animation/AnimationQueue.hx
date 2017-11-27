@@ -21,12 +21,21 @@ class AnimationQueue<T:Animation> {
     this._currentAnimation = null;
   }
 
+  public function update():Void {
+    if (this.current == null) return;
+    this.current.update();
+  }
+
   // for setting up the next behaviour
   public function enqueue(behaviour:String, force:Bool = false) {
     if (force) {
+      if (this._currentAnimation != null) this._currentAnimation.onComplete = null;
       this.clearQueue();
     }
+
     this.queue.push(behaviour);
+
+    if (force) { this.setCurrent(); }
   }
 
   function currentAnimationComplete(anim:Animation):Void {
@@ -43,6 +52,7 @@ class AnimationQueue<T:Animation> {
     this._currentBehaviour = this.behaviour;
     this._currentAnimation = this.behaviourAnimationsMap[this._currentBehaviour];
     this._currentAnimation.onComplete = this.currentAnimationComplete;
+    this._currentAnimation.play();
   }
 
   // Properties

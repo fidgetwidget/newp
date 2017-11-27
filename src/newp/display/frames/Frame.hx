@@ -32,7 +32,7 @@ class Frame {
   public function new(x:Int, y:Int, width:Int, height:Int) {
     this.x = x;
     this.y = y;
-    this.widht = widht;
+    this.width = width;
     this.height = height;
     this.offsetX = 0;
     this.offsetY = 0;
@@ -44,7 +44,7 @@ class Frame {
   public function set(x:Int, y:Int, width:Int, height:Int):Void {
     this.x = x;
     this.y = y;
-    this.widht = widht;
+    this.width = width;
     this.height = height;
     if (this.hasBitmapData) {
       this.bmp = null;

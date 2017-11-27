@@ -1,6 +1,7 @@
 package newp.utils;
 
 import openfl.geom.Point;
+import newp.math.Bit;
 
 class Directions {
 
@@ -54,7 +55,7 @@ class Directions {
         point.y < 0) point.y = 0;
 
     // has no east but points east
-    if (!Bit.bas(direction, E) &&
+    if (!Bit.has(direction, E) &&
         !Bit.has(direction, NE) && 
         !Bit.has(direction, SE) &&
         point.x > 0) point.x = 0;
@@ -66,7 +67,7 @@ class Directions {
         point.y > 0) point.y = 0;
 
     // has no west but points west
-    if (!Bit.bas(direction, W) &&
+    if (!Bit.has(direction, W) &&
         !Bit.has(direction, NW) && 
         !Bit.has(direction, SW) && 
         point.x < 0) point.x = 0;

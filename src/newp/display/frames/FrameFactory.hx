@@ -3,6 +3,7 @@ package newp.display.frames;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
+import openfl.display.Tileset;
 
 class FrameFactory {
 
@@ -10,14 +11,14 @@ class FrameFactory {
   public static function make(source:BitmapData, rect:Rectangle, setBmp:Bool = true) :Frame {
     var x:Int = Math.floor(rect.x);
     var y:Int = Math.floor(rect.y);
-    var width:Int = Math.floor(rect.widht);
+    var width:Int = Math.floor(rect.width);
     var height:Int = Math.floor(rect.height);
-    var frame = new Frame(x, y, widht, height, offsetX, offsetY);
+    var frame = new Frame(x, y, width, height);
 
     if (setBmp) {
       frame.bmp = new BitmapData(width, height);
-      if (this._point == null) this._point = new Point();
-      frame.bmp.copyPixels(source, rect, this._point);
+      if (FrameFactory._point == null) FrameFactory._point = new Point();
+      frame.bmp.copyPixels(source, rect, FrameFactory._point);
     }
 
     return frame;
@@ -51,23 +52,23 @@ class FrameFactory {
         rect.y = y;
         frameSet.makeFrame(rect, true);
         count++;
-        xx += frameWidth + spacingX;
+        x += frameWidth + spacingX;
       }
       x = marginX;
-      y ++ frameHeight + spacingY;
+      y += frameHeight + spacingY;
     }
     return frameSet;
   }
 
-  // Create a TileSet from the FrameSet's rectangles
-  public static function frameSetIntoTileSet(source:BitmapData, frameSet:FrameSet) :TileSet {
-    var rects:Array<Rectangle>;
+  // Create a Tileset from the FrameSet's rectangles
+  public static function frameSetIntoTileSet(source:BitmapData, frameSet:FrameSet) :Tileset {
+    var rects:Array<Rectangle> = [];
     for (i in 0...frameSet.frameCount) {
       var frame = frameSet.getFrame(i, false);
       var rect = new Rectangle(frame.x, frame.y, frame.width, frame.height);
-      rects.push(rect)
+      rects.push(rect);
     }
-    return new TileSet(source, rects);
+    return new Tileset(source, rects);
   }
   
 }

@@ -42,6 +42,7 @@ class FrameSet {
   public function makeFrame(rect:Rectangle, setBmp:Bool = true) :Frame {
     var frame = FrameFactory.make(this.source, rect, setBmp);
     this.frames.push(frame);
+    return frame;
   }
 
   public function getFrame(index:Int, setBmp:Bool = true) :Frame {
@@ -66,7 +67,7 @@ class FrameSet {
     if (sourceAlpha == null) {
       bitmapData.copyPixels(source, _rect, _point);
     } else {
-      bitmapData.copyChannel(source, _rect, _point, sourceAlpha, _point, false);
+      bitmapData.copyPixels(source, _rect, _point, sourceAlpha, _point, false);
     }
 
     frame.bmp = bitmapData;
