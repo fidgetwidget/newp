@@ -33,7 +33,9 @@ class AnimationQueue<T:Animation> {
       this.clearQueue();
     }
 
-    this.queue.push(behaviour);
+    if (behaviour != null && this.behaviourAnimationsMap.exists(behaviour)) {
+      this.queue.push(behaviour);
+    }
 
     if (force) { this.setCurrent(); }
   }

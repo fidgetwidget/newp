@@ -32,6 +32,8 @@ class Engine {
 
   public function start(scene:Scene = null):Void {
     this.stage.addEventListener (Event.ENTER_FRAME, this.update);
+    this.stage.addEventListener(Event.DEACTIVATE, this.pause);
+    this.stage.addEventListener(Event.ACTIVATE, this.unpause);
 
     this.main.addChild(sceneLayer);
     this.main.addChild(debugLayer);
@@ -41,6 +43,11 @@ class Engine {
   }
 
   function update(e:Event):Void {
+    if (this._paused) {
+      this.inputs.update(); // make sure we check the inputs, in case they are pausing/unpausing
+      return;
+    }
+
     this.clock.tick();
     if (Lib.pauseFrames > 0) {
       Lib.pauseFrames--;
@@ -54,6 +61,15 @@ class Engine {
     this.scenes.update();
   }
 
+  function pause(e:Event):Void {
+    this._paused = true;
+  }
+
+  function unpause(e:Event):Void {
+    this._paused = false;
+    this.clock.restart();
+  }
+
   // Properties
   inline function get_stage():Stage { return this.main.stage; }
 
@@ -63,9 +79,7 @@ class Engine {
     return this._debug = val;
   }
   
-
+  var _paused:Bool = false;
   var _debug:Bool = false;
-
-
 
 }
