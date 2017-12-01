@@ -16,6 +16,7 @@ class Main extends Sprite {
     var simple = new Simple();
     var simpleCollisions = new SimpleCollisions();
     var animation = new AnimationTest();
+    var texturePacker = new TexturePackerTest();
 
     var vollybox = new VollyBox();
     

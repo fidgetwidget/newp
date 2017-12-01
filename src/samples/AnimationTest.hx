@@ -29,6 +29,8 @@ class AnimationTest extends SimpleScene {
   // Methods
 
   function initAnimations():Void {
+    var asset = openfl.Assets.getBitmapData('assets/animationTest/kit.png');
+
     var behaviours = new BehaviourMap<FrameAnimation>();
     behaviours.add(new FrameAnimation("idle",      [0, 1, 2],    true,   true,  3));
     behaviours.add(new FrameAnimation("walk",      [3, 4, 5],    false,  false, 10));
@@ -39,8 +41,8 @@ class AnimationTest extends SimpleScene {
     behaviours.add(new FrameAnimation("flypunch",  [18, 19, 20], false,  false, 10));
     behaviours.add(new FrameAnimation("flykick",   [21, 22, 23], false,  false, 10));
     behaviours.add(new FrameAnimation("ko",        [24, 25, 26], true,   false, 6));
+
     this.animationQueue = new AnimationQueue(behaviours.behaviourAnimationMap, "idle");
-    var asset = openfl.Assets.getBitmapData('assets/private/fox/kit_from_firefox.png');
     this.frameSet = FrameFactory.makeFrameSet('fox', asset, 56, 80);
   }
 
