@@ -27,20 +27,23 @@ class TexturePackerTest extends SimpleScene {
 
   function initGroups():Void {
     var importer = new TexturePackerImporter();
-    this.frameGroups = importer.praseIntoGroups('kit', 'assets/animationTest/texturePacker/kit');
+    var exp:EReg = ~/.+(?=\/)/;
+    this.frameGroups = importer.praseIntoGroups('kit', 'assets/animationTest/texturePacker/kit', exp);
     var behaviours = new BehaviourMap<FrameAnimation>();
-    // behaviours.add(new FrameAnimation("idle",      [0, 1, 2],    true,   true,  3));
-    // behaviours.add(new FrameAnimation("walk",      [3, 4, 5],    false,  false, 10));
-    // behaviours.add(new FrameAnimation("jump",      [6, 7, 8],    false,  false, 10));
-    // behaviours.add(new FrameAnimation("hit",       [9, 10, 11],  false,  false, 10));
-    // behaviours.add(new FrameAnimation("punch",     [12, 13, 14], false,  false, 10));
-    // behaviours.add(new FrameAnimation("kick",      [15, 16, 17], false,  false, 10));
-    // behaviours.add(new FrameAnimation("flypunch",  [18, 19, 20], false,  false, 10));
-    // behaviours.add(new FrameAnimation("flykick",   [21, 22, 23], false,  false, 10));
-    // behaviours.add(new FrameAnimation("ko",        [24, 25, 26], true,   false, 6));
+    
+    //                                            name        loop     reverse    fps
+    behaviours.add(frameGroups.makeFrameAnimation("airkick",  false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("airpunch", false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("block",    false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("hit",      false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("idle",     true,    true,      3));
+    behaviours.add(frameGroups.makeFrameAnimation("jump",     false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("kick",     false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("ko",       true,    false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("punch",    false,   false,     10));
+    behaviours.add(frameGroups.makeFrameAnimation("walk",     false,   false,     5));
 
     this.animationQueue = new AnimationQueue(behaviours.behaviourAnimationMap, "idle");
-    // this.frameSet = FrameFactory.makeFrameSet('fox', asset, 56, 80);
   }
 
   function initSprite():Void {
@@ -51,51 +54,58 @@ class TexturePackerTest extends SimpleScene {
   // Update Loop
 
   public override function update():Void {
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_1)) {
-    //   this.animationQueue.enqueue("walk");
-    // }
+    this.input_update(); // check for user input on what animation should be default/queued
 
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_2)) {
-    //   this.animationQueue.enqueue("jump");
-    // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_3)) {
-    //   this.animationQueue.enqueue("hit");
-    // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_4)) {
-    //   this.animationQueue.enqueue("punch");
-    // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_5)) {
-    //   this.animationQueue.enqueue("kick");
-    // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_6)) {
-    //   this.animationQueue.enqueue("flypunch");
-    // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_7)) {
-    //   this.animationQueue.enqueue("flykick");
-    // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_8)) {
-    //   this.animationQueue.enqueue("ko");
-    // }
-
-    // // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_9)) {
-    // //   this.animationQueue.enqueue("block");
-    // // }
-
-    // if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_0)) {
-    //   this.animationQueue.enqueue(null, true);
-    // }
-
-    // this.animationQueue.update();
-    // if (this.animationQueue.current.frameId != this.frameId) {
-    //   this.setFrame();
-    // }
+    this.animationQueue.update();
+    if (this.animationQueue.current.frameId != this.frameId) {
+      this.setFrame();
+    }
   } 
+
+  inline function input_update():Void {
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_1)) {
+      this.animationQueue.defaultBehaviour = "walk";
+      this.animationQueue.enqueue(null, true);
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_2)) {
+      this.animationQueue.enqueue("jump");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_3)) {
+      this.animationQueue.enqueue("hit");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_4)) {
+      this.animationQueue.enqueue("punch");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_5)) {
+      this.animationQueue.enqueue("kick");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_6)) {
+      this.animationQueue.enqueue("airpunch");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_7)) {
+      this.animationQueue.enqueue("airkick");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_8)) {
+      this.animationQueue.defaultBehaviour = "ko";
+      this.animationQueue.enqueue(null, true);
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_9)) {
+      this.animationQueue.enqueue("block");
+    }
+
+    if (Lib.inputs.keyboard.pressed(Keyboard.NUMBER_0)) {
+      this.animationQueue.defaultBehaviour = "idle";
+      this.animationQueue.enqueue(null, true);
+    }
+  }
 
   inline function setFrame() :Void {
     this.frameId = this.animationQueue.current.frameId;

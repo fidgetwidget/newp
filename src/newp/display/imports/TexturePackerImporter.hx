@@ -12,17 +12,19 @@ class TexturePackerImporter {
 
   public function parse(name:String, path:String) :FrameSet {
     var source = openfl.Assets.getBitmapData(path + '.png');
-    var json = Json.parse(path + '.json');
-    var tpFrameData = cast(json.frames, Array<TPFrameData>);
-    var frameSet = parseFrameSet(name, json, source);
+    var json = openfl.Assets.getText(path + '.json');
+    var data:TPData = Json.parse(json);
+    var tpFrameData = data.frames;
+    var frameSet = parseFrameSet(name, tpFrameData, source);
 
     return frameSet;
   }
 
   public function praseIntoGroups(name:String, path:String, exp:EReg = null) :FrameGroups {
     var source = openfl.Assets.getBitmapData(path + '.png');
-    var json = Json.parse(path + '.json');
-    var tpFrameData = cast(json.frames, Array<TPFrameData>);
+    var json = openfl.Assets.getText(path + '.json');
+    var data:TPData = Json.parse(json);
+    var tpFrameData = data.frames;
     var frameSet = parseFrameSet(name, tpFrameData, source);
     var groups = parseGroups(tpFrameData, exp);
     var frameGroups = new FrameGroups(frameSet, groups);
@@ -63,10 +65,15 @@ class TexturePackerImporter {
     for (frame in tpFrameData) {
       exp.match(frame.filename);
       var groupName = exp.matched(0);
-      if (!map.exists(groupName)) { map.set(groupName, []); }
+      trace(exp.matched);
+      if (!map.exists(groupName)) { 
+        map.set(groupName, []); 
+      }
       var frames = map.get(groupName);
       frames.push(i++);
     }
+
+    trace('groups', map);
 
     return map;
   }
@@ -74,6 +81,11 @@ class TexturePackerImporter {
 
 // TexturePacker TypeDef
 // =====================
+
+typedef TPData = {
+  var frames:Array<TPFrameData>;
+  var meta:Dynamic;
+}
 
 typedef TPFrameData = {
   var filename:String;

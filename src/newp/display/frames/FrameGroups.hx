@@ -80,17 +80,17 @@ class FrameGroups {
   // ==============
   
   public function makeFrameAnimation(
-    groupName:String,
-    animName:String, 
+    name:String,
     loop:Bool = false, 
     reverse:Bool = false, 
-    frameRate:Int = 30) :FrameAnimation 
+    frameRate:Int = 30,
+    animName:String = null) :FrameAnimation 
   {
-    var frames = this.getGroup(groupName);
+    var frames = this.getGroup(name);
     if (frames == null) {
       return null;
     }
-
+    if (animName == null) animName = name;
     var frameAnim = new FrameAnimation(animName, frames, loop, reverse, frameRate);
     return frameAnim;
   }
