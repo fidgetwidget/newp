@@ -19,29 +19,32 @@ class TexturePackerTest extends SimpleScene {
 
   public function new () {
     super();
-    this.initGroups();
+    this.initFrameData();
+    this.initAnimations();
     this.initSprite();
   }
 
   // Methods
 
-  function initGroups():Void {
+  function initFrameData() :Void {
     var importer = new TexturePackerImporter();
     var exp:EReg = ~/.+(?=\/)/;
     this.frameGroups = importer.praseIntoGroups('kit', 'assets/animationTest/texturePacker/kit', exp);
+  }
+
+  function initAnimations() :Void {
     var behaviours = new BehaviourMap<FrameAnimation>();
-    
-    //                                            name        loop     reverse    fps
-    behaviours.add(frameGroups.makeFrameAnimation("airkick",  false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("airpunch", false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("block",    false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("hit",      false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("idle",     true,    true,      3));
-    behaviours.add(frameGroups.makeFrameAnimation("jump",     false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("kick",     false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("ko",       true,    false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("punch",    false,   false,     10));
-    behaviours.add(frameGroups.makeFrameAnimation("walk",     false,   false,     5));
+    //                                                 name        loop     reverse    fps
+    behaviours.add( this.frameGroups.makeFrameAnimation("airkick",  false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("airpunch", false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("block",    false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("hit",      false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("idle",     true,    true,      3)  );
+    behaviours.add( this.frameGroups.makeFrameAnimation("jump",     false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("kick",     false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("ko",       true,    false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("punch",    false,   false,     10) );
+    behaviours.add( this.frameGroups.makeFrameAnimation("walk",     false,   false,     5)  );
 
     this.animationQueue = new AnimationQueue(behaviours.behaviourAnimationMap, "idle");
   }

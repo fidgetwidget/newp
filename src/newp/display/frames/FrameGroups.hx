@@ -29,24 +29,32 @@ class FrameGroups {
 
   public function new(frameSet:FrameSet, groups:Map<String, Array<Int>> = null) {
     this.frameSet = frameSet;
-    if (groups == null) {
-      groups = new Map();
+    this.groups = groups == null ? new Map() : groups;
+  }
+
+  public function setFrameSet(frameSet) :Void {
+    this.frameSet = frameSet;
+  }
+
+  public function setGroups(groups:Map<String, Array<Int>>) :Void {
+    for (name in groups.keys()) {
+      var frames = groups[name];
+      this.groups.set(name, frames);
     }
-    this.groups = groups;
   }
 
   // Groups
   // ======
 
-  public function getGroup(name:String) :Array<Int> {
+  public function get(name:String) :Array<Int> {
     if (this.groups.exists(name)) {
       return this.groups[name];
     }
     return null;
   }
 
-  public function setGroup(name:String, frameIds:Array<Int>) :Void {
-    this.groups.set(name, frameIds);
+  public function set(name:String, frames:Array<Int>) :Void {
+    this.groups.set(name, frames);
   }
 
   public function groupFrameCount(name:String) :Int {
@@ -60,7 +68,7 @@ class FrameGroups {
   // ======
 
   public function getFrame(name:String, index:Int):Frame {
-    var group = this.getGroup(name);
+    var group = this.get(name);
     if (group == null) {
       return null;
     }
@@ -86,7 +94,7 @@ class FrameGroups {
     frameRate:Int = 30,
     animName:String = null) :FrameAnimation 
   {
-    var frames = this.getGroup(name);
+    var frames = this.get(name);
     if (frames == null) {
       return null;
     }

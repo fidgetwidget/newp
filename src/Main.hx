@@ -20,7 +20,7 @@ class Main extends Sprite {
 
     var vollybox = new VollyBox();
     
-    engine.start(texturePacker);
+    engine.start(animation);
   }
   
 }
