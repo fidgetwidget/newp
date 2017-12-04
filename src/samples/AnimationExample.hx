@@ -7,7 +7,7 @@ import newp.display.frames.*;
 import newp.display.animation.*;
 import newp.Lib;
 
-class AnimationTest extends SimpleScene {
+class AnimationExample extends SimpleScene {
 
   var animationQueue:AnimationQueue<FrameAnimation>;
   var frameSet:FrameSet;

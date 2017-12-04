@@ -8,7 +8,7 @@ import newp.display.imports.TexturePackerImporter;
 import newp.display.animation.*;
 import newp.Lib;
 
-class TexturePackerTest extends SimpleScene {
+class TexturePackerExample extends SimpleScene {
 
   var animationQueue:AnimationQueue<FrameAnimation>;
   var frameGroups:FrameGroups;

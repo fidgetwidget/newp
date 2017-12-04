@@ -1,7 +1,10 @@
 package newp.components;
 
+import openfl.display.BitmapData;
 import newp.Entity;
+import newp.display.frames.Frame;
 import newp.display.frames.FrameSet;
+import newp.display.animation.AnimationQueue;
 import newp.display.animation.FrameAnimation;
 
 class AnimationComponent implements IComponent implements IUpdateable {
@@ -27,6 +30,7 @@ class AnimationComponent implements IComponent implements IUpdateable {
   public var queue:AnimationQueue<FrameAnimation>;
   public var frameSet:FrameSet;
   public var bitmapData(get, never):BitmapData;
+  public var defaultBehaviour(get, set):String;
   var behaviour:String;
   var animation:FrameAnimation;
   var bmp:BitmapData;
@@ -38,8 +42,8 @@ class AnimationComponent implements IComponent implements IUpdateable {
     this.name = name == null ? '${this.type}${++AnimationComponent.uid}' : name;
     this.frameSet = frameSet;
     this.queue = queue;
-    this.behaviour = null;
-    this.animation = null;
+    this.behaviour = this.queue.defaultBehaviour;
+    this.animation = this.queue.current;
     this.frame = null;
     this.frameId = -1;
   }
@@ -90,8 +94,15 @@ class AnimationComponent implements IComponent implements IUpdateable {
   // Properites
   // ==========
 
+  inline function get_defaultBehaviour():String {
+    return this.queue.defaultBehaviour;
+  }
+  inline function set_defaultBehaviour(val:String):String {
+    return this.queue.defaultBehaviour = val;
+  }
+
   inline function get_bitmapData():BitmapData {
-    if (this.frameId != this.anim.frameId) {
+    if (this.frameId != this.animation.frameId) {
       this.setFrame();
     }
     return this.bmp;

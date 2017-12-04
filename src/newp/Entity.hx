@@ -59,6 +59,15 @@ class Entity {
   }
 
   public function update():Void { 
+    this.preUpdate();
+    this.updateComponents();
+    this.postUpdate();
+  }
+
+  function preUpdate():Void {}
+  function postUpdate():Void {}
+
+  inline function updateComponents():Void {
     for (c in this.components.updateables) c.update();
   }
 

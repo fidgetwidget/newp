@@ -15,12 +15,13 @@ class Main extends Sprite {
     var pong = new Pong();
     var simple = new Simple();
     var simpleCollisions = new SimpleCollisions();
-    var animation = new AnimationTest();
-    var texturePacker = new TexturePackerTest();
+    var animationExample = new AnimationExample();
+    var texturePacker = new TexturePackerExample();
+    var characterExample = new CharacterExample();
 
     var vollybox = new VollyBox();
     
-    engine.start(animation);
+    engine.start(characterExample);
   }
   
 }
