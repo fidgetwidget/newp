@@ -7,14 +7,21 @@ import newp.Entity;
 
 class TweenerComponent implements IComponent implements IUpdateable {
 
+  // Static
+  // ======
+
   public static function make(e:Entity, ?name:String):TweenerComponent {
     var t = new TweenerComponent(name);
     e.addComponent(t);
     return t;
   }
 
-
   static var uid:Int = 0;
+
+  // Interfaces
+  // ==========
+
+  // IComponent
 
   public var name(default, null):String;
   public var entity(default, null):Entity;
@@ -22,30 +29,24 @@ class TweenerComponent implements IComponent implements IUpdateable {
   public var updateable(default, null):Bool = true;
   public var renderable(default, null):Bool = false;
   public var collidable(default, null):Bool = false;
+  
+  public function addedToEntity(e:Entity):Void { this.entity = e; }
+  public function removedFromEntity(e:Entity):Void { this.entity = null; }
+
+  // IUpdateable
+
+  public function update():Void { this.tweener.update(); }
+
+  // Instance
+  // ========
+
   public var tweener:Tweener;
+  public var tweens(get, never):Map<String, Tween>;
 
   public function new(?name:String) {
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++TweenerComponent.uid}' : name;
     this.tweener = new Tweener();
-  }
-
-  // Updateable
-  // ==========
-
-  public function update():Void {
-    this.tweener.update();
-  }
-
-  // Component
-  // =========
-
-  public function addedToEntity(e:Entity):Void {
-    this.entity = e;
-  }
-
-  public function removedFromEntity(e:Entity):Void {
-    this.entity = null;
   }
 
   // Methods
@@ -69,6 +70,13 @@ class TweenerComponent implements IComponent implements IUpdateable {
 
   public function resume(name:String):Void {
     this.tweener.resume(name);
+  }
+
+  // Properites
+  // ==========
+
+  inline function get_tweens():Map<String, Tween> {
+    return this.tweener.tweens;
   }
 
 }

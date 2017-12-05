@@ -9,6 +9,9 @@ import newp.display.animation.FrameAnimation;
 
 class AnimationComponent implements IComponent implements IUpdateable {
 
+  // Static
+  // ======
+
   public static function make(e:Entity, frameSet:FrameSet, queue:AnimationQueue<FrameAnimation>) :AnimationComponent {
     var fac = new AnimationComponent(frameSet, queue);
     e.addComponent(fac);
@@ -17,8 +20,10 @@ class AnimationComponent implements IComponent implements IUpdateable {
 
   static var uid:Int = 0;
 
-  // Instance
-  // ========
+  // Interfaces
+  // ==========
+
+  // IComponent
 
   public var name(default, null):String;
   public var entity(default, null):Entity;
@@ -26,6 +31,25 @@ class AnimationComponent implements IComponent implements IUpdateable {
   public var updateable(default, null):Bool = true;
   public var renderable(default, null):Bool = false;
   public var collidable(default, null):Bool = false;
+
+  public function addedToEntity(e:Entity):Void { this.entity = e; }
+  public function removedFromEntity(e:Entity):Void { this.entity = null; }
+
+  // IUpdateable
+
+  public function update():Void {
+    if (this.entity == null) return;
+    this.queue.update();
+    // check for changes
+    if (this.behaviour != this.queue.behaviour) {
+      this.setAnimation();
+    } else if (this.animation.frameId != this.frameId) {
+      this.setFrame();
+    }
+  }
+
+  // Instance
+  // ========
 
   public var queue:AnimationQueue<FrameAnimation>;
   public var frameSet:FrameSet;
@@ -48,37 +72,12 @@ class AnimationComponent implements IComponent implements IUpdateable {
     this.frameId = -1;
   }
 
-  // Updateable
-  // ==========
+  // Methods
+  // =======
 
   public function enqueue(behaviour:String, force:Bool = false):Void {
     this.queue.enqueue(behaviour, force);
   }
-
-  public function update():Void {
-    if (this.entity == null) return;
-    this.queue.update();
-    // check for changes
-    if (this.behaviour != this.queue.behaviour) {
-      this.setAnimation();
-    } else if (this.animation.frameId != this.frameId) {
-      this.setFrame();
-    }
-  }
-
-  // Component
-  // =========
-
-  public function addedToEntity(e:Entity):Void {
-    this.entity = e;
-  }
-
-  public function removedFromEntity(e:Entity):Void {
-    this.entity = null;
-  }
-
-  // Methods
-  // =======
 
   inline function setAnimation():Void {
     this.behaviour = this.queue.behaviour;

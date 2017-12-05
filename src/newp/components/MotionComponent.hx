@@ -9,6 +9,9 @@ import newp.Entity;
 
 class MotionComponent implements IComponent implements IUpdateable {
 
+  // Static
+  // ======
+
   public static function make(e:Entity) :MotionComponent {
     var mc = new MotionComponent();
     e.addComponent(mc);
@@ -17,8 +20,10 @@ class MotionComponent implements IComponent implements IUpdateable {
 
   static var uid:Int = 0;
 
-  // Instance
-  // ========
+  // Interfaces
+  // ==========
+
+  // IComponent
 
   public var name(default, null):String;
   public var entity(default, null):Entity;
@@ -26,6 +31,19 @@ class MotionComponent implements IComponent implements IUpdateable {
   public var updateable(default, null):Bool = true;
   public var renderable(default, null):Bool = false;
   public var collidable(default, null):Bool = false;
+
+  public function addedToEntity(e:Entity):Void { this.entity = e; }
+  public function removedFromEntity(e:Entity):Void { this.entity = null; }
+
+  // IUpdateable
+
+  public function update():Void {
+    if (this.entity == null) return;
+    this.motion.update(this.entity);
+  }
+
+  // Instance
+  // ========
 
   public var motion:Motion;
   public var ax(get, set):Float;
@@ -55,25 +73,6 @@ class MotionComponent implements IComponent implements IUpdateable {
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++MotionComponent.uid}' : name;
     this.motion = new Motion(['x', 'y', 'z', 'rotation']);
-  }
-
-  // Updateable
-  // ==========
-
-  public function update():Void {
-    if (this.entity == null) return;
-    this.motion.update(this.entity);
-  }
-
-  // Component
-  // =========
-
-  public function addedToEntity(e:Entity):Void {
-    this.entity = e;
-  }
-
-  public function removedFromEntity(e:Entity):Void {
-    this.entity = null;
   }
 
   // Methods

@@ -65,15 +65,12 @@ class TexturePackerImporter {
     for (frame in tpFrameData) {
       exp.match(frame.filename);
       var groupName = exp.matched(0);
-      trace(exp.matched);
       if (!map.exists(groupName)) { 
         map.set(groupName, []); 
       }
       var frames = map.get(groupName);
       frames.push(i++);
     }
-
-    trace('groups', map);
 
     return map;
   }

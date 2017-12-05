@@ -9,14 +9,21 @@ import openfl.display.Sprite;
 //  was easier
 class TransformComponent implements IComponent {
 
+  // Static
+  // ======
+
   public static function make(e:Entity, ?name:String, ?body:DisplayObject):TransformComponent {
     var t = new TransformComponent(body, name);
     e.addComponent(t);
     return t;
   }
 
-
   static var uid:Int = 0;
+
+  // Interfaces
+  // ==========
+
+  // IComponent
 
   public var name(default, null):String;
   public var entity(default, null):Entity;
@@ -24,6 +31,13 @@ class TransformComponent implements IComponent {
   public var updateable(default, null):Bool = false;
   public var renderable(default, null):Bool = false;
   public var collidable(default, null):Bool = false;
+
+  public function addedToEntity(e:Entity):Void { this.entity = e; }
+  public function removedFromEntity(e:Entity):Void { this.entity = null; }
+
+  // Instance
+  // ========
+
   public var body(default, null):DisplayObject;
   
   public var x(get, set):Float;
@@ -34,24 +48,11 @@ class TransformComponent implements IComponent {
   public var scaleY(get, set):Float;
   var _z:Float = 0;
 
-
   public function new(?body:DisplayObject, ?name:String) { 
     this.type = Type.getClassName(Type.getClass(this));
     this.name = name == null ? '${this.type}${++TransformComponent.uid}' : name;
     this.body = body == null ? new Sprite() : body; 
   }
-
-  // Component
-  // =========
-
-  public function addedToEntity(e:Entity):Void {
-    this.entity = e;
-  }
-
-  public function removedFromEntity(e:Entity):Void {
-    this.entity = null;
-  }
-
 
   // Properties
   // ==========

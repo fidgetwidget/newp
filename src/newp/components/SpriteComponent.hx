@@ -8,6 +8,9 @@ import openfl.display.Sprite;
 
 class SpriteComponent implements IComponent implements IRenderable implements IUpdateable {
 
+  // Static
+  // ======
+
   public static function make(e:Entity, ?layer:String) :SpriteComponent {
     var sc = new SpriteComponent(new Sprite(), layer);
     e.addComponent(sc);
@@ -16,8 +19,10 @@ class SpriteComponent implements IComponent implements IRenderable implements IU
 
   static var uid:Int = 0;
 
-  // Instance
-  // ========
+  // Interfaces
+  // ==========
+
+  // IComponent
 
   public var name(default, null):String;
   public var entity(default, null):Entity;
@@ -25,10 +30,38 @@ class SpriteComponent implements IComponent implements IRenderable implements IU
   public var updateable(default, null):Bool = true;
   public var renderable(default, null):Bool = true;
   public var collidable(default, null):Bool = false;
+
+  public function addedToEntity(e:Entity):Void {
+    this.entity = e;
+    if (this.sync) this.syncPosition(e);
+  }
+  public function removedFromEntity(e:Entity):Void { this.entity = null; }
+
+  // IRenderable
+
+  public var sprite(default, null):Sprite;
   public var layer(get, set):String;
   public var scene(default, null):Scene;
+
+  public function addedToScene(scene:Scene):Void {
+    this.scene = scene;
+    this.scene.addSprite(this.sprite, this.layer);
+  }
+
+  public function removedFromScene():Void {
+    this.scene.removeSprite(this.sprite);
+    this.scene = null;
+  }
+
+  // IUpdateable
+
+  public function update():Void {
+    if (this.sync) this.syncPosition(this.entity);
+  }
+
+  // Instance
+  // ========
   
-  public var sprite(default, null):Sprite;
   public var graphics(get, never):Graphics;
   public var scaleX(get, set):Float;
   public var scaleY(get, set):Float;
@@ -65,46 +98,14 @@ class SpriteComponent implements IComponent implements IRenderable implements IU
     this.sprite.removeChild(s);
   }
 
-  // Updateable
-  // ==========
-
-  public function update():Void {
-    if (this.sync) this.syncPosition(this.entity);
-  }
-
-  // Component
-  // =========
-
-  public function addedToEntity(e:Entity):Void {
-    this.entity = e;
-    if (this.sync) this.syncPosition(e);
-  }
-
-  public function removedFromEntity(e:Entity):Void {
-    this.entity = null;
-  }
-
-  // Renderable
-  // ==========
-
-  public function addedToScene(scene:Scene):Void {
-    this.scene = scene;
-    this.scene.addSprite(this.sprite, this.layer);
-  }
-
-  public function removedFromScene():Void {
-    this.scene.removeSprite(this.sprite);
-    this.scene = null;
-  }
-
-  // Internal
-  // ========
-
   inline function syncPosition(entity:Entity):Void {
     if (entity == null) return;
     this.sprite.x = entity.x;
     this.sprite.y = entity.y;
   }
+
+  // Properties
+  // ==========
 
   inline function get_layer():String { return this._layer; }
   inline function set_layer(val:String):String {

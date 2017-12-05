@@ -23,7 +23,7 @@ class CharacterExample extends BasicScene {
     this.character = new Character();
     this.addEntity(this.character);
     this.character.x = Lib.stage.stageWidth / 2;
-    this.character.y = Lib.stage.stageHeight / 2;
+    this.character.ground = (Lib.stage.stageHeight / 2) - this.character.height;
   }
 
   // Update Loop
@@ -34,19 +34,23 @@ class CharacterExample extends BasicScene {
   } 
 
   function update_controllerInput() :Void {
-    if (Lib.inputs.keyboard.pressed(Keyboard.A)) {
+
+    if (
+      Lib.inputs.keyboard.down(Keyboard.A) || 
+      Lib.inputs.keyboard.down(Keyboard.LEFT)) {
       this.character.moveLeft();
-    }
-
-    if (Lib.inputs.keyboard.pressed(Keyboard.S)) {
-      
-    }
-
-    if (Lib.inputs.keyboard.pressed(Keyboard.D)) {
+    } else if (
+      Lib.inputs.keyboard.down(Keyboard.D) || 
+      Lib.inputs.keyboard.down(Keyboard.RIGHT)) {
       this.character.moveRight();
+    } else {
+      this.character.notMoving();
     }
 
-    if (Lib.inputs.keyboard.pressed(Keyboard.W)) {
+    if (
+      Lib.inputs.keyboard.down(Keyboard.W) || 
+      Lib.inputs.keyboard.down(Keyboard.L) ||
+      Lib.inputs.keyboard.down(Keyboard.UP)) {
       this.character.jump();
     }
 
@@ -56,10 +60,6 @@ class CharacterExample extends BasicScene {
 
     if (Lib.inputs.keyboard.pressed(Keyboard.K)) {
       this.character.kick();
-    }
-
-    if (Lib.inputs.keyboard.pressed(Keyboard.L)) {
-      this.character.jump();
     }
   }
 
