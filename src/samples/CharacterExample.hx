@@ -31,6 +31,9 @@ class CharacterExample extends BasicScene {
   public override function update():Void {
     this.update_controllerInput();
     this.character.update();
+
+    if (character.x < 0) { character.x = 0; }
+    if (character.x > Lib.stage.stageWidth) { character.x = Lib.stage.stageWidth; }
   } 
 
   function update_controllerInput() :Void {
